@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import com.example.demo.asset.model.Asset;
 
 @Repository
-public interface AssetRepository extends JpaRepository<Asset, Long> {
+public interface AssetRepository extends JpaRepository<Asset, String> {
     Optional<Asset> findByName(String name);
+
 }

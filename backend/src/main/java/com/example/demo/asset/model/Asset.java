@@ -12,29 +12,77 @@ import com.example.rating.model.Rating;
 import com.example.review.model.Review;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class Asset {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "asset_type")
+public abstract class Asset {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(unique = true, nullable = false)
     private String name;
-    @ManyToOne
-    @JoinColumn(name = "publisher_id", nullable = false)
-    private User publisher;
+    private String label;
+    private String publisher;
     private String publisherMail;
+
+    private String filePath;
+    @Temporal(TemporalType.DATE)
     private Date publishDate;
-    private String status;
 
-    @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL)
-    private List<Review> comments;
+    @Enumerated(EnumType.STRING)
+    private License license;
 
-    @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL)
-    private List<Rating> ratings;
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    private String image;
+
+    @Column(length = 2000)
+    private String description;
+
+    private String documentation;
+
+    @Enumerated(EnumType.STRING)
+    private AssetType assetType;
+
+    @ManyToMany
+    private List<Tag> tags;
+
+    @ManyToMany
+    private List<Category> categories;
+
+
+    public Asset() {
+    }
+
+    public Asset(String id, String name, String label, String publisher, String publisherMail, Date publishDate,
+                 License license, Status status, String image, String description, String documentation,
+                  AssetType assetType, List<Tag> tags, List<Category> categories) {
+        this.id = id;
+        this.name = name;
+        this.setLabel(label);
+        this.publisher = publisher;
+        this.publisherMail = publisherMail;
+        this.publishDate = publishDate;
+        this.license = license;
+        this.status = status;
+        this.image = image;
+        this.description = description;
+        this.documentation = documentation;
+        this.assetType = assetType;
+        this.tags = tags;
+        this.categories = categories;
+    }
+    public String getFilePath() {
+		return filePath;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
 
 	public String getName() {
 		return name;
@@ -44,20 +92,21 @@ public class Asset {
 		this.name = name;
 	}
 
-	public User getPublisher() {
+	public String getPublisher() {
 		return publisher;
 	}
 
-	public void setPublisher(User currentUser) {
-		this.publisher = currentUser;
+	public void setPublisher(String user) {
+		this.publisher = user;
 	}
 
+
 	public String getPublisherMail() {
-		return publisherMail;
+	    return publisherMail;
 	}
 
 	public void setPublisherMail(String publisherMail) {
-		this.publisherMail = publisherMail;
+		this.publisherMail=publisherMail;
 	}
 
 	public Date getPublishDate() {
@@ -68,28 +117,77 @@ public class Asset {
 		this.publishDate = publishDate;
 	}
 
-	public String getStatus() {
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	public License getLicense() {
+		return license;
+	}
+
+	public void setLicense(License license) {
+		this.license = license;
+	}
+
+	public Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(Status status) {
 		this.status = status;
 	}
 
-	public List<Review> getComments() {
-		return comments;
+	public AssetType getAssetType() {
+		return assetType;
 	}
 
-	public void setComments(List<Review> comments) {
-		this.comments = comments;
+	public void setAssetType(AssetType assetType) {
+		this.assetType = assetType;
 	}
 
-	public List<Rating> getRatings() {
-		return ratings;
+	public String getDocumentation() {
+		return documentation;
 	}
 
-	public void setRatings(List<Rating> ratings) {
-		this.ratings = ratings;
+	public void setDocumentation(String documentation) {
+		this.documentation = documentation;
 	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	public List<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<Tag> tags) {
+		this.tags = tags;
+	}
+
+	public List<Category> getCategories() {
+		return categories;
+	}
+
+	public void setCategories(List<Category> categories) {
+		this.categories = categories;
+	}
+	
 
 }

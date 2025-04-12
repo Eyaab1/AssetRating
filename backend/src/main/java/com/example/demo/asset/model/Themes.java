@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 @Entity
 @DiscriminatorValue("Themes")
 public class Themes extends Asset {
-    @Column(unique = true)
-    private String name;
+    public Themes() {
+    	super();
+    }
+    
 }
