@@ -1,0 +1,71 @@
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0d0d0d; 
+    padding: 20px 40px ;
+
+    color: white;
+  
+    .logo-container {
+        margin-left: 0px;
+        display: flex;
+        align-items: center;
+      }
+      .logo-text {
+        padding: 0;
+        display: flex;
+        flex-direction: column; 
+        line-height: 1; 
+      }
+      
+      .veggo {
+        font-weight:500;
+        font-size: 30px;
+      }
+      
+      .by-vermeg {
+        position: relative;
+        padding-top: 5px;
+        left: 17px;
+        font-size: 20px;
+        color: gray; /* Adjust styling */
+      }
+      img {
+        padding: 0;
+        position: relative;
+        bottom:25px;
+        left: 20px;
+        /* left: ; */
+        height: 30px;
+        margin-right: 7px;
+      }
+  
+     
+  
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      
+      .icon-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 20px;
+        margin-right: 15px;
+      }
+  
+      .profile-icon {
+        width: 40px;
+        height: 40px;
+        background: gray;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+    }
+  }
+  

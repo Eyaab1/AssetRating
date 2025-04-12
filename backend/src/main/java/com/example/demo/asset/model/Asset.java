@@ -28,8 +28,6 @@ public class Asset {
     private User publisher;
     private String publisherMail;
     private Date publishDate;
-    
-    
     private String status;
 
     @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL)

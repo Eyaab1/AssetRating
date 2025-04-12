@@ -1,0 +1,51 @@
+<div class="add-asset-page">
+    <div class="asset-form-card">
+      <h2 class="form-title">Add New Asset</h2>
+  
+      <form [formGroup]="assetForm" (ngSubmit)="submitAsset()">
+        <div class="form-grid">
+          <div class="form-group" *ngFor="let field of ['name', 'label', 'publisher', 'publisherMail', 'publishDate', 'image', 'documentation']">
+            <label [for]="field">{{ field | titlecase }}</label>
+            <input
+              *ngIf="field !== 'description'"
+              [type]="field === 'publishDate' ? 'date' : 'text'"
+              [id]="field"
+              [formControlName]="field"
+              [placeholder]="'Enter ' + field"
+            />
+          </div>
+  
+          <div class="form-group description-field">
+            <label for="description">Description</label>
+            <textarea id="description" formControlName="description" rows="3" placeholder="Enter description..."></textarea>
+          </div>
+  
+          <div class="form-group">
+            <label for="license">License</label>
+            <select id="license" formControlName="license">
+              <option *ngFor="let license of licenseOptions" [value]="license" class="selectionForm">{{ license }}</option>
+            </select>
+          </div>
+  
+          <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" formControlName="status" >
+              <option *ngFor="let status of statusOptions" [value]="status" class="selectionForm">{{ status }}</option>
+            </select>
+          </div>
+  
+          <div class="form-group">
+            <label for="assetType">Asset Type</label>
+            <select id="assetType" formControlName="assetType" >
+              <option *ngFor="let type of assetTypes" [value]="type" class="selectionForm">{{ type }}</option>
+            </select>
+          </div>
+        </div>
+  
+        <div class="form-actions">
+          <button type="submit" [disabled]="assetForm.invalid">Add Asset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  

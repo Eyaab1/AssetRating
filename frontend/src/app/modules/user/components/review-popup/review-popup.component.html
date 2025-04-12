@@ -1,0 +1,82 @@
+<div class="modal-overlay" *ngIf="isVisible" (click)="onOverlayClick($event)">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <button class="close-btn" (click)="close()">×</button>
+      <h2>Leave a Review</h2>
+      
+      <div class="rating-categories">
+        <!-- Functionality Rating -->
+        <div class="rating-category">
+          <label>Functionality:</label>
+          <div class="stars">
+            <span
+              *ngFor="let star of stars; index as i"
+              [class.active]="i < ratings.functionality"
+              (click)="setRating('functionality', i + 1)"
+            >
+              ★
+            </span>
+          </div>
+        </div>
+        
+        <!-- Performance Rating -->
+        <div class="rating-category">
+          <label>Performance:</label>
+          <div class="stars">
+            <span
+              *ngFor="let star of stars; index as i"
+              [class.active]="i < ratings.performance"
+              (click)="setRating('performance', i + 1)"
+            >
+              ★
+            </span>
+          </div>
+        </div>
+        
+        <!-- Integration Rating -->
+        <div class="rating-category">
+          <label>Integration:</label>
+          <div class="stars">
+            <span
+              *ngFor="let star of stars; index as i"
+              [class.active]="i < ratings.integration"
+              (click)="setRating('integration', i + 1)"
+            >
+              ★
+            </span>
+          </div>
+        </div>
+        
+        <!-- Documentation Rating -->
+        <div class="rating-category">
+          <label>Documentation:</label>
+          <div class="stars">
+            <span
+              *ngFor="let star of stars; index as i"
+              [class.active]="i < ratings.documentation"
+              (click)="setRating('documentation', i + 1)"
+            >
+              ★
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="overall-rating">
+        <label>Overall Rating: {{ calculateOverallRating() }}/5</label>
+      </div>
+      
+      <textarea
+        [(ngModel)]="reviewText"
+        rows="4"
+        placeholder="Write your review here..."
+      ></textarea>
+      
+      <!-- <div class="user-details" *ngIf="!userLoggedIn">
+        <input type="text" [(ngModel)]="userName" placeholder="Your Name (optional)" />
+      </div>
+       -->
+      <button class="submit-btn" [disabled]="!isValidReview()" (click)="submitReview()">
+        Submit Review
+      </button>
+    </div>
+  </div>

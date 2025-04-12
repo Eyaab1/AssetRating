@@ -1,0 +1,49 @@
+{
+  "ratings": [
+    {
+      "id": "03058q8fwa49",
+      "functionality": 5,
+      "performance": 4,
+      "easeOfIntegration": 4,
+      "documentationQuality": 5,
+      "timestamp": "2025-04-10T09:29:36.808Z",
+      "userId": "123"
+    },
+    {
+      "id": "z362we6zit",
+      "functionality": 5,
+      "performance": 4,
+      "easeOfIntegration": 4,
+      "documentationQuality": 5,
+      "timestamp": "2025-04-10T09:30:56.788Z",
+      "userId": "123"
+    },
+    {
+      "id": "re9zdohsg7p",
+      "functionality": 5,
+      "performance": 4,
+      "easeOfIntegration": 4,
+      "documentationQuality": 5,
+      "timestamp": "2025-04-10T09:31:38.319Z",
+      "userId": "123"
+    },
+    {
+      "id": "ec8xygu2l1t",
+      "functionality": 5,
+      "performance": 4,
+      "easeOfIntegration": 4,
+      "documentationQuality": 5,
+      "timestamp": "2025-04-10T16:24:32.516Z",
+      "userId": "123"
+    },
+    {
+      "id": "zuvgapdo44",
+      "functionality": 5,
+      "performance": 4,
+      "easeOfIntegration": 4,
+      "documentationQuality": 5,
+      "timestamp": "2025-04-12T13:21:41.555Z",
+      "userId": "123"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+<div class="marketplace-container">
+  <!-- Sidebar Filters -->
+  <aside class="sidebar">
+    <h3>Filters</h3>
+
+    <div class="filter-section">
+      <h4>Project Type</h4>
+      <div *ngFor="let type of projectTypes">
+        <input type="checkbox" [value]="type" (change)="onFilterChange('projectType', $event)"> {{ type }}
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <h4>Framework</h4>
+      <div *ngFor="let fw of frameworks">
+        <input type="checkbox" [value]="fw" (change)="onFilterChange('framework', $event)"> {{ fw }}
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <h4>License</h4>
+      <div *ngFor="let lic of licenses">
+        <input type="checkbox" [value]="lic" (change)="onFilterChange('license', $event)"> {{ lic }}
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- Main Content -->
+  <main class="content">
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <input 
+        type="text" 
+        placeholder="Search assets..." 
+        [(ngModel)]="searchQuery" 
+        (input)="filterAssets()"
+      >
+    </div>
+
+    <!-- Top Rated -->
+    <section class="asset-section">
+      <h2>Top Rated</h2>
+      <div class="asset-grid">
+        <div *ngFor="let asset of topRatedAssets" class="asset-card" [routerLink]="['/detail', asset.id]">
+          <img [src]="asset?.image || '../../../../../assets/images/default3.jpg'" alt="Asset Image">
+          <h3>{{ asset?.name }}</h3>
+        </div>
+      </div>
+    </section>
+
+    <!-- Available -->
+    <section class="asset-section">
+      <h2>Available</h2>
+      <div class="asset-grid">
+        <div *ngFor="let asset of availableAssets" class="asset-card" [routerLink]="['/detail', asset.id]">
+          <img [src]="asset?.image || 'assets/images/default3.jpg'" alt="Asset Image">
+          <h3>{{ asset?.name }}</h3>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>

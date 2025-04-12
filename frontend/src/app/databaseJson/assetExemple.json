@@ -1,0 +1,37 @@
+{
+  "widgets": [],
+  "utilities": [
+    {
+      "id": "ccinucu9m98dk9xo",
+      "name": "assetTest",
+      "label": "dark theme",
+      "publisher": "testPublisher",
+      "publisherMail": "publisher@gmail.com",
+      "publishDate": "2025-03-05",
+      "license": "Free",
+      "status": "published",
+      "image": "image UrL",
+      "description": "test test ",
+      "documentation": "url documentation",
+      "assetType": "Utility"
+    }
+  ],
+  "sheets": [],
+  "themes": [
+    {
+      "id": "ccsqwbr6m98dph9f",
+      "name": "test",
+      "label": "tzqt",
+      "publisher": "testPublisher",
+      "publisherMail": "publisher@gmail.com",
+      "publishDate": "2025-01-05",
+      "license": "Paid",
+      "status": "published",
+      "image": "image UrL",
+      "description": "ettey",
+      "documentation": "url documentation",
+      "assetType": "Theme"
+    }
+  ],
+  "templates": []
+}

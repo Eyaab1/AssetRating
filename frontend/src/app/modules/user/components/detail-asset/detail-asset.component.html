@@ -1,0 +1,67 @@
+<div class="container1">
+  <div class="asset-detail">
+    <div class="left-section">
+      <h1>{{ assetSelected?.name }}</h1>
+      <h2 class="labelasset">{{assetSelected?.label}}</h2>
+
+      <p class="publisher">Published by: <strong>{{ assetSelected?.publisher }}</strong></p>
+      <p class="metadata">
+        <br>
+        <span>License: {{ assetSelected?.license }}</span><br>
+        <span>Published date: {{ assetSelected?.publishDate| date:'short' }}</span> <br>
+        <span>License: {{ assetSelected?.license }}</span>
+      </p>
+      <div class="desc">
+      <p class="description">
+        {{ assetSelected?.description || 'No description available.' }}
+      </p>
+      </div>
+      <button class="documentation-btn">
+        <i class="fa fa-download"></i>Documentation
+      </button>
+      <button class="download-btn">
+        <i class="fa fa-download"></i> Download
+      </button>
+    </div>
+    <div class="right-section">
+      <img src="../../../../../assets/images/default3.jpg" alt="{{ assetSelected?.name }}">
+    </div>
+  </div>
+
+   <div class="reviewSec">
+  <div class="comment-section" >
+   
+    <div class="reviewSecHeader">
+      <h2 >Comment Section</h2>
+      <button class="addReview-btn" (click)="reviewModal.open()">Add your review</button>
+    </div>
+
+    <div class="comment-card" *ngFor="let comment of comments" >
+      <app-comment [comment]="comment"></app-comment>
+    </div>
+  </div>
+  <div class="rating-section">
+    <h2>Average Rating</h2>
+    <div class="rating-list">
+      <div class="rating-category" *ngFor="let category of ratingCategories">
+        <label>{{ category.label }}</label>
+  
+        <div class="stars">
+          <ng-container *ngFor="let starType of createStarDisplay(calculateAverageForCategory(category.field))">
+            <span *ngIf="starType === 'full'" class="full-star">★</span>
+            <span *ngIf="starType === 'half'" class="half-star">✨</span>
+            <span *ngIf="starType === 'empty'" class="empty-star">☆</span>
+          </ng-container>
+        </div>
+  
+        <small>{{ calculateAverageForCategory(category.field) }}/5</small>
+      </div>
+    </div>
+  </div>
+   </div>
+</div>
+
+  
+<app-review-popup #reviewModal (reviewSubmitted)="handleReviewSubmit({review :$event})"></app-review-popup>
+
+    <!-- <app-comment-form (commentAdded)="addComment($event)"></app-comment-form> -->

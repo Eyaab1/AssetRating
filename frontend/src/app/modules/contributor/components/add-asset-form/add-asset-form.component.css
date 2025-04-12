@@ -1,0 +1,99 @@
+.add-asset-page {
+    min-height: 100vh;
+    background: radial-gradient(circle at 90% 40%,  
+    #205467 0%, 
+    #271545 35%,  
+    #0B0514 60%,   
+    #07030C 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+  }
+  
+  .asset-form-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    padding: 2rem 3rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    max-width: 900px;
+    width: 100%;
+    color: #ffffff;
+  }
+  
+  .form-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .description-field {
+    grid-column: span 2;
+  }
+  
+  label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  input,
+  select,
+  textarea {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    padding: 0.7rem;
+    border-radius: 10px;
+    color: white;
+    font-size: 1rem;
+  }
+  
+  textarea {
+    resize: vertical;
+  }
+  
+  input::placeholder,
+  textarea::placeholder {
+    color: #ccc;
+  }
+  
+  .form-actions {
+    margin-top: 2rem;
+    text-align: center;
+  }
+  
+  button {
+    background-color: #ffffff;
+    color: #302b63;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #ddd;
+  }
+  
+  button:disabled {
+    background-color: #777;
+    cursor: not-allowed;
+  }
+  .selectionForm{
+    color: #07030C;
+  }
