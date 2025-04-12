@@ -1,5 +1,10 @@
 package com.example.demo.auth;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.example.demo.asset.model.Asset;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +22,16 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role; // USER or CONTRIBUTOR
+    @OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL)
+    private List<Asset> publishedAssets = new ArrayList<>();
+
+	public List<Asset> getPublishedAssets() {
+		return publishedAssets;
+	}
+
+	public void setPublishedAssets(List<Asset> publishedAssets) {
+		this.publishedAssets = publishedAssets;
+	}
 
 	public String getFirstName() {
 		return firstName;
