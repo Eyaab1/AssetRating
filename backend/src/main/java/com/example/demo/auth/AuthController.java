@@ -12,8 +12,7 @@ public class AuthController {
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
+        this.authService = authService;}
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
@@ -21,10 +20,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        boolean success = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
-        if (success) {
-            return ResponseEntity.ok("Login successful!");
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        String Token = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
+        if (Token!=null) {
+            return ResponseEntity.ok(new AuthResponse(Token));
         } else {
             return ResponseEntity.status(401).body("Invalid credentials!");
         }

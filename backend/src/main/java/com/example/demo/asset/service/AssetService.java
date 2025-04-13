@@ -47,7 +47,7 @@ public class AssetService {
                     asset.setImage(updatedAsset.getImage());
                     asset.setDescription(updatedAsset.getDescription());
                     asset.setDocumentation(updatedAsset.getDocumentation());
-                    asset.setAssetType(updatedAsset.getAssetType());
+                    //asset.setAssetType(updatedAsset.getAssetType());
                     asset.setTags(updatedAsset.getTags());
                     asset.setCategories(updatedAsset.getCategories());
                     return assetRepository.save(asset);

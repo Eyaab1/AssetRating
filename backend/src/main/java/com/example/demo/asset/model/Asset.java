@@ -41,8 +41,8 @@ public abstract class Asset {
 
     private String documentation;
 
-    @Enumerated(EnumType.STRING)
-    private AssetType assetType;
+   // @Enumerated(EnumType.STRING)
+    //private AssetType assetType;
 
     @ManyToMany
     private List<Tag> tags;
@@ -68,7 +68,7 @@ public abstract class Asset {
         this.image = image;
         this.description = description;
         this.documentation = documentation;
-        this.assetType = assetType;
+        //this.assetType = assetType;
         this.tags = tags;
         this.categories = categories;
     }
@@ -149,13 +149,13 @@ public abstract class Asset {
 		this.status = status;
 	}
 
-	public AssetType getAssetType() {
-		return assetType;
-	}
+//	public AssetType getAssetType() {
+	//	return assetType;
+	//}
 
-	public void setAssetType(AssetType assetType) {
-		this.assetType = assetType;
-	}
+	//public void setAssetType(AssetType assetType) {
+		//this.assetType = assetType;
+	//}
 
 	public String getDocumentation() {
 		return documentation;

@@ -9,10 +9,11 @@ import java.util.Optional;
 public class AuthService {
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public AuthService(AuthRepository authRepository, PasswordEncoder passwordEncoder) {
+    private final JwtUtils jwtUtils;
+    public AuthService(AuthRepository authRepository, PasswordEncoder passwordEncoder,JwtUtils jwtUtils) {
         this.authRepository = authRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtils=jwtUtils;
     }
 
     public String register(User user) {
@@ -25,14 +26,15 @@ public class AuthService {
         return "User registered successfully!";
     }
 
-    public boolean login(String email, String rawPassword) {
+    public String login(String email, String rawPassword) {
         Optional<User> userOptional = authRepository.findByEmail(email);
         
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            return passwordEncoder.matches(rawPassword, user.getPassword());
+            if (passwordEncoder.matches(rawPassword, user.getPassword())) {
+                return jwtUtils.generateToken(user);
+            }
         }
-        
-        return false; 
+        return null;
     }
 }
