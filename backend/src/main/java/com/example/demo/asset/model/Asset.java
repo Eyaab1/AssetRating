@@ -7,9 +7,20 @@ import lombok.*;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "asset_type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+  @JsonSubTypes.Type(value = Widget.class, name = "Widget"),
+  @JsonSubTypes.Type(value = Sheet.class, name = "Sheet"),
+  @JsonSubTypes.Type(value = Template.class, name = "Template"),
+  @JsonSubTypes.Type(value = Themes.class, name = "Themes"),
+  @JsonSubTypes.Type(value = UILibrary.class, name = "UILibrary")
+})
 public abstract class Asset {
 
     @Id

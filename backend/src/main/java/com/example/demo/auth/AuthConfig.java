@@ -39,8 +39,7 @@ public class AuthConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/api/assets/**").hasAnyRole("USER", "CONTRIBUTOR")  // 🔥 Allow access for these roles!
-                .anyRequest().authenticated()
+                .requestMatchers("/api/assets/**").authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
