@@ -20,7 +20,7 @@ import lombok.*;
 @AllArgsConstructor
 public class User implements UserDetails {
     
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

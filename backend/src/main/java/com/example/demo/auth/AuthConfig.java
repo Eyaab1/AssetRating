@@ -42,6 +42,7 @@ public class AuthConfig {
             	    .requestMatchers("/api/assets/filter").authenticated() // 👈 Add this
             	    .requestMatchers("/api/assets/**", "/api/assets", "/api/assets/").authenticated()
             	    .requestMatchers("/api/ratings/**").permitAll()
+            	    .requestMatchers("/api/reviews/**").permitAll() 
             	    .anyRequest().authenticated()
             	)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
