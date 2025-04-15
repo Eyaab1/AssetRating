@@ -4,6 +4,7 @@ package com.example.demo.asset.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,13 +20,17 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
   @JsonSubTypes.Type(value = Sheet.class, name = "Sheet"),
   @JsonSubTypes.Type(value = Template.class, name = "Template"),
   @JsonSubTypes.Type(value = Themes.class, name = "Themes"),
-  @JsonSubTypes.Type(value = UILibrary.class, name = "UILibrary")
+  @JsonSubTypes.Type(value = UILibrary.class, name = "UILibrary"),
+  @JsonSubTypes.Type(value = Connector.class, name = "Connector"),
+  @JsonSubTypes.Type(value = Utility.class, name = "Utility"),
+
+
 })
 public abstract class Asset {
 
     @Id
     private String id;
-
+    @Column(unique = true, nullable = false)
     private String name;
     private String label;
     private String publisher;
@@ -57,8 +62,14 @@ public abstract class Asset {
     @ManyToMany
     private List<Category> categories;
 
+    @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL)
+    private List<AssetReleases> releases = new ArrayList<>();
 
-    public Asset() {
+    @Enumerated(EnumType.STRING)
+    private ProjectType projectType;
+
+  
+	public Asset() {
     }
 
     public Asset(String id, String name, String label, String publisher, String publisherMail, Date publishDate,
@@ -194,6 +205,22 @@ public abstract class Asset {
 
 	public void setCategories(List<Category> categories) {
 		this.categories = categories;
+	}
+
+	public List<AssetReleases> getReleases() {
+		return releases;
+	}
+
+	public void setReleases(List<AssetReleases> releases) {
+		this.releases = releases;
+	}
+
+	public ProjectType getProjectType() {
+		return projectType;
+	}
+
+	public void setProjectType(ProjectType projectType) {
+		this.projectType = projectType;
 	}
 	
 

@@ -6,18 +6,14 @@ import jakarta.persistence.Entity;
 @Entity
 @DiscriminatorValue("Sheet")
 public class Sheet extends Asset {
-    private String icon;
+	private Format format;
 
-	public String getIcon() {
-		return icon;
+	public Format getFormat() {
+		return format;
 	}
 
-	public void setIcon(String icon) {
-		this.icon = icon;
+	public void setFormat(Format format) {
+		this.format = format;
 	}
-
-	public Sheet() {
-		super();
-	}
-   
+	
 }

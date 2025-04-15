@@ -1,6 +1,11 @@
 package com.example.demo.asset.service;
 
 import com.example.demo.asset.model.Asset;
+import com.example.demo.asset.model.AssetReleases;
+import com.example.demo.asset.model.Framework;
+import com.example.demo.asset.model.Status;
+import com.example.demo.asset.model.Tag;
+import com.example.demo.asset.repository.AssetReleaseRepository;
 import com.example.demo.asset.repository.AssetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +17,13 @@ import java.util.Optional;
 public class AssetService {
 
     private final AssetRepository assetRepository;
+
+    @Autowired
+    private AssetReleaseRepository assetReleaseRepository;
+
+    public AssetReleases saveRelease(AssetReleases release) {
+        return assetReleaseRepository.save(release);
+    }
 
     @Autowired
     public AssetService(AssetRepository assetRepository) {
@@ -50,8 +62,13 @@ public class AssetService {
                     //asset.setAssetType(updatedAsset.getAssetType());
                     asset.setTags(updatedAsset.getTags());
                     asset.setCategories(updatedAsset.getCategories());
+                    asset.setProjectType(updatedAsset.getProjectType());
                     return assetRepository.save(asset);
                 })
                 .orElseThrow(() -> new RuntimeException("Asset not found with id: " + id));
     }
+    public List<Asset> filterAssets(Tag tag, Framework framework, Status status) {
+        return assetRepository.filterAssets(tag, framework, status);
+    }
+
 }
