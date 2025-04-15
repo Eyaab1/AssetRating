@@ -6,5 +6,6 @@ import jakarta.persistence.Entity;
 @Entity
 @DiscriminatorValue("UILibrary")
 public class UILibrary extends Asset {
+
 	
 }

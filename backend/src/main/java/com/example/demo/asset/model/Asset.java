@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.example.rating.Impl.ToRate;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -68,7 +69,7 @@ public abstract class Asset {
     @Enumerated(EnumType.STRING)
     private ProjectType projectType;
 
-  
+    
 	public Asset() {
     }
 
@@ -222,6 +223,8 @@ public abstract class Asset {
 	public void setProjectType(ProjectType projectType) {
 		this.projectType = projectType;
 	}
+
+	
 	
 
 }

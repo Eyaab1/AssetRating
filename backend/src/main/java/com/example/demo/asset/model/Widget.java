@@ -26,5 +26,6 @@ public class Widget extends Asset {
 	public void setFramework(Framework framework) {
 		this.framework = framework;
 	}
+
     
 }

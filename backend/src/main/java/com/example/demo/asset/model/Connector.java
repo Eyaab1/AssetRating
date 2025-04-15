@@ -17,5 +17,6 @@ public class Connector extends Asset {
 	public void setPreconfigured(boolean preconfigured) {
 		this.preconfigured = preconfigured;
 	}
+
     
 }

@@ -16,5 +16,4 @@ public class Utility extends Asset {
 	public void setDependencies(String dependencies) {
 		this.dependencies = dependencies;
 	}
-    
 }

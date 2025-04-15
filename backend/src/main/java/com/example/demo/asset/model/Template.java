@@ -27,6 +27,7 @@ public class Template extends Asset {
 	public void setFramework(Framework framework) {
 		this.framework = framework;
 	}
+
 	
     
     
