@@ -74,6 +74,19 @@ public class ReviewController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Review not found.");
         }
     }
+    
+    @PutMapping("/{reviewId}")
+    public ResponseEntity<?> updateReview(@PathVariable("reviewId") Long reviewId,
+                                          @RequestBody ReplyRequest request) {
+        Review updated = reviewService.updateReview(reviewId, request.getComment());
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<?> deleteReview(@PathVariable("reviewId") Long reviewId) {
+        reviewService.deleteReview(reviewId);
+        return ResponseEntity.ok("Review deleted.");
+    }
 
 
 }
