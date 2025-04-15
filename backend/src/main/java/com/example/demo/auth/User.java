@@ -14,8 +14,12 @@ import lombok.*;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,68 +28,90 @@ public class User implements UserDetails {
     private String lastName;
     private String email;
     private String password;
+
     @Enumerated(EnumType.STRING)
     private Role role; // USER or CONTRIBUTOR
+
     @OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL)
     private List<Asset> publishedAssets = new ArrayList<>();
 
-	public List<Asset> getPublishedAssets() {
-		return publishedAssets;
-	}
+    // Standard Getters and Setters
+    public List<Asset> getPublishedAssets() {
+        return publishedAssets;
+    }
 
-	public void setPublishedAssets(List<Asset> publishedAssets) {
-		this.publishedAssets = publishedAssets;
-	}
+    public void setPublishedAssets(List<Asset> publishedAssets) {
+        this.publishedAssets = publishedAssets;
+    }
 
-	public String getFirstName() {
-		return firstName;
-	}
+    public String getFirstName() {
+        return firstName;
+    }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    public String getLastName() {
+        return lastName;
+    }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	public Role getRole() {
-	    return role;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public void setRole(Role role) {
-	    this.role = role;
-	}
+    public Role getRole() {
+        return role;
+    }
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public void setRole(Role role) {
+        this.role = role;
+    }
 
-	@Override
-	public String getUsername() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    // 🔥 Spring Security methods
+    @Override
+    public String getUsername() {
+        return email; // ✅ Use email as username
+    }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of((GrantedAuthority) () -> "ROLE_" + role.name()); // ✅ Return user's role
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

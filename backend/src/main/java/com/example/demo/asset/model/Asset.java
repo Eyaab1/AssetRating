@@ -7,10 +7,6 @@ import lombok.*;
 import java.util.Date;
 import java.util.List;
 
-import com.example.demo.auth.User;
-import com.example.rating.model.Rating;
-import com.example.review.model.Review;
-
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "asset_type")

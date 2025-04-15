@@ -23,11 +23,13 @@ public class JwtUtils {
 	    public String generateToken(User user) {
 	        return Jwts.builder()
 	                .setSubject(user.getEmail())
+	                .claim("role", user.getRole().name())   // 🔥 Add role into the JWT!
 	                .setIssuedAt(new Date())
 	                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-	                .signWith(getSigningKey(), SignatureAlgorithm.HS512) 
+	                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
 	                .compact();
 	    }
+
 
 	    public String getEmailFromToken(String token) {
 	        Claims claims = Jwts.parserBuilder()
