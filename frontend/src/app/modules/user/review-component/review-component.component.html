@@ -1,1 +1,19 @@
-<p>review-component works!</p>
+<div class="review-component">
+  
+    <!-- Display Comments -->
+    <div class="comment-card" *ngFor="let comment of comments" >
+        <app-comment [comment]="comment"></app-comment>
+      </div>
+  
+    <!-- Comment Form -->
+    <div class="comment-form">
+      <textarea [(ngModel)]="commentText" rows="3" placeholder="Write your comment here..."></textarea>
+      <button (click)="submitComment()">Submit</button>
+    </div>
+  
+    <!-- Average Rating -->
+    <div class="avg-rating">
+      <h4>Average Rating: {{ averageRating }}/5</h4>
+    </div>
+  </div>
+  

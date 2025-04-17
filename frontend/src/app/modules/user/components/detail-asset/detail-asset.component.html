@@ -36,9 +36,7 @@
       <button class="addReview-btn" (click)="reviewModal.open()">Add your review</button>
     </div>
 
-    <div class="comment-card" *ngFor="let comment of comments" >
-      <app-comment [comment]="comment"></app-comment>
-    </div>
+    <app-review-component [assetId]="assetSelected?.id || ''"></app-review-component>
   </div>
   <div class="rating-section">
     <h2>Average Rating</h2>
@@ -47,14 +45,13 @@
         <label>{{ category.label }}</label>
   
         <div class="stars">
-          <ng-container *ngFor="let starType of createStarDisplay(calculateAverageForCategory(category.field))">
-            <span *ngIf="starType === 'full'" class="full-star">★</span>
-            <span *ngIf="starType === 'half'" class="half-star">✨</span>
-            <span *ngIf="starType === 'empty'" class="empty-star">☆</span>
+          <ng-container *ngFor="let star of createStarDisplay(categoryAverages[category.field] || 0)">
+            <span *ngIf="star === 'full'" class="full-star">★</span>
+            <span *ngIf="star === 'half'" class="half-star">⯪</span> <!-- half star -->
+            <span *ngIf="star === 'empty'" class="empty-star">☆</span>
           </ng-container>
         </div>
-  
-        <small>{{ calculateAverageForCategory(category.field) }}/5</small>
+        <small>{{ categoryAverages[category.field] | number:'1.1-1' }}/5</small>
       </div>
     </div>
   </div>

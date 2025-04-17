@@ -1,8 +1,14 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Asset, AssetType, LicenseType, StatusType } from '../../../../shared/models/asset';
 import{ AssetServiceService } from '../../../../shared/services/asset-service.service';
 import { CommonModule } from '@angular/common';
+import { jwtDecode } from 'jwt-decode'; 
+import { AssetType } from '../../../../shared/enums/AssetType';
+import { LicenseType } from '../../../../shared/enums/LicenseType';
+import { StatusType } from '../../../../shared/enums/StatusType';
+import { ProjectType } from '../../../../shared/enums/ProjectType';
+import { Asset } from '../../../../shared/models/asset';
+
 @Component({
   selector: 'app-add-asset-form',
   standalone: true,
@@ -12,38 +18,57 @@ import { CommonModule } from '@angular/common';
 })
 export class AddAssetFormComponent {
   assetForm: FormGroup;
-  assetTypes: AssetType[] = ['Widget', 'Utility', 'Sheet', 'Theme', 'Template'];
-  licenseOptions: LicenseType[] = ['Free', 'Paid'];
-  statusOptions: StatusType[] = ['published', 'unpublished', 'deleted'];
+
+  assetTypes = Object.values(AssetType);
+  licenseOptions = Object.values(LicenseType);
+  statusOptions = Object.values(StatusType);
+  projectTypes = Object.values(ProjectType);
 
   constructor(private fb: FormBuilder, private assetService: AssetServiceService) {
     this.assetForm = this.fb.group({
-      // id: ['', Validators.required],
       name: ['', Validators.required],
       label: ['', Validators.required],
-      publisher: ['', Validators.required],
+      publisher: [''],
       publisherMail: ['', [Validators.required, Validators.email]],
       publishDate: ['', Validators.required],
-      license: ['Free', Validators.required],
-      status: ['Published', Validators.required],
+      license: [LicenseType.Free, Validators.required],
+      status: [StatusType.Published, Validators.required],
       image: [''],
       description: [''],
       documentation: [''],
-      assetType: ['Widget', Validators.required]
+      assetType: [AssetType.Widget, Validators.required],
+      projectType: [ProjectType.Frontend, Validators.required]
     });
   }
 
   submitAsset() {
     if (this.assetForm.valid) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const decoded: any = jwtDecode(token);
+        this.assetForm.patchValue({
+          publisherMail: decoded.sub,
+          publisher: `${decoded.firstName ?? 'Anonymous'} ${decoded.lastName ?? ''}`.trim()
+        });
+      }
+
       const asset: Asset = {
         ...this.assetForm.value,
-        id: this.generateId()  
+        id: this.generateId(),
+        type: this.assetForm.value.assetType,
+        tags: [],
+        categories: []
       };
-  
+
       this.assetService.addAsset(asset).subscribe({
         next: () => {
-          alert(`Asset of type '${asset.assetType}' created successfully!`);
-          this.assetForm.reset({ license: 'Free', status: 'Published', assetType: 'Widget' });
+          alert(`Asset of type '${asset.type}' created successfully!`);
+          this.assetForm.reset({
+            license: LicenseType.Free,
+            status: StatusType.Published,
+            assetType: AssetType.Widget,
+            projectType: ProjectType.Frontend
+          });
         },
         error: (err) => {
           console.error('Asset creation failed:', err);
@@ -54,8 +79,7 @@ export class AddAssetFormComponent {
       alert('Please fill in all required fields.');
     }
   }
-  
-  // Auto-generate ID
+
   generateId(): string {
     return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
   }
