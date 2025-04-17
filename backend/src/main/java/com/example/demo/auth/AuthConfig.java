@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -15,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-
+@EnableMethodSecurity
 public class AuthConfig {
 	
 	@Autowired
@@ -41,6 +42,7 @@ public class AuthConfig {
             	    .requestMatchers("/auth/**").permitAll()
             	    .requestMatchers("/api/assets/filter").authenticated() // 👈 Add this
             	    .requestMatchers("/api/assets/**", "/api/assets", "/api/assets/").authenticated()
+            	    .requestMatchers("/api/assets/**").permitAll()
             	    .requestMatchers("/api/ratings/**").permitAll()
             	    .requestMatchers("/api/reviews/**").permitAll() 
             	    .anyRequest().authenticated()

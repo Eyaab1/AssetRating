@@ -14,6 +14,8 @@ import com.example.demo.asset.model.Tag;
 
 @Repository
 public interface AssetRepository extends JpaRepository<Asset, String> {
+	@Query("SELECT DISTINCT a FROM Asset a LEFT JOIN FETCH a.releases")
+    List<Asset> findAllWithReleases();
     Optional<Asset> findByName(String name);
     @Query("SELECT a FROM Asset a " +
     	       "JOIN a.tags t " +

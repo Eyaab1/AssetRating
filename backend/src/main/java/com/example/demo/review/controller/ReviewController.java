@@ -88,5 +88,10 @@ public class ReviewController {
         return ResponseEntity.ok("Review deleted.");
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Review>> getReviewsByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(reviewService.getReviewsByUser(userId));
+    }
+
 
 }

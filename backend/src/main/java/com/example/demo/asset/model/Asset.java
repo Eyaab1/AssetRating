@@ -7,11 +7,14 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.example.rating.Impl.ToRate;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "asset_type")
@@ -38,7 +41,7 @@ public abstract class Asset {
     private String publisherMail;
 
     private String filePath;
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date publishDate;
 
     @Enumerated(EnumType.STRING)
@@ -63,14 +66,21 @@ public abstract class Asset {
     @ManyToMany
     private List<Category> categories;
 
-    @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL)
-    private List<AssetReleases> releases = new ArrayList<>();
+    @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<AssetReleases> releases;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_asset_id")
+    @JsonBackReference
+    private Asset parentAsset;
 
     @Enumerated(EnumType.STRING)
     private ProjectType projectType;
 
     
 	public Asset() {
+		super();
     }
 
     public Asset(String id, String name, String label, String publisher, String publisherMail, Date publishDate,
@@ -222,6 +232,18 @@ public abstract class Asset {
 
 	public void setProjectType(ProjectType projectType) {
 		this.projectType = projectType;
+	}
+
+	public Asset getParentAsset() {
+		return parentAsset;
+	}
+
+	public void setParentAsset(Asset parentAsset) {
+		this.parentAsset = parentAsset;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	

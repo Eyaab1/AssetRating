@@ -6,7 +6,10 @@ import com.example.demo.asset.model.Framework;
 import com.example.demo.asset.model.Status;
 import com.example.demo.asset.model.Tag;
 import com.example.demo.asset.service.AssetService;
+import com.example.demo.dto.AssetReleaseRequest;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,7 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/assets")
-@CrossOrigin(origins = "*") // or "http://localhost:4200"
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AssetController {
 
     private final AssetService assetService;
@@ -36,23 +39,33 @@ public class AssetController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('CONTRIBUTOR')")
     public ResponseEntity<Asset> createAsset(@RequestBody Asset asset) {
         Asset createdAsset = assetService.saveAsset(asset);
         return ResponseEntity.ok(createdAsset);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('CONTRIBUTOR')")
     public ResponseEntity<Asset> updateAsset(@PathVariable("id") String id, @RequestBody Asset asset) {
         return ResponseEntity.ok(assetService.updateAsset(id, asset));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('CONTRIBUTOR')")
     public ResponseEntity<Void> deleteAsset(@PathVariable("id") String id) {
         assetService.deleteAsset(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{assetId}/releases")
+    @PostMapping("/release/full")
+    @PreAuthorize("hasRole('CONTRIBUTOR')")
+    public ResponseEntity<Asset> uploadAssetRelease(@RequestBody AssetReleaseRequest request) {
+        Asset release = assetService.uploadAssetRelease(request);
+        return ResponseEntity.ok(release);
+    }
+
+    /*@PostMapping("/{assetId}/releases")
     public ResponseEntity<AssetReleases> addRelease(
             @PathVariable("assetId") String assetId,
             @RequestBody AssetReleases release) {
@@ -60,7 +73,7 @@ public class AssetController {
                 .orElseThrow(() -> new RuntimeException("Asset not found"));
         release.setAsset(asset);
         return ResponseEntity.ok(assetService.saveRelease(release));
-    }
+    }*/
 
     @GetMapping("/filter")
     public List<Asset> filterAssets(
@@ -70,5 +83,8 @@ public class AssetController {
     ) {
         return assetService.filterAssets(tag, framework, status);
     }
-
+    @GetMapping("/recommendations")
+    public ResponseEntity<List<Asset>> getRecommendedAssets() {
+        return ResponseEntity.ok(assetService.getRecommendedAssets());
+    }
 }

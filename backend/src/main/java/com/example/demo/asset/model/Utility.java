@@ -1,12 +1,15 @@
 package com.example.demo.asset.model;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.*;
 
-@Entity
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@DiscriminatorValue("Utility")
 public class Utility extends Asset {
     private String dependencies;
 	
