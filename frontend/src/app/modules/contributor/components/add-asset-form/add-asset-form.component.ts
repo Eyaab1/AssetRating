@@ -3,12 +3,6 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import{ AssetServiceService } from '../../../../shared/services/asset-service.service';
 import { CommonModule } from '@angular/common';
 import { jwtDecode } from 'jwt-decode'; 
-import { AssetType } from '../../../../shared/enums/AssetType';
-import { LicenseType } from '../../../../shared/enums/LicenseType';
-import { StatusType } from '../../../../shared/enums/StatusType';
-import { ProjectType } from '../../../../shared/enums/ProjectType';
-import { Asset } from '../../../../shared/models/asset';
-
 @Component({
   selector: 'app-add-asset-form',
   standalone: true,
@@ -55,7 +49,9 @@ export class AddAssetFormComponent {
       const asset: Asset = {
         ...this.assetForm.value,
         id: this.generateId(),
-        type: this.assetForm.value.assetType,
+        type: this.assetForm.value.assetType,               
+        license: this.assetForm.value.license.toUpperCase(), 
+        status: this.assetForm.value.status.toUpperCase(),   
         tags: [],
         categories: []
       };
@@ -63,12 +59,7 @@ export class AddAssetFormComponent {
       this.assetService.addAsset(asset).subscribe({
         next: () => {
           alert(`Asset of type '${asset.type}' created successfully!`);
-          this.assetForm.reset({
-            license: LicenseType.Free,
-            status: StatusType.Published,
-            assetType: AssetType.Widget,
-            projectType: ProjectType.Frontend
-          });
+          this.assetForm.reset({ license: 'Free', status: 'Published', assetType: 'Widget' });
         },
         error: (err) => {
           console.error('Asset creation failed:', err);
