@@ -14,7 +14,18 @@ public class Category {
     
     public Category() {}
 
-    // Full constructor
+    
+    public Long getId() {
+		return id;
+	}
+
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+
+	// Full constructor
     public Category(String name) {
         this.name = name;
     }

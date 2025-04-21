@@ -60,14 +60,20 @@ public abstract class Asset {
    // @Enumerated(EnumType.STRING)
     //private AssetType assetType;
 
-    @ManyToMany
-    private List<Tag> tags;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "asset_tags",
+        joinColumns = @JoinColumn(name = "asset_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private List<Tag> tags = new ArrayList<>();
 
-    @ManyToMany
-    private List<Category> categories;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "asset_categories",
+        joinColumns = @JoinColumn(name = "asset_id"),
+        inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private List<Category> categories = new ArrayList<>();
+
 
     @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.EAGER)
-    @JsonManagedReference
     private List<AssetReleases> releases;
 
     @ManyToOne

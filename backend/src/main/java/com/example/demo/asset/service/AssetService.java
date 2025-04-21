@@ -26,18 +26,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
+import com.example.demo.asset.model.Category;
+import com.example.demo.dto.AssetRequest;
 @Service
 public class AssetService {
 
     private final AssetRepository assetRepository;
     private final RatingService ratingService;
-
+    private final TagService tagService;
+    private final CategoryService categoryService;
 
     @Autowired
-    public AssetService(AssetRepository assetRepository, RatingService ratingService) {
+    public AssetService(AssetRepository assetRepository, RatingService ratingService,TagService tagService, CategoryService categoryService) {
         this.assetRepository = assetRepository;
         this.ratingService= ratingService;
+        this.tagService=tagService;
+        this.categoryService=categoryService;
     }
     @Autowired
     private AssetReleaseRepository assetReleaseRepository;
@@ -46,6 +50,69 @@ public class AssetService {
         return assetReleaseRepository.save(release);
     }
     
+    public Asset createAssetFromRequest(AssetRequest request) {
+        Asset asset = switch (request.type.toUpperCase()) {
+            case "TEMPLATE" -> new Template();
+            case "WIDGET" -> new Widget();
+            case "UTILITY" -> new Utility();
+            case "SHEET" -> new Sheet();
+            case "CONNECTOR" -> new Connector();
+            case "THEME" -> new Themes();
+            default -> throw new IllegalArgumentException("Unknown asset type: " + request.type);
+        };
+
+        asset.setId(UUID.randomUUID().toString());
+        asset.setName(request.name);
+        asset.setLabel(request.label);
+        asset.setPublisher(request.publisher);
+        asset.setPublisherMail(request.publisherMail);
+        asset.setFilePath(request.filePath);
+        asset.setPublishDate(request.publishDate);
+        asset.setLicense(request.license);
+        asset.setStatus(Status.valueOf(request.status));
+        asset.setImage(request.image);
+        asset.setDescription(request.description);
+        asset.setDocumentation(request.documentation);
+        asset.setProjectType(request.projectType);
+
+        if (asset instanceof Template template) {
+            template.setTemplateCategory(request.templateCategory);
+            template.setFramework(request.framework);
+        }
+
+        if (asset instanceof Themes theme) {
+            theme.setFramework(request.framework);
+        }
+
+        if (asset instanceof Widget widget) {
+            widget.setFramework(request.framework);
+        }
+
+        List<Tag> tags = tagService.findAllById(request.tagIds);
+        if (tags.size() != request.tagIds.size()) {
+            throw new IllegalArgumentException("One or more tag IDs are invalid.");
+        }
+
+        List<Category> categories = categoryService.findAllById(request.categoryIds);
+
+        if (categories == null || categories.isEmpty()) {
+            throw new RuntimeException("❌ No categories were fetched from DB.");
+        }
+
+        for (Category category : categories) {
+            if (category == null || category.getId() == null) {
+                throw new RuntimeException("❌ Category object is null or has null ID!");
+            } else {
+                System.out.println("✅ Category ID: " + category.getId() + " | Name: " + category.getName());
+            }
+        }
+
+        asset.setCategories(categories);
+
+        asset.setTags(tags);
+
+        return assetRepository.save(asset);
+    }
     
     public Asset uploadAssetRelease(AssetReleaseRequest request) {
         Asset original = assetRepository.findById(request.getOriginalAssetId())

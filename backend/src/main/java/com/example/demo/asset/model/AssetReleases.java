@@ -33,12 +33,10 @@ public class AssetReleases {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "asset_id")
-    @JsonBackReference
     private Asset asset;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "released_asset_id", nullable = false)
-    @JsonManagedReference
     private Asset releasedAsset;
 
 

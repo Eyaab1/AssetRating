@@ -7,6 +7,7 @@ import com.example.demo.asset.model.Status;
 import com.example.demo.asset.model.Tag;
 import com.example.demo.asset.service.AssetService;
 import com.example.demo.dto.AssetReleaseRequest;
+import com.example.demo.dto.AssetRequest;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,8 +41,8 @@ public class AssetController {
 
     @PostMapping
     @PreAuthorize("hasRole('CONTRIBUTOR')")
-    public ResponseEntity<Asset> createAsset(@RequestBody Asset asset) {
-        Asset createdAsset = assetService.saveAsset(asset);
+    public ResponseEntity<Asset> createAsset(@RequestBody AssetRequest request) {
+        Asset createdAsset = assetService.createAssetFromRequest(request);
         return ResponseEntity.ok(createdAsset);
     }
 
