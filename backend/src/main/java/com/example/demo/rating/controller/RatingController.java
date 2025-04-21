@@ -4,6 +4,8 @@ import com.example.demo.asset.repository.AssetRepository;
 import com.example.demo.dto.RatingRequest;
 import com.example.rating.service.RatingService;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +44,12 @@ public class RatingController {
     public ResponseEntity<Integer> getOverallRating(@PathVariable("assetId") String assetId) {
         int average = ratingService.getOverallRating(assetId);
         return ResponseEntity.ok(average);
+    }
+    
+    @GetMapping("/averageBycategory/{assetId}")
+    public ResponseEntity<Map<String, Double>> getCategoryAverages(@PathVariable("assetId") String assetId) {
+        Map<String, Double> averages = ratingService.getAverageScoresByCategory(assetId);
+        return ResponseEntity.ok(averages);
     }
 
 

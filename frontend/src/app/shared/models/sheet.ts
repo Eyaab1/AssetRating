@@ -1,10 +1,15 @@
-import { Asset, LicenseType, ProjectType, StatusType } from "./asset";
+import { AssetType } from "../enums/AssetType";
+import { LicenseType } from "../enums/LicenseType";
+import { ProjectType } from "../enums/ProjectType";
+import { StatusType } from "../enums/StatusType";
+import { Asset } from "./asset";
 import { Rating } from "./rating";
 
 export class Sheet extends Asset {
     constructor(
-       id: string,
+         id: string,
          name: string,
+         type: 'Sheet',
          label: string,
          publisher: string,
          publisherMail: string,
@@ -19,7 +24,7 @@ export class Sheet extends Asset {
          comments:Comment[]=[],
       public icon: string 
     ) {
-      super(id, name,label, publisher, publisherMail, publishDate, license, status,image, description,documentation,'Sheet',projectType, ratings, comments);
+      super(id, name,type,label, publisher, publisherMail, publishDate, license, status,image, description,documentation,'Sheet',projectType, ratings, comments);
     }
   }
   

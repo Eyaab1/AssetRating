@@ -8,6 +8,7 @@ import { NgIf,NgFor,CommonModule } from '@angular/common';
   templateUrl: './comment.component.html',
   styleUrl: './comment.component.css'
 })
+// <app-review-component [assetId]="assetSelected?.id || ''"></app-review-component>
 export class CommentComponent {
   @Input() comment!: Comment; 
 

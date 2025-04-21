@@ -19,7 +19,7 @@ export class UserHomeComponent {
   topRatedAssets: Asset[] = [];
   availableAssets: Asset[] = [];
   searchQuery: string = '';
-
+  token='';
   selectedFilters: any = {
     projectType: [],
     framework: [],

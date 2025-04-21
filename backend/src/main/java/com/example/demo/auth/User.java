@@ -39,7 +39,9 @@ public class User implements UserDetails {
     public List<Asset> getPublishedAssets() {
         return publishedAssets;
     }
-
+	public Long getId() {
+		return this.id;
+	}
     public void setPublishedAssets(List<Asset> publishedAssets) {
         this.publishedAssets = publishedAssets;
     }

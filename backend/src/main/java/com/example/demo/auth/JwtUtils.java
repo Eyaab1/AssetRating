@@ -22,15 +22,26 @@ public class JwtUtils {
 
 	    public String generateToken(User user) {
 	        return Jwts.builder()
-	                .setSubject(user.getEmail())
-	                .claim("role", user.getRole().name())   // 🔥 Add role into the JWT!
+	                .setSubject(user.getEmail()) // Email still as subject
+	                .claim("userId", user.getId())        // Add user ID ✅
+	                .claim("firstName", user.getFirstName())  // Optional extras
+	                .claim("lastName", user.getLastName())
+	                .claim("role", user.getRole().name()) 
 	                .setIssuedAt(new Date())
 	                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
 	                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
 	                .compact();
 	    }
+	    
+	    public Long getUserIdFromToken(String token) {
+	        Claims claims = Jwts.parserBuilder()
+	                .setSigningKey(getSigningKey())
+	                .build()
+	                .parseClaimsJws(token)
+	                .getBody();
 
-
+	        return claims.get("userId", Long.class);
+	    }
 	    public String getRoleFromToken(String token) {
 	        Claims claims = Jwts.parserBuilder()
 	                .setSigningKey(getSigningKey())
@@ -42,7 +53,7 @@ public class JwtUtils {
 
 	    public String getEmailFromToken(String token) {
 	        Claims claims = Jwts.parserBuilder()
-	                .setSigningKey(getSigningKey()) // ✅ use strong signing key
+	                .setSigningKey(getSigningKey()) 
 	                .build()
 	                .parseClaimsJws(token)
 	                .getBody();
