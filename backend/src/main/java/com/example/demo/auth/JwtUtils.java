@@ -26,6 +26,7 @@ public class JwtUtils {
 	                .claim("userId", user.getId())        // Add user ID ✅
 	                .claim("firstName", user.getFirstName())  // Optional extras
 	                .claim("lastName", user.getLastName())
+	                .claim("name", user.getFirstName() + " " + user.getLastName()) 
 	                .claim("role", user.getRole().name()) 
 	                .setIssuedAt(new Date())
 	                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))

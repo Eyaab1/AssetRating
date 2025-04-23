@@ -11,14 +11,15 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
     "com.example.demo.asset.model",
     "com.example.demo.auth",
     "com.example.review.model",
-    "com.example.rating.model"
+    "com.example.rating.model",
+    "com.example.demo.notification"  // ✅ for Notification entity
 })
 @EnableJpaRepositories(basePackages = {
-	"com.example.review.repository",
-	"com.example.rating.repository",
-	"com.example.demo.asset.repository",
-	"com.example.demo.auth"
-
+    "com.example.review.repository",
+    "com.example.rating.repository",
+    "com.example.demo.asset.repository",
+    "com.example.demo.auth",
+    "com.example.demo.notification"  // ✅ for NotificationRepository
 })
 public class BackendApplication {
     public static void main(String[] args) {

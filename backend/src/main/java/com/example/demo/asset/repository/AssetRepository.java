@@ -25,5 +25,6 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
     	List<Asset> filterAssets(@Param("tag") Tag tag,
     	                         @Param("framework") Framework framework,
     	                         @Param("status") Status status);
+    List<Asset> findByPublisher(String publisher);
 
 }

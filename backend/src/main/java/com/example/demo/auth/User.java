@@ -32,25 +32,21 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role; // USER or CONTRIBUTOR
 
-    @OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL)
-    private List<Asset> publishedAssets = new ArrayList<>();
-
     // Standard Getters and Setters
-    public List<Asset> getPublishedAssets() {
-        return publishedAssets;
-    }
-	public Long getId() {
-		return this.id;
-	}
-    public void setPublishedAssets(List<Asset> publishedAssets) {
-        this.publishedAssets = publishedAssets;
-    }
-
+  
     public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
