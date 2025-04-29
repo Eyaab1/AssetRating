@@ -65,6 +65,12 @@ public class ReviewController {
         }
         return ResponseEntity.ok(reviewService.getReviewsByAssetId(assetId));
     }
+    
+    @GetMapping("/all")
+    public ResponseEntity<?> getCommentsall() {
+       
+        return ResponseEntity.ok(reviewService.getReviewsAll());
+    }
 
     @GetMapping("/{reviewId}")
     public ResponseEntity<?> getReview(@PathVariable("reviewId") Long reviewId) {
@@ -91,6 +97,29 @@ public class ReviewController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Review>> getReviewsByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(reviewService.getReviewsByUser(userId));
+    }
+    @GetMapping("/{reviewId}/likes/count")
+    public ResponseEntity<Integer> getLikesCount(@PathVariable Long reviewId) {
+        try {
+            Review review = reviewService.getReviewById(reviewId);
+            int likesCount = review.getLikes() != null ? review.getLikes().size() : 0;
+            return ResponseEntity.ok(likesCount);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+        }
+    }
+
+    @GetMapping("/{reviewId}/likes/hasLiked")
+    public ResponseEntity<Boolean> hasUserLiked(
+        @PathVariable Long reviewId,
+        @RequestParam Long userId) {
+        try {
+            Review review = reviewService.getReviewById(reviewId);
+            boolean hasLiked = review.getLikes() != null && review.getLikes().contains(userId);
+            return ResponseEntity.ok(hasLiked);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+        }
     }
 
 

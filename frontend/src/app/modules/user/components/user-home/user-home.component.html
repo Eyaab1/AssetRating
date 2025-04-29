@@ -1,64 +1,68 @@
-<div class="marketplace-container">
-  <!-- Sidebar Filters -->
+<div class="marketplace-page">
+  <!-- Sidebar -->
   <aside class="sidebar">
-    <h3>Filters</h3>
-
-    <div class="filter-section">
-      <h4>Project Type</h4>
-      <div *ngFor="let type of projectTypes">
-        <input type="checkbox" [value]="type" (change)="onFilterChange('projectType', $event)"> {{ type }}
-      </div>
+    <div class="filter-group">
+      <h4>Categories ({{ allCategories.length }})</h4>
+      <label *ngFor="let category of allCategories">
+        <input
+          type="checkbox"
+          [value]="category.id"
+          (change)="onFilterChange('categories', $event)"
+        />
+        {{ category.name }}
+      </label>
     </div>
 
-    <div class="filter-section">
-      <h4>Framework</h4>
-      <div *ngFor="let fw of frameworks">
-        <input type="checkbox" [value]="fw" (change)="onFilterChange('framework', $event)"> {{ fw }}
-      </div>
+    <div class="filter-group">
+      <h4>Tags ({{ allTags.length }})</h4>
+      <label *ngFor="let tag of allTags">
+        <input
+          type="checkbox"
+          [value]="tag.name"
+          (change)="onFilterChange('tags', $event)"
+        />
+        {{ tag.name }}
+      </label>
     </div>
 
-    <div class="filter-section">
-      <h4>License</h4>
-      <div *ngFor="let lic of licenses">
-        <input type="checkbox" [value]="lic" (change)="onFilterChange('license', $event)"> {{ lic }}
-      </div>
-    </div>
-
+    <button class="filter-button" (click)="applyFilters()">Apply filters</button>
   </aside>
 
   <!-- Main Content -->
   <main class="content">
-    <!-- Search Bar -->
-    <div class="search-bar">
-      <input 
-        type="text" 
-        placeholder="Search assets..." 
-        [(ngModel)]="searchQuery" 
+    <div class="top-bar">
+      <input
+        type="text"
+        placeholder="Search by keyword"
+        [(ngModel)]="searchQuery"
         (input)="filterAssets()"
-      >
+      />
+      
     </div>
 
-    <!-- Top Rated -->
-    <section class="asset-section">
-      <h2>Top Rated</h2>
-      <div class="asset-grid">
-        <div *ngFor="let asset of topRatedAssets" class="asset-card" [routerLink]="['/detail', asset.id]">
-          <img [src]="asset?.image || '../../../../../assets/images/default3.jpg'" alt="Asset Image">
-          <h3>{{ asset?.name }}</h3>
+    <div *ngIf="groupedAssets.length === 0">
+      <p>No assets found.</p>
+    </div>
+
+    <div class="group-section" *ngFor="let group of groupedAssets">
+      <h3>{{ group.label }}</h3>
+      <div class="asset-list">
+        <div 
+        class="asset-item" 
+        *ngFor="let asset of group.assets"
+        [routerLink]="['/detail', asset.id]"
+        style="cursor: pointer;"
+      >          <img
+            [src]="getIcon(asset.image)"
+            alt="asset icon"
+            (error)="onImageError($event)"
+          />
+          <div>
+            <strong>{{ asset.name }}</strong><br />
+            <span>{{ asset.description }}</span>
+          </div>
         </div>
       </div>
-    </section>
-
-    <!-- Available -->
-    <section class="asset-section">
-      <h2>Available</h2>
-      <div class="asset-grid">
-        <div *ngFor="let asset of availableAssets" class="asset-card" [routerLink]="['/detail', asset.id]">
-          <img [src]="asset?.image || 'assets/images/default3.jpg'" alt="Asset Image">
-          <h3>{{ asset?.name }}</h3>
-        </div>
-      </div>
-    </section>
-
+    </div>
   </main>
 </div>

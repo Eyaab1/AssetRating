@@ -3,16 +3,14 @@ import { LicenseType } from "../enums/LicenseType";
 import { ProjectType } from "../enums/ProjectType";
 import { StatusType } from "../enums/StatusType";
 import { Rating } from "./rating";
-export type AssetType = 'Utility' | 'Widget' | 'Sheet' | 'Theme' | 'Template';
-export type LicenseType = 'Free' | 'Paid';
-export type StatusType = 'published' | 'unpublished' | 'deleted';
-export type ProjectType='Frontend' | 'Backend' | 'Fullstack' | 'Desktop' | 'Web' | 'Framework' | 'Plugin' ;
-export type types = 'Widget' | 'Utility' | 'Sheet' | 'Theme' | 'Template';
+import { Tag } from './tag';
+import { Category } from './category';
+import { AssetRelease } from "./asset-release";
 export class Asset {
         constructor(
           public id: string,
           public name: string,
-          public type: types,         
+          public type: AssetType,         
           public label: string,
           public publisher: string,
           public publisherMail: string,
@@ -23,16 +21,14 @@ export class Asset {
           public description: string,
           public documentation: string,
           public projectType: ProjectType,
+          public tags: Tag[],           
+          public categories: Category[], 
+          public releases?: AssetRelease[],
+          public parentAsset: Asset | null = null,
           public ratings?:Rating[],
           public comments?:Comment[],
         ) {
-          // if (ratings) {
-          //   this.ratings = ratings.map(r => new Rating(r));
-          // }
-          
-          // if (comments) {
-          //   this.comments = comments.map(c => new Comment(c));
-          // }
+         
         }
       
         

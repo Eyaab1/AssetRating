@@ -18,8 +18,14 @@ import com.example.rating.service.RatingService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -95,8 +101,8 @@ public class AssetService {
 
         List<Category> categories = categoryService.findAllById(request.categoryIds);
 
-        if (categories == null || categories.isEmpty()) {
-            throw new RuntimeException("❌ No categories were fetched from DB.");
+        if (categories == null || categories.isEmpty() || categories.stream().anyMatch(c -> c == null || c.getId() == null)) {
+            throw new RuntimeException("❌ One or more categories are null or have a null ID.");
         }
 
         for (Category category : categories) {
@@ -113,6 +119,22 @@ public class AssetService {
 
         return assetRepository.save(asset);
     }
+    public Asset createAssetWithFile(AssetRequest request, MultipartFile documentationFile) {
+        if (documentationFile != null && !documentationFile.isEmpty()) {
+            String docFilename = UUID.randomUUID() + "_" + documentationFile.getOriginalFilename();
+            Path path = Paths.get("uploads/docs/" + docFilename);
+            try {
+                Files.createDirectories(path.getParent());
+                Files.copy(documentationFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                request.documentation = "/docs/" + docFilename;
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to store documentation", e);
+            }
+        }
+
+        return createAssetFromRequest(request); 
+    }
+
     
     public Asset uploadAssetRelease(AssetReleaseRequest request) {
         Asset original = assetRepository.findById(request.getOriginalAssetId())
@@ -176,7 +198,7 @@ public class AssetService {
         releaseRecord.setAsset(original);
         releaseRecord.setReleaseVersion(request.getVersion());
         releaseRecord.setPublishedDate(new Date());
-        releaseRecord.setReleasedAsset(savedRelease); // 👈 include full asset
+        releaseRecord.setReleasedAsset(savedRelease); 
 
         assetReleaseRepository.save(releaseRecord);
 
@@ -238,6 +260,35 @@ public class AssetService {
             .limit(10)
             .collect(Collectors.toList());
     }
+    public List<AssetReleases> getReleasesByAsset(String assetId) {
+        Asset asset = assetRepository.findById(assetId)
+            .orElseThrow(() -> new RuntimeException("Asset not found"));
+        return asset.getReleases(); // assuming `releases` are fetched eagerly
+    }
+
+    //get assets eli andhom the same categ
+    public List<Asset> getAssetsByCategory(Long categoryId) {
+        return assetRepository.findAssetsByCategoryId(categoryId);
+    }
+    
+    public String uploadReleaseDocumentation(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new RuntimeException("No file provided for release documentation");
+        }
+
+        String docFilename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path path = Paths.get("uploads/docs/" + docFilename);
+        try {
+            Files.createDirectories(path.getParent());
+            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store release documentation", e);
+        }
+
+        return "/docs/" + docFilename;
+    }
+
+
 
 
 }

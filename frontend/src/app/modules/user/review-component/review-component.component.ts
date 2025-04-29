@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { jwtDecode } from 'jwt-decode';
 import { CommentService } from '../../../shared/services/comment.service';
 import { RatingService } from '../../../shared/services/rating.service';
 import { Comment } from '../../../shared/models/comment';
 import { CommentComponent } from '../components/comment/comment.component';
+import { on } from 'events';
 
 @Component({
   selector: 'app-review-component',
@@ -14,16 +15,25 @@ import { CommentComponent } from '../components/comment/comment.component';
   templateUrl: './review-component.component.html',
   styleUrl: './review-component.component.css'
 })
-export class ReviewComponentComponent {
+export class ReviewComponentComponent implements OnChanges {
   @Input() assetId!: string;
 
   comments: Comment[] = [];
   commentText: string = '';
   userId: string = '';
   averageRating: number = 0;
+  loading = false;
+  visibleCommentsCount = 3; 
+  showAllComments = false;  
 
   constructor(private commentService: CommentService, private ratingService: RatingService) {}
-
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['assetId'] && this.assetId) {
+      this.loadComments();
+      // this.loadAverageRating(); if needed
+    }
+  }
+  
   ngOnInit(): void {
     const token = localStorage.getItem('token');
     if (token) {
@@ -33,20 +43,26 @@ export class ReviewComponentComponent {
 
     if (this.assetId) {
       this.loadComments();
-      this.loadAverageRating();
+      // this.loadAverageRating();
     }
   }
-
   loadComments() {
+    this.loading = true;
+  
     this.commentService.getCommentsByAsset(this.assetId).subscribe({
       next: data => {
-        this.comments = data;
-        console.log('Comments loaded:', data);
+        this.comments = data; // No need to filter anymore
+        this.loading = false;
+        console.log('Loaded top-level comments:', this.comments);
       },
-      
-      error: err => console.error('Error loading comments', err)
+      error: err => {
+        console.error('Error loading comments', err);
+        this.loading = false;
+      }
     });
   }
+  
+  
 
   loadAverageRating() {
     // this.ratingService.getAverageRating(this.assetId).subscribe({
@@ -61,7 +77,8 @@ export class ReviewComponentComponent {
     const payload = {
       userId: Number(this.userId),
       assetId: this.assetId,
-      comment: this.commentText
+      comment: this.commentText,
+   
     };
 
     this.commentService.addComment(payload).subscribe({
@@ -72,4 +89,18 @@ export class ReviewComponentComponent {
       error: err => console.error('Error adding comment', err)
     });
   }
+
+
+get visibleComments() {
+  if (this.showAllComments) {
+    return this.comments;
+  } else {
+    return this.comments.slice(0, this.visibleCommentsCount);
+  }
+}
+
+toggleShowAllComments(): void {
+  this.showAllComments = !this.showAllComments;
+}
+
 }

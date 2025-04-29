@@ -25,5 +25,10 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
     	List<Asset> filterAssets(@Param("tag") Tag tag,
     	                         @Param("framework") Framework framework,
     	                         @Param("status") Status status);
+    
+    //get assets that have the same category 
+    @Query("SELECT a FROM Asset a JOIN a.categories c WHERE c.id = :categoryId")
+    List<Asset> findAssetsByCategoryId(@Param("categoryId") Long categoryId);
+
 
 }

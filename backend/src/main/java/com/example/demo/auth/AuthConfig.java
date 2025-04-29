@@ -38,13 +38,19 @@ public class AuthConfig {
                 return corsConfig;
             }))
             .csrf(csrf -> csrf.disable())
+            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+///releases/docs/upload
             .authorizeHttpRequests(auth -> auth
             	    .requestMatchers("/auth/**").permitAll()
-            	    .requestMatchers("/api/assets/filter").authenticated() // 👈 Add this
+            	    .requestMatchers("/api/assets/filter").authenticated() 
             	    .requestMatchers("/api/assets/**", "/api/assets", "/api/assets/").authenticated()
             	    .requestMatchers("/api/assets/**").permitAll()
             	    .requestMatchers("/api/ratings/**").permitAll()
             	    .requestMatchers("/api/reviews/**").permitAll() 
+            	    .requestMatchers("/api/categories/**").permitAll()  
+            	    .requestMatchers("/api/tags/**").permitAll()  
+            	    .requestMatchers("/docs/**").permitAll()
+            	    .requestMatchers("/releases/docs/upload").permitAll()
             	    .anyRequest().authenticated()
             	)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

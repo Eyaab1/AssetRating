@@ -1,4 +1,4 @@
- package com.example.demo.asset.model;
+package com.example.demo.asset.model;
 
 
 import jakarta.persistence.*;
@@ -67,9 +67,11 @@ public abstract class Asset {
     private List<Tag> tags = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "asset_categories",
+    @JoinTable(
+        name = "asset_categories",
         joinColumns = @JoinColumn(name = "asset_id"),
-        inverseJoinColumns = @JoinColumn(name = "category_id"))
+        inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
     private List<Category> categories = new ArrayList<>();
 
 

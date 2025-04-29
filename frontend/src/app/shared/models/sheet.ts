@@ -9,7 +9,7 @@ export class Sheet extends Asset {
     constructor(
          id: string,
          name: string,
-         type: 'Sheet',
+         type: AssetType.Sheet,
          label: string,
          publisher: string,
          publisherMail: string,
@@ -24,7 +24,7 @@ export class Sheet extends Asset {
          comments:Comment[]=[],
       public icon: string 
     ) {
-      super(id, name,type,label, publisher, publisherMail, publishDate, license, status,image, description,documentation,'Sheet',projectType, ratings, comments);
+      super(id, name,type,label, publisher, publisherMail, publishDate, license, status,image, description,documentation,projectType, ratings, comments);
     }
   }
   
