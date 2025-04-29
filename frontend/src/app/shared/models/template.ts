@@ -5,6 +5,9 @@ import { StatusType } from "../enums/StatusType";
 import { Asset } from "./asset";
 import { Rating } from "./rating";
 import { Framework } from "../enums/framework";
+import { Category } from "./category";
+import { Tag } from "./tag";
+import { AssetRelease } from "./asset-release";
 export class Template extends Asset {
   constructor(
     id: string,
@@ -20,10 +23,14 @@ export class Template extends Asset {
     description: string,
     documentation: string,
     projectType: ProjectType,
+    tags: Tag[],           
+    categories: Category[], 
     public framework: Framework,
+    parentAsset?: Asset,
+    releases?: AssetRelease[],
     ratings: Rating[] = [],
     comments: Comment[] = [],
   ) {
-    super(id, name, type, label, publisher, publisherMail, publishDate, license, status, image, description, documentation, projectType, ratings, comments);
+    super(id, name, type, label, publisher, publisherMail, publishDate, license, status, image, description, documentation, projectType,tags,categories, releases,parentAsset, ratings, comments);
   }
 }

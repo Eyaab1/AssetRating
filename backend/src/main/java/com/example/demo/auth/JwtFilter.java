@@ -1,7 +1,6 @@
 package com.example.demo.auth;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,59 +23,51 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired 
     private JwtUtils jwtUtils;
 
-	@Autowired
-	private AuthRepository authRepository;
-	@Override
-	protected void doFilterInternal(HttpServletRequest request,
-	                                 HttpServletResponse response,
-	                                 FilterChain filterChain) throws ServletException, IOException {
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
-	    String path = request.getRequestURI();
-	    System.out.println("Request URI = " + path);
+        String path = request.getRequestURI();
+        System.out.println("Request URI = " + path);
 
-	    // Skip /auth
-	    if (path.startsWith("/auth")) {
-	        filterChain.doFilter(request, response);
-	        return;
-	    }
+        // Allow auth endpoints without authentication
+        if (path.startsWith("/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-	    String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
 
-	    if (authHeader != null && authHeader.startsWith("Bearer ")) {
-	        String token = authHeader.substring(7);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
 
-	        if (jwtUtils.validateJwtToken(token)) {
-	            String email = jwtUtils.getEmailFromToken(token);
+            if (jwtUtils.validateJwtToken(token)) {
+                String email = jwtUtils.getEmailFromToken(token);
+                String role = jwtUtils.getRoleFromToken(token); 
 
-	            User user = authRepository.findByEmail(email).orElse(null);
+                if (email != null && role != null) {
+                    List<GrantedAuthority> authorities = List.of(() -> "ROLE_" + role);
 
-	            if (user != null) {
-	                UserDetails userDetails = org.springframework.security.core.userdetails.User
-	                    .withUsername(user.getEmail())
-	                    .password(user.getPassword())
-	                    .authorities(Collections.emptyList()) // no roles now
-	                    .build();
-	                System.out.println("Auth Header: " + authHeader);
-	                System.out.println("Email from token: " + email);
-	                System.out.println("UserDetails found: " + (userDetails != null));
-	                System.out.println("Token: " + token);
-	                UsernamePasswordAuthenticationToken authenticationToken = 
-	                    new UsernamePasswordAuthenticationToken(
-	                        userDetails,
-	                        null,
-	                        userDetails.getAuthorities()
-	                    );
+                    UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+                        email,
+                        "",
+                        authorities
+                    );
 
-	                authenticationToken.setDetails(
-	                    new WebAuthenticationDetailsSource().buildDetails(request)
-	                );
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 
-	                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-	            }
-	        }
-	    }
+                    authenticationToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
 
-	    filterChain.doFilter(request, response);
-	}
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
 
+            }
+        }
+
+        filterChain.doFilter(request, response);
+    }
 }

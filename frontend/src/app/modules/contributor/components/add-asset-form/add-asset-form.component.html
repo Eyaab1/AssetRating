@@ -1,58 +1,163 @@
 <div class="add-asset-page">
-    <div class="asset-form-card">
-      <h2 class="form-title">Add New Asset</h2>
-  
-      <form [formGroup]="assetForm" (ngSubmit)="submitAsset()">
-        <div class="form-grid">
-          <div class="form-group" *ngFor="let field of ['name', 'label', 'publisher', 'publisherMail', 'publishDate', 'image', 'documentation']">
-            <label [for]="field">{{ field | titlecase }}</label>
-            <input
-              *ngIf="field !== 'description'"
-              [type]="field === 'publishDate' ? 'date' : 'text'"
-              [id]="field"
-              [formControlName]="field"
-              [placeholder]="'Enter ' + field"
-            />
-          </div>
-  
-          <div class="form-group description-field">
-            <label for="description">Description</label>
-            <textarea id="description" formControlName="description" rows="3" placeholder="Enter description..."></textarea>
-          </div>
-  
-          <div class="form-group">
-            <label for="license">License</label>
-            <select id="license" formControlName="license">
-              <option *ngFor="let license of licenseOptions" [value]="license" class="selectionForm">{{ license }}</option>
-            </select>
-          </div>
-  
-          <div class="form-group">
-            <label for="status">Status</label>
-            <select id="status" formControlName="status" >
-              <option *ngFor="let status of statusOptions" [value]="status" class="selectionForm">{{ status }}</option>
-            </select>
-          </div>
-  
-          <div class="form-group">
-            <label for="assetType">Asset Type</label>
-            <select id="assetType" formControlName="assetType" >
-              <option *ngFor="let type of assetTypes" [value]="type" class="selectionForm">{{ type }}</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="projectType">Project Type</label>
-            <select id="projectType" formControlName="projectType">
-              <option *ngFor="let type of ['Frontend', 'Backend', 'Fullstack', 'Desktop', 'Web', 'Framework', 'Plugin']"
-                      [value]="type" class="selectionForm">{{ type }}</option>
-            </select>
+  <div class="asset-form-card">
+    <h2 class="form-title">Add New Asset</h2>
+
+    <form [formGroup]="assetForm" (ngSubmit)="submitAsset()" enctype="multipart/form-data">
+      <div class="form-grid">
+        <div class="form-group full-span">
+          <label for="name">Name</label>
+          <input id="name" type="text" formControlName="name" placeholder="Asset Name" />
+        </div>
+
+        <div class="form-group">
+          <label for="label">Label</label>
+          <input id="label" type="text" formControlName="label" />
+        </div>
+
+        <div class="form-group">
+          <label for="publisher">Publisher</label>
+          <input id="publisher" type="text" formControlName="publisher" />
+        </div>
+
+        <div class="form-group">
+          <label for="publisherMail">Publisher Email</label>
+          <input id="publisherMail" type="email" formControlName="publisherMail" />
+        </div>
+
+        <div class="form-group">
+          <label for="publishDate">Publish Date</label>
+          <input id="publishDate" type="date" formControlName="publishDate" />
+        </div>
+
+        <div class="form-group">
+          <label for="license">License</label>
+          <select id="license" formControlName="license">
+            <option *ngFor="let license of licenseOptions" [value]="license">{{ license }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" formControlName="status">
+            <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="assetType">Asset Type</label>
+          <select id="assetType" formControlName="assetType">
+            <option *ngFor="let type of assetTypes" [value]="type">{{ type }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="projectType">Project Type</label>
+          <select id="projectType" formControlName="projectType">
+            <option *ngFor="let type of projectTypes" [value]="type">{{ type }}</option>
+          </select>
+        </div>
+
+        <div class="form-group full-span">
+          <label for="description">Description</label>
+          <textarea id="description" rows="3" formControlName="description" placeholder="Description..."></textarea>
+        </div>
+        <div class="form-group full-span">
+          <label>Upload Documentation (PDF)</label>
+          <input type="file" accept="application/pdf" (change)="onDocumentationSelect($event)">
+        </div>
+        
+
+        <div class="form-group full-span">
+          <label>Asset Image</label>
+          <div
+            class="dropzone"
+            (drop)="onImageDrop($event)"
+            (dragover)="onImageDragOver($event)"
+            (dragleave)="onImageDragLeave($event)"
+            [class.active]="dragImageOver"
+            (click)="imageInput?.click()"
+          >
+            <p *ngIf="!imagePreview">Drag & drop or click to select image</p>
+            <img *ngIf="imagePreview" [src]="imagePreview" alt="Preview" class="preview" />
+            <input type="file" hidden accept="image/*" #imageInput (change)="onImageSelect($event)" />
           </div>
         </div>
-  
-        <div class="form-actions">
-          <button type="submit" [disabled]="assetForm.invalid">Add Asset</button>
+
+        <div class="form-group full-span" *ngIf="assetForm.get('icon')">
+          <label>Icon Upload</label>
+          <div
+            class="dropzone"
+            (drop)="onIconDrop($event)"
+            (dragover)="onIconDragOver($event)"
+            (dragleave)="onIconDragLeave($event)"
+            [class.active]="dragIconOver"
+            (click)="iconInput?.click()"
+          >
+            <p *ngIf="!iconPreview">Drag & drop or click to select icon</p>
+            <img *ngIf="iconPreview" [src]="iconPreview" alt="Icon Preview" class="preview" />
+            <input type="file" hidden accept="image/*" #iconInput (change)="onIconSelect($event)" />
+          </div>
         </div>
-      </form>
-    </div>
+
+        <div *ngIf="assetForm.get('framework')" class="form-group">
+          <label for="framework">Framework</label>
+          <select id="framework" formControlName="framework">
+            <option *ngFor="let fw of frameworks" [value]="fw">{{ fw }}</option>
+          </select>
+        </div>
+
+        <div *ngIf="assetForm.get('format')" class="form-group">
+          <label for="format">Format</label>
+          <input id="format" type="text" formControlName="format" />
+        </div>
+
+        <div *ngIf="assetForm.get('themeType')" class="form-group">
+          <label for="themeType">Theme Type</label>
+          <input id="themeType" type="text" formControlName="themeType" />
+        </div>
+
+        <div *ngIf="assetForm.get('primaryColor')" class="form-group">
+          <label for="primaryColor">Primary Color</label>
+          <input id="primaryColor" type="text" formControlName="primaryColor" />
+        </div>
+
+        <div *ngIf="assetForm.get('templateCategory')" class="form-group">
+          <label for="templateCategory">Template Category</label>
+          <input id="templateCategory" type="text" formControlName="templateCategory" />
+        </div>
+
+        <div *ngIf="assetForm.get('preconfigured')" class="form-group checkbox-group">
+          <label for="preconfigured">Preconfigured</label>
+          <input type="checkbox" id="preconfigured" formControlName="preconfigured" />
+        </div>
+
+        <div *ngIf="assetForm.get('dependencies')" class="form-group full-span">
+          <label for="dependencies">Dependencies</label>
+          <textarea id="dependencies" formControlName="dependencies" rows="2"></textarea>
+        </div>
+      </div>
+      <div class="form-group full-span">
+        <label>Tags</label>
+        <select formControlName="tags" multiple>
+          <option *ngFor="let tag of allTags" [value]="tag.name">{{ tag.name }}</option>
+        </select>
+      
+        <div style="margin-top: 0.5rem;">
+          <input type="text" [(ngModel)]="customTag" [ngModelOptions]="{ standalone: true }" placeholder="Add a custom tag" />
+          <button type="button" (click)="addCustomTag()">Add</button>
+        </div>
+      </div>
+      <div class="form-group full-span">
+        <label>Category</label>
+        <select formControlName="category">
+          <option *ngFor="let cat of allCategories" [value]="cat.name">{{ cat.name }}</option>
+        </select>
+      </div>
+            
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="assetForm.invalid">Add Asset</button>
+      </div>
+    </form>
   </div>
-  
+</div>

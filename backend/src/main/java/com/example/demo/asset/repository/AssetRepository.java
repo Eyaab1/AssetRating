@@ -26,5 +26,10 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
     	                         @Param("framework") Framework framework,
     	                         @Param("status") Status status);
     List<Asset> findByPublisher(String publisher);
+    
+    //get assets that have the same category 
+    @Query("SELECT a FROM Asset a JOIN a.categories c WHERE c.id = :categoryId")
+    List<Asset> findAssetsByCategoryId(@Param("categoryId") Long categoryId);
+
 
 }

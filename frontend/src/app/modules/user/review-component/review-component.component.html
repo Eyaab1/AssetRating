@@ -1,19 +1,54 @@
 <div class="review-component">
-  
-    <!-- Display Comments -->
-    <div class="comment-card" *ngFor="let comment of comments" >
-        <app-comment [comment]="comment"></app-comment>
-      </div>
-  
-    <!-- Comment Form -->
+  <!-- 🌀 Loading -->
+  <div *ngIf="loading" class="loading-spinner">Loading reviews...</div>
+
+  <!-- 💬 Comments -->
+  <div class="comments-section" *ngIf="!loading">
     <div class="comment-form">
-      <textarea [(ngModel)]="commentText" rows="3" placeholder="Write your comment here..."></textarea>
+      <h4 class="form-title">Leave a Comment</h4>
+      <textarea [(ngModel)]="commentText" rows="3" placeholder="Write your thoughts..."></textarea>
       <button (click)="submitComment()">Submit</button>
     </div>
-  
-    <!-- Average Rating -->
-    <div class="avg-rating">
-      <h4>Average Rating: {{ averageRating }}/5</h4>
+    <h3 class="section-title">What people say</h3>
+
+    <div *ngIf="comments.length > 0; else noCommentsYet">
+      <div class="comment-card" *ngFor="let comment of visibleComments">
+        <app-comment [comment]="comment"></app-comment>
+      </div>
+    
+      <!-- View More / View Less Button -->
+      <div *ngIf="comments.length > visibleCommentsCount" class="view-more-container">
+        <button (click)="toggleShowAllComments()">
+          {{ showAllComments ? 'View less comments' : 'View more comments' }}
+        </button>
+      </div>
     </div>
+    
+
+    <ng-template #noCommentsYet>
+      <p class="no-comments">No comments yet. Be the first to share!</p>
+    </ng-template>
   </div>
+
+  <!-- Comment form -->
   
+<!--   
+  <div class="review-component">
+    <h3 class="section-title">What people say</h3>
+  
+    <div *ngIf="comments.length > 0; else noCommentsYet">
+      <div class="comment-card" *ngFor="let comment of comments">
+        <app-comment [comment]="comment"></app-comment>
+      </div>
+    </div>
+  
+    <ng-template #noCommentsYet>
+      <p class="no-comments">No comments yet. Be the first to share!</p>
+    </ng-template>
+  
+    <div class="comment-form">
+      <h4 class="form-title">Leave a Comment</h4>
+      <textarea [(ngModel)]="commentText" rows="3" placeholder="Write your thoughts..."></textarea>
+      <button (click)="submitComment()">Submit</button>
+    </div>
+  </div> -->

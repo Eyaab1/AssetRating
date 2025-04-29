@@ -37,4 +37,9 @@ public class AuthService {
         }
         return null;
     }
+    public Optional<UserDTO> getUserById(Long id) {
+        return authRepository.findById(id).map(UserDTO::new);
+    }
+
+
 }

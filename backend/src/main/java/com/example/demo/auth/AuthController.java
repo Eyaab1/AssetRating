@@ -27,5 +27,15 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid credentials!");
         }
     }
+   
+    @GetMapping("/user/{id}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+        return authService.getUserById(id)
+                          .map(ResponseEntity::ok)
+                          .orElse(ResponseEntity.notFound().build());
+    }
+
+
+    
 
 }

@@ -1,6 +1,7 @@
 package com.example.demo.asset.controller;
 
 import com.example.demo.asset.model.Asset;
+
 import com.example.demo.asset.model.AssetReleases;
 import com.example.demo.asset.model.Framework;
 import com.example.demo.asset.model.Status;
@@ -12,10 +13,17 @@ import com.example.demo.dto.AssetRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/assets")
@@ -40,12 +48,16 @@ public class AssetController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     @PreAuthorize("hasRole('CONTRIBUTOR')")
-    public ResponseEntity<Asset> createAsset(@RequestBody AssetRequest request) {
-        Asset createdAsset = assetService.createAssetFromRequest(request);
+    public ResponseEntity<Asset> createAsset(
+            @RequestPart("request") AssetRequest request,
+            @RequestPart(value = "documentation", required = false) MultipartFile documentation
+    ) {
+        Asset createdAsset = assetService.createAssetWithFile(request, documentation);
         return ResponseEntity.ok(createdAsset);
     }
+
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('CONTRIBUTOR')")
@@ -72,6 +84,7 @@ public class AssetController {
         return ResponseEntity.ok(releases);
     }
 
+
     /*@PostMapping("/{assetId}/releases")
     public ResponseEntity<AssetReleases> addRelease(
             @PathVariable("assetId") String assetId,
@@ -81,6 +94,14 @@ public class AssetController {
         release.setAsset(asset);
         return ResponseEntity.ok(assetService.saveRelease(release));
     }*/
+    
+    @PostMapping("/releases/docs/upload")
+    @PreAuthorize("hasRole('CONTRIBUTOR')")
+    public ResponseEntity<String> uploadReleaseDoc(@RequestParam("file") MultipartFile file) {
+        String path = assetService.uploadReleaseDocumentation(file);
+        return ResponseEntity.ok(path); // returns string like "/docs/filename.pdf"
+    }
+
 
     @GetMapping("/filter")
     public List<Asset> filterAssets(
@@ -94,4 +115,10 @@ public class AssetController {
     public ResponseEntity<List<Asset>> getRecommendedAssets() {
         return ResponseEntity.ok(assetService.getRecommendedAssets());
     }
+    @GetMapping("/categories/{categoryId}/assets")
+    public ResponseEntity<List<Asset>> getAssetsByCategory(@PathVariable Long categoryId) {
+        List<Asset> assets = assetService.getAssetsByCategory(categoryId);
+        return ResponseEntity.ok(assets);
+    }
+
 }
