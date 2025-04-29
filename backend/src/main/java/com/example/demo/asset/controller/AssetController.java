@@ -66,6 +66,11 @@ public class AssetController {
         Asset release = assetService.uploadAssetRelease(request);
         return ResponseEntity.ok(release);
     }
+    @GetMapping("/{assetId}/releases")
+    public ResponseEntity<List<AssetReleases>> getReleasesByAsset(@PathVariable String assetId) {
+        List<AssetReleases> releases = assetService.getReleasesByAsset(assetId);
+        return ResponseEntity.ok(releases);
+    }
 
     /*@PostMapping("/{assetId}/releases")
     public ResponseEntity<AssetReleases> addRelease(
