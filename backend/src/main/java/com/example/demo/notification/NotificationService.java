@@ -103,4 +103,19 @@ public class NotificationService {
 
         notifyUser(originalCommenter, content, NotificationType.COMMENT_REPLIED, parentReview.getId().toString(), asset.getId());
     }
+    public void notifyAllUsersOfAsset(Asset asset, NotificationType type) {
+        String message;
+        if (type == NotificationType.ASSET_PUBLISHED) {
+            message = "🚀 New feature alert! A new asset titled \"" + asset.getName() + "\" has just been published — check it out now!";
+        } else {
+            message = "🔁 \"" + asset.getName() + "\" just got a new version! Discover the latest update now.";
+        }
+
+        List<User> allUsers = authRepository.findAll();
+        for (User user : allUsers) {
+            notifyUser(user, message, type, asset.getId(), asset.getId());
+        }
+    }
+
+
 }

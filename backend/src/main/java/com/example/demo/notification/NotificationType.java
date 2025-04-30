@@ -4,5 +4,7 @@ public enum NotificationType {
     REVIEW_REPORTED,
     REVIEW_LIKED,
     COMMENT_REPLIED,
-    REVIEW_ADDED
+    REVIEW_ADDED,
+    ASSET_PUBLISHED,
+    ASSET_UPDATED
 }

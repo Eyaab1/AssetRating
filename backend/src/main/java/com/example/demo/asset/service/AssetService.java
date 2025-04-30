@@ -34,6 +34,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import com.example.demo.asset.model.Category;
 import com.example.demo.dto.AssetRequest;
+import com.example.demo.notification.NotificationService;
+import com.example.demo.notification.NotificationType;
 @Service
 public class AssetService {
 
@@ -41,13 +43,15 @@ public class AssetService {
     private final RatingService ratingService;
     private final TagService tagService;
     private final CategoryService categoryService;
+    private final NotificationService notificationService;
 
     @Autowired
-    public AssetService(AssetRepository assetRepository, RatingService ratingService,TagService tagService, CategoryService categoryService) {
+    public AssetService(AssetRepository assetRepository, RatingService ratingService,TagService tagService, CategoryService categoryService, NotificationService notificationService) {
         this.assetRepository = assetRepository;
         this.ratingService= ratingService;
         this.tagService=tagService;
         this.categoryService=categoryService;
+        this.notificationService =notificationService;
     }
     @Autowired
     private AssetReleaseRepository assetReleaseRepository;
@@ -117,7 +121,10 @@ public class AssetService {
 
         asset.setTags(tags);
 
-        return assetRepository.save(asset);
+        Asset saved = assetRepository.save(asset);
+        notificationService.notifyAllUsersOfAsset(saved, NotificationType.ASSET_PUBLISHED);
+        return saved;
+
     }
     public Asset createAssetWithFile(AssetRequest request, MultipartFile documentationFile) {
         if (documentationFile != null && !documentationFile.isEmpty()) {
@@ -201,6 +208,7 @@ public class AssetService {
         releaseRecord.setReleasedAsset(savedRelease); 
 
         assetReleaseRepository.save(releaseRecord);
+        notificationService.notifyAllUsersOfAsset(original, NotificationType.ASSET_UPDATED);
 
         return savedRelease;
     }
