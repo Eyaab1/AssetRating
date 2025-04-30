@@ -26,7 +26,7 @@ public class NotificationService {
         this.authRepository = authRepository;
     }
 
-    public void notifyUser(User user, String content, NotificationType type, String relatedEntityId) {
+    public void notifyUser(User user, String content, NotificationType type, String relatedEntityId, String relatedAssetId) {
         Notification n = new Notification();
         n.setRecipient(user);
         n.setContent(content);
@@ -34,6 +34,7 @@ public class NotificationService {
         n.setRead(false);
         n.setType(type);
         n.setRelatedEntityId(relatedEntityId);
+        n.setRelatedAssetId(relatedAssetId);
         notificationRepository.save(n);
     }
 
@@ -45,7 +46,7 @@ public class NotificationService {
         if (publisherEmail != null) {
             User contributor = authRepository.findByEmail(publisherEmail)
                 .orElseThrow(() -> new RuntimeException("User not found by email: " + publisherEmail));
-            notifyUser(contributor, content, type, assetId);
+            notifyUser(contributor, content, type, assetId, assetId);
         }
     }
 
@@ -72,7 +73,8 @@ public class NotificationService {
             String content = "Review by " + commenter.getFirstName() + " " + commenter.getLastName()
                 + " on your asset \"" + asset.getName() + "\" was reported for: " + reason;
 
-            notifyUser(contributor, content, NotificationType.REVIEW_REPORTED, asset.getId());
+            // ✅ FIX: use review ID for relatedEntityId
+            notifyUser(contributor, content, NotificationType.REVIEW_REPORTED, review.getId().toString(), asset.getId());
         }
     }
 
@@ -86,7 +88,7 @@ public class NotificationService {
         String content = "Your comment on the asset \"" + asset.getName() + "\" was liked by " +
                          liker.getFirstName() + " " + liker.getLastName();
 
-        notifyUser(author, content, NotificationType.REVIEW_LIKED, review.getId().toString());
+        notifyUser(author, content, NotificationType.REVIEW_LIKED, review.getId().toString(), asset.getId());
     }
 
     public void notifyUserOfReply(Review parentReview, User replier) {
@@ -99,6 +101,6 @@ public class NotificationService {
         String content = replier.getFirstName() + " " + replier.getLastName() +
                          " replied to your comment on the asset \"" + asset.getName() + "\"";
 
-        notifyUser(originalCommenter, content, NotificationType.COMMENT_REPLIED, parentReview.getId().toString());
+        notifyUser(originalCommenter, content, NotificationType.COMMENT_REPLIED, parentReview.getId().toString(), asset.getId());
     }
 }

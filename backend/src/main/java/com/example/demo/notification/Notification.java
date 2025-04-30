@@ -22,6 +22,8 @@ public class Notification {
 
     private String relatedEntityId;
 
+    private String relatedAssetId;
+
     @ManyToOne
     @JoinColumn(name = "recipient_id")
     private User recipient;
@@ -94,6 +96,15 @@ public class Notification {
 	public void setRelatedEntityId(String relatedEntityId) {
 		this.relatedEntityId = relatedEntityId;
 	}
+
+	public String getRelatedAssetId() {
+		return relatedAssetId;
+	}
+
+	public void setRelatedAssetId(String relatedAssetId) {
+		this.relatedAssetId = relatedAssetId;
+	}
+	
     
     
 }
