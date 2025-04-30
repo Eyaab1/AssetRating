@@ -55,12 +55,7 @@ public class AssetService {
     public AssetReleases saveRelease(AssetReleases release) {
         return assetReleaseRepository.save(release);
     }
-    public List<AssetReleases> getReleasesByAsset(String assetId) {
-        Asset asset = assetRepository.findById(assetId)
-            .orElseThrow(() -> new RuntimeException("Asset not found"));
-        return asset.getReleases(); // assuming releases are fetched eagerly
-    }
-    
+  
     public Asset createAssetFromRequest(AssetRequest request) {
         Asset asset = switch (request.type.toUpperCase()) {
             case "TEMPLATE" -> new Template();

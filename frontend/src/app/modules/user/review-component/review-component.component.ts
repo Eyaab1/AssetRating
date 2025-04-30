@@ -6,7 +6,6 @@ import { CommentService } from '../../../shared/services/comment.service';
 import { RatingService } from '../../../shared/services/rating.service';
 import { Comment } from '../../../shared/models/comment';
 import { CommentComponent } from '../components/comment/comment.component';
-import { on } from 'events';
 
 @Component({
   selector: 'app-review-component',
@@ -30,7 +29,7 @@ export class ReviewComponentComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['assetId'] && this.assetId) {
       this.loadComments();
-      // this.loadAverageRating(); if needed
+      this.loadAverageRating();
     }
   }
   
@@ -43,7 +42,7 @@ export class ReviewComponentComponent implements OnChanges {
 
     if (this.assetId) {
       this.loadComments();
-      // this.loadAverageRating();
+      this.loadAverageRating();
     }
   }
   loadComments() {

@@ -19,6 +19,7 @@ public class Notification {
     private Date createdAt = new Date();
 
     @ManyToOne
+    @JoinColumn(name = "recipient_id")
     private User recipient;
 
     public Notification() {

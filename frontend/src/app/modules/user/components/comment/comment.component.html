@@ -2,14 +2,14 @@
   <!-- Avatar with initial -->
   <div class="comment-avatar">
     <span class="initial">
-      {{ userC?.firstName ? userC.firstName.charAt(0).toUpperCase() : '?' }}
+      {{ userC.firstName ? userC.firstName.charAt(0).toUpperCase() : '?' }}
     </span>
   </div>
 
   <div class="comment-body">
     <!-- Meta: Author, Verified badge, Date -->
     <div class="comment-meta">
-      <span class="author">{{ userC?.firstName }} {{ userC?.lastName }}</span>
+      <span class="author">{{ userC.firstName }} {{ userC.lastName }}</span>
       <span class="verified" *ngIf="userC"><i class="fa-solid fa-circle-check"></i></span>
       <span class="date">{{ comment.date | date:'mediumDate' }}</span>
     </div>
@@ -20,7 +20,7 @@
       <span *ngIf="!showFullComment && comment.comment.length > 100" class="view-more" (click)="toggleShowFull()">... View more</span>
     </div>
 
-    <!-- Actions Row (Like + Reply) -->
+    <!-- Like + Reply -->
     <div class="comment-actions-row">
       <div class="left-actions">
         <span class="like" [class.liked]="liked" (click)="toggleLikeComment()">
@@ -31,16 +31,17 @@
         <button class="reply-btn" (click)="replyToComment()">
           <i class="fa-solid fa-reply"></i> Reply
         </button>
+    <!-- Report button -->
+        <button class="report-btn" (click)="openReportPopup()" >
+          <i class="fa-solid fa-flag"></i> Report
+        </button>
       </div>
-      
-
       <div class="right-actions">
         <button *ngIf="comment?.replies?.length ?? 0 > 0" class="toggle-replies-btn" (click)="showReplies = !showReplies">
           {{ showReplies ? 'Hide Replies' : 'View Replies (' + comment.replies.length + ')' }}
         </button>
       </div>
     </div>
-
     <!-- Reply Form -->
     <div *ngIf="replying" class="reply-form">
       <textarea [(ngModel)]="replyText" rows="2" placeholder="Write your reply..."></textarea>
@@ -65,3 +66,4 @@
 
   </div> <!-- comment-body -->
 </div> <!-- comment-container -->
+

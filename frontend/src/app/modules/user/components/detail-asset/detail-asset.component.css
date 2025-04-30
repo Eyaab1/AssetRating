@@ -93,15 +93,15 @@
   margin-bottom: 18px;
   border-radius: 12px;
   border: 1px solid #ddd;
-  overflow: hidden;
+  /* overflow: hidden; */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
   transition: all 0.2s ease;
 }
 
-.release-card:hover {
+/* .release-card:hover {
   transform: translateY(-1px);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
-}
+} */
 
 .release-header {
   padding: 18px 24px;

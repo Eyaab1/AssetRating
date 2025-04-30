@@ -65,26 +65,9 @@ public class ReviewController {
         }
 
         List<Review> reviews = reviewService.getReviewsByAssetId(assetId);
-        List<Map<String, Object>> enrichedReviews = new ArrayList<>();
-
-        for (Review review : reviews) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("review", review);
-            try {
-                ModerationResult result = reviewModerationService.analyzeReview(review.getComment());
-                map.put("sentiment", result.getSentiment());
-                map.put("score", result.getScore());
-                map.put("containsProfanity", result.isContainsProfanity());
-                map.put("spamLabel", result.getSpamLabel());
-                map.put("spamScore", result.getSpamScore());
-            } catch (Exception e) {
-                map.put("error", "Analysis failed");
-            }
-            enrichedReviews.add(map);
-        }
-
-        return ResponseEntity.ok(enrichedReviews);
+        return ResponseEntity.ok(reviews);
     }
+
 
     @GetMapping("/{reviewId}")
     public ResponseEntity<?> getReview(@PathVariable Long reviewId) {
@@ -118,29 +101,29 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getReviewsByUser(userId));
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<?> getAllReviews() {
-        List<Review> reviews = reviewService.getAllReviews();
-        List<Map<String, Object>> enrichedReviews = new ArrayList<>();
+   // @GetMapping("/all")
+    //public ResponseEntity<?> getAllReviews() {
+    //List<Review> reviews = reviewService.getAllReviews();
+    //  List<Map<String, Object>> enrichedReviews = new ArrayList<>();
 
-        for (Review review : reviews) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("review", review);
-            try {
-                ModerationResult result = reviewModerationService.analyzeReview(review.getComment());
-                map.put("sentiment", result.getSentiment());
-                map.put("score", result.getScore());
-                map.put("containsProfanity", result.isContainsProfanity());
-                map.put("spamLabel", result.getSpamLabel());
-                map.put("spamScore", result.getSpamScore());
-            } catch (Exception e) {
-                map.put("error", "Analysis failed");
-            }
-            enrichedReviews.add(map);
-        }
+    //  for (Review review : reviews) {
+    //     Map<String, Object> map = new HashMap<>();
+    //      map.put("review", review);
+    //      try {
+    //          ModerationResult result = reviewModerationService.analyzeReview(review.getComment());
+    //          map.put("sentiment", result.getSentiment());
+    //         map.put("score", result.getScore());
+    //          map.put("containsProfanity", result.isContainsProfanity());
+    ////         map.put("spamLabel", result.getSpamLabel());
+    //          map.put("spamScore", result.getSpamScore());
+    //       } catch (Exception e) {
+            	//          map.put("error", "Analysis failed");
+    //      }
+    //      enrichedReviews.add(map);
+    //  }
 
-        return ResponseEntity.ok(enrichedReviews);
-    }
+    //   return ResponseEntity.ok(enrichedReviews);
+    //  }
 
     @GetMapping("/{reviewId}/likes/count")
     public ResponseEntity<Integer> getLikesCount(@PathVariable Long reviewId) {

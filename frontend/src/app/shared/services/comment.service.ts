@@ -79,4 +79,10 @@ export class CommentService {
       headers: this.getAuthHeaders()
     });
   }
+  reportReview(reviewId: number, reason: string) {
+    return this.http.post(
+      `${this.baseUrl}/${reviewId}/report`,{ reason: reason },{ headers: this.getAuthHeaders() } 
+    );
+  }
+  
 }

@@ -40,6 +40,13 @@ public class AuthService {
     public Optional<UserDTO> getUserById(Long id) {
         return authRepository.findById(id).map(UserDTO::new);
     }
+    //
+    public String logout(String token) {
+        if (token != null && !token.isBlank()) {
+            return "User logged out successfully.";
+        }
+        return "Invalid or missing token.";
+    }
 
 
 }

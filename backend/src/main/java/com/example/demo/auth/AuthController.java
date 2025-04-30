@@ -34,6 +34,13 @@ public class AuthController {
                           .map(ResponseEntity::ok)
                           .orElse(ResponseEntity.notFound().build());
     }
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        String message = authService.logout(token);
+        return ResponseEntity.ok(message);
+    }
+
 
 
     

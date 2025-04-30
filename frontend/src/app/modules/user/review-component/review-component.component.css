@@ -21,11 +21,11 @@
   position: relative;
   transition: all 0.2s ease;
 }
-
+/* 
 .comment-card:hover {
   background: #f3f1ff;
   transform: translateY(-2px);
-}
+} */
 
 .comment-actions {
   display: flex;
@@ -152,9 +152,9 @@
   transition: background 0.3s ease;
 }
 
-.comment-form button:hover {
+/* .comment-form button:hover {
   background: #5a26b3;
-}
+} */
 .view-more-container {
   text-align: center;
   margin-top: 20px;

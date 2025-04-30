@@ -10,10 +10,10 @@
   /* margin-bottom: 20px; */
 }
 
-.comment-container:hover {
+/* .comment-container:hover {
   background: #f8f8fc;
-  /* transform: translateY(-2px); */
-}
+  /* transform: translateY(-2px); 
+} */
 
 .comment-avatar {
   width: 50px;
@@ -218,6 +218,8 @@
   margin-left: 5px;
 }
 
-.view-more:hover {
+/* .view-more:hover {
   text-decoration: underline;
-}
+} */
+
+

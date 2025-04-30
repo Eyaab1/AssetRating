@@ -1,18 +1,44 @@
 <nav class="navbar">
     
-    <div class="logo-container">
-        <img src="assets/images/logo.png" alt="Veggo Logo">
-        <div class="logo-text">
-          <span class="veggo">Veggo</span>
-          <span class="by-vermeg">by VERMEG</span>
-        </div>
+  <div class="logo-container">
+      <img src="assets/images/logo.png" alt="Veggo Logo">
+      <div class="logo-text">
+        <span class="veggo">Veggo</span>
+        <span class="by-vermeg">by VERMEG</span>
       </div>
-      
-     <div class="nav-actions">
-      <button class="icon-btn">
-        <i class="fas fa-bell" style="color: white;"></i>
-    </button>
-      <div class="profile-icon">F</div>
     </div>
-  </nav>
-  
+    
+   <div class="nav-actions">
+  <!-- Home button -->
+  <button class="icon-btn" (click)="goHome()" title="Home">
+    <i class="fas fa-home"></i>
+  </button>
+
+<!-- Notification button -->
+<div class="notification-wrapper">
+  <button class="icon-btn" (click)="toggleDropdown()">
+    <i class="fas fa-bell"></i>
+    <span *ngIf="hasUnread()" class="notif-badge"></span>
+  </button>
+
+  <!-- Dropdown -->
+  <div class="dropdown" *ngIf="showDropdown">
+    <div *ngIf="notifications.length === 0" class="notif-empty">No notifications</div>
+    <div *ngFor="let notif of notifications" class="notif-item" [class.unread]="!notif.read" (click)="markAsRead(notif)">
+      {{ notif.content }}
+      <div class="notif-date">{{ notif.createdAt | date:'short' }}</div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Logout icon -->
+  <button class="icon-btn logout-btn" (click)="logout()" title="Logout">
+    <i class="fas fa-sign-out-alt"></i>
+  </button>
+
+  <!-- Profile circle -->
+  <div class="profile-icon">F</div>
+</div>
+
+</nav>
