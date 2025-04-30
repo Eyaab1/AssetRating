@@ -41,26 +41,20 @@ public class ReviewReportController {
 
         String reason = body.get("reason");
 
-        // Reporting user (the one who clicked "Report")
         User reporter = authRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Long reporterId = reporter.getId();
 
-        // The review being reported
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
-        // ✅ The user who originally wrote the review
         User commenter = authRepository.findById(review.getUserId())
                 .orElseThrow(() -> new RuntimeException("Reviewer not found"));
 
-        // Save the report (if you’re logging/storing them)
         reviewReportService.reportReview(reporterId, review, reason);
 
-        // ✅ Send notification to the asset publisher
         notificationService.notifyContributorOfReportedReview(review, reason, commenter);
 
-        // Return success response
         Map<String, String> response = new HashMap<>();
         response.put("message", "Review reported successfully.");
         return ResponseEntity.ok(response);

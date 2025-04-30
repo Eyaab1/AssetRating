@@ -4,14 +4,20 @@ import com.example.demo.dto.ReviewRequest;
 import com.example.demo.dto.ModerationResult;
 import com.example.demo.dto.ReplyRequest;
 import com.example.demo.asset.repository.AssetRepository;
+import com.example.demo.auth.AuthRepository;
+import com.example.demo.auth.User;
 import com.example.review.model.Review;
+import com.example.review.repository.ReviewRepository;
 import com.example.review.service.ReviewService;
 import com.example.demo.review.ReviewAnalysisClient;
+import com.example.demo.notification.NotificationService;
+import com.example.demo.notification.NotificationType;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.*;
 
 @RestController
@@ -22,39 +28,85 @@ public class ReviewController {
     private final ReviewService reviewService;
     private final AssetRepository assetRepository;
     private final ReviewAnalysisClient reviewModerationService;
+    private final NotificationService notificationService;
+    private final AuthRepository authRepository;
+    private final ReviewRepository reviewRepository;
 
-    public ReviewController(ReviewService reviewService, AssetRepository assetRepository, ReviewAnalysisClient reviewModerationService) {
+    public ReviewController(
+            ReviewService reviewService,
+            AssetRepository assetRepository,
+            ReviewAnalysisClient reviewModerationService,
+            NotificationService notificationService,
+            AuthRepository authRepository,
+            ReviewRepository reviewRepository
+    ) {
         this.reviewService = reviewService;
         this.assetRepository = assetRepository;
         this.reviewModerationService = reviewModerationService;
+        this.notificationService = notificationService;
+        this.authRepository = authRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addReview(@RequestBody ReviewRequest request) {
+    public ResponseEntity<?> addReview(@RequestBody ReviewRequest request, Principal principal) {
         if (!assetRepository.existsById(request.getAssetId().toString())) {
             return ResponseEntity.badRequest().body("Asset with ID " + request.getAssetId() + " does not exist.");
         }
-        Review review = new Review(request.getUserId(), request.getAssetId(), request.getComment());
-        return ResponseEntity.ok(reviewService.addReview(review));
+
+        User reviewer = authRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Review review = new Review(reviewer.getId(), request.getAssetId(), request.getComment());
+        Review savedReview = reviewService.addReview(review);
+
+        notificationService.notifyContributorByAssetId(
+            request.getAssetId(),
+            reviewer.getFirstName() + " " + reviewer.getLastName() + " added a new review on your asset.",
+            NotificationType.REVIEW_ADDED
+        );
+
+        return ResponseEntity.ok(savedReview);
     }
 
+
     @PostMapping("/{reviewId}/like")
-    public ResponseEntity<Void> likeReview(@PathVariable Long reviewId, @RequestParam("userId") Long userId) {
-        reviewService.addLike(reviewId, userId);
+    public ResponseEntity<Void> likeReview(@PathVariable Long reviewId, Principal principal) {
+        User liker = authRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        reviewService.addLike(reviewId, liker.getId());
+
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+
+        notificationService.notifyUserOfLikedReview(review, liker);
+
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{reviewId}/unlike")
-    public ResponseEntity<Void> unlikeReview(@PathVariable Long reviewId, @RequestParam("userId") Long userId) {
-        reviewService.removeLike(reviewId, userId);
+    public ResponseEntity<Void> unlikeReview(@PathVariable Long reviewId, Principal principal) {
+        User liker = authRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        reviewService.removeLike(reviewId, liker.getId());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{reviewId}/reply")
-    public ResponseEntity<?> addReply(@PathVariable Long reviewId, @RequestBody ReplyRequest replyRequest) {
+    public ResponseEntity<?> addReply(@PathVariable Long reviewId, @RequestBody ReplyRequest replyRequest, Principal principal) {
         Review parent = reviewService.getReviewById(reviewId);
-        Review reply = new Review(replyRequest.getUserId(), parent.getAssetId(), replyRequest.getComment());
+
+        User replier = authRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Review reply = new Review(replier.getId(), parent.getAssetId(), replyRequest.getComment());
         reviewService.addReply(reviewId, reply);
+
+        // Optional: send notification to original commenter
+        notificationService.notifyUserOfReply(parent, replier);
+
         return ResponseEntity.ok().build();
     }
 
@@ -67,7 +119,6 @@ public class ReviewController {
         List<Review> reviews = reviewService.getReviewsByAssetId(assetId);
         return ResponseEntity.ok(reviews);
     }
-
 
     @GetMapping("/{reviewId}")
     public ResponseEntity<?> getReview(@PathVariable Long reviewId) {
@@ -100,30 +151,6 @@ public class ReviewController {
     public ResponseEntity<List<Review>> getReviewsByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(reviewService.getReviewsByUser(userId));
     }
-
-   // @GetMapping("/all")
-    //public ResponseEntity<?> getAllReviews() {
-    //List<Review> reviews = reviewService.getAllReviews();
-    //  List<Map<String, Object>> enrichedReviews = new ArrayList<>();
-
-    //  for (Review review : reviews) {
-    //     Map<String, Object> map = new HashMap<>();
-    //      map.put("review", review);
-    //      try {
-    //          ModerationResult result = reviewModerationService.analyzeReview(review.getComment());
-    //          map.put("sentiment", result.getSentiment());
-    //         map.put("score", result.getScore());
-    //          map.put("containsProfanity", result.isContainsProfanity());
-    ////         map.put("spamLabel", result.getSpamLabel());
-    //          map.put("spamScore", result.getSpamScore());
-    //       } catch (Exception e) {
-            	//          map.put("error", "Analysis failed");
-    //      }
-    //      enrichedReviews.add(map);
-    //  }
-
-    //   return ResponseEntity.ok(enrichedReviews);
-    //  }
 
     @GetMapping("/{reviewId}/likes/count")
     public ResponseEntity<Integer> getLikesCount(@PathVariable Long reviewId) {

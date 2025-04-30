@@ -8,29 +8,35 @@ import com.example.demo.auth.User;
 @Entity
 @Data
 public class Notification {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String content;
-
     private boolean read = false;
-
     private Date createdAt = new Date();
+
+    @Enumerated(EnumType.STRING)
+    private NotificationType type;
+
+    private String relatedEntityId;
 
     @ManyToOne
     @JoinColumn(name = "recipient_id")
     private User recipient;
 
+
     public Notification() {
 		super();}
     
-	public Notification(String content, boolean read, Date createdAt, User recipient) {
+	public Notification(String content, boolean read, Date createdAt, User recipient, NotificationType type) {
 
 		this.content = content;
 		this.read = read;
 		this.createdAt = createdAt;
 		this.recipient = recipient;
+		this.type=type;
 	}
 
 	public Long getId() {
@@ -71,6 +77,22 @@ public class Notification {
 
 	public void setRecipient(User recipient) {
 		this.recipient = recipient;
+	}
+
+	public NotificationType getType() {
+		return type;
+	}
+
+	public void setType(NotificationType type) {
+		this.type = type;
+	}
+
+	public String getRelatedEntityId() {
+		return relatedEntityId;
+	}
+
+	public void setRelatedEntityId(String relatedEntityId) {
+		this.relatedEntityId = relatedEntityId;
 	}
     
     
