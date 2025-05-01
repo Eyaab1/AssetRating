@@ -7,8 +7,8 @@ import { Tag } from '../models/tag';
   providedIn: 'root'
 })
 export class TagAndcategoryService {
-  private apiUrl1 = 'http://localhost:8080/api/tags';
-  private apiUrl2 = 'http://localhost:8080/api/categories';
+  private apiUrl1 = 'http://localhost:8081/api/tags';
+  private apiUrl2 = 'http://localhost:8081/api/categories';
   constructor( private http: HttpClient) { }
   
   private getAuthHeaders(): HttpHeaders {

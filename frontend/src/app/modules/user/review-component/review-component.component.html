@@ -7,6 +7,10 @@
     <div class="comment-form">
       <h4 class="form-title">Leave a Comment</h4>
       <textarea [(ngModel)]="commentText" rows="3" placeholder="Write your thoughts..."></textarea>
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+      
       <button (click)="submitComment()">Submit</button>
     </div>
     <h3 class="section-title">What people say</h3>

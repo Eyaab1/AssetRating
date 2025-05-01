@@ -1,3 +1,4 @@
+// detail-asset.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
@@ -25,8 +26,6 @@ import { AssetRelease } from '../../../../shared/models/asset-release';
   styleUrl: './detail-asset.component.css'
 })
 export class DetailAssetComponent {
-  //declaration
-  
   private userId: string = '';
   comments: Comment[] = [];
   ratings: Rating[] = [];
@@ -43,17 +42,14 @@ export class DetailAssetComponent {
   newReleaseFileObject: File | null = null;
   newReleaseFile = '';
   selectedRelease: AssetRelease | null = null;
-  
 
   categoryAverages: { [key: string]: number } = {};
-
   ratingCategories: { label: string, field: string }[] = [
     { label: 'Functionality', field: 'functionality' },
     { label: 'Performance', field: 'performance' },
     { label: 'Integration', field: 'integration' },
     { label: 'Documentation', field: 'documentation' }
   ];
-
 
   constructor(
     private route: ActivatedRoute,
@@ -75,7 +71,7 @@ export class DetailAssetComponent {
         next: (data) => {
           this.assetSelected = data;
           if (this.assetSelected.documentation) {
-            this.safeDocUrl = this.sanitizer.bypassSecurityTrustResourceUrl('http://localhost:8080' + this.assetSelected.documentation);
+            this.safeDocUrl = this.sanitizer.bypassSecurityTrustResourceUrl('http://localhost:8081' + this.assetSelected.documentation);
           }
           if (this.assetSelected) {
             this.loadComments();
@@ -100,35 +96,25 @@ export class DetailAssetComponent {
         error: (err) => console.error('Error fetching asset', err)
       });
     }
-   
-    
   }
 
-  //loading
   loadComments() {
     const assetId = this.assetSelected?.id;
     if (!assetId) return;
-  
+
     this.commentService.getCommentsByAsset(assetId).subscribe({
       next: data => {
-        // Filter root comments (those without parentReviewId)
         this.comments = data.filter(comment => !comment.parentReviewId);
-  
-        // For each root comment, ensure replies are properly loaded
         this.comments.forEach(comment => {
           if (comment.replies) {
-            // Make sure replies exist and attach them to the comment
             comment.replies = comment.replies.filter(reply => reply.parentReviewId === comment.id);
           }
         });
-  
         console.log('Root Comments loaded:', this.comments);
       },
       error: err => console.error('Error loading comments', err)
     });
   }
-  
-  
 
   loadRatings(assetId: string) {
     this.ratingService.getRatingsByAsset(assetId).subscribe({
@@ -145,6 +131,7 @@ export class DetailAssetComponent {
       error: (err) => console.error('Failed to fetch same category assets', err)
     });
   }
+
   loadReleases(assetId: string): void {
     this.assetService.getReleasesByAsset(assetId).subscribe({
       next: (data) => {
@@ -154,12 +141,9 @@ export class DetailAssetComponent {
       error: (err) => console.error('Error loading releases', err)
     });
   }
-  
 
-  //review fun
   handleReviewSubmit(review: { review: { rating: number, text: string } }): void {
     if (!this.assetSelected || !this.userId) return;
-
     const assetId = this.assetSelected.id;
 
     const backendRatingPayload = {
@@ -181,26 +165,53 @@ export class DetailAssetComponent {
           }
         });
       },
-      error: (err) => console.error('Error submitting rating', err)
+      error: (err) => {
+        if (err.status === 400 && err.error === 'You have already rated this asset.') {
+          alert('⚠️ You have already rated this asset.');
+        } else {
+          console.error('Error submitting rating', err);
+        }
+      }
     });
+
     const commentPayload = {
       userId: Number(this.userId),
       assetId: assetId,
       comment: review.review.text
     };
+
     this.commentService.addComment(commentPayload).subscribe({
       next: () => {
         console.log('Comment added successfully');
         this.loadComments();
       },
-      error: (err) => console.error('Error adding comment', err)
+      error: (err) => {
+        if (err.status === 400 && err.error === 'Review contains inappropriate language.') {
+          alert('⚠️ Your comment contains inappropriate language.');
+        } else {
+          console.error('Error adding comment', err);
+        }
+      }
     });
   }
-
-  //release fun
+  onReviewSubmitted(): void {
+    if (this.assetSelected?.id) {
+      this.loadComments();
+      this.loadRatings(this.assetSelected.id);
+      this.ratingService.getAverageRatingPerCategory(this.assetSelected.id).subscribe({
+        next: (averages) => {
+          this.categoryAverages = averages;
+        },
+        error: (err) => {
+          console.error('Error fetching average ratings by category', err);
+        }
+      });
+    }
+  }
+  
   submitRelease(): void {
     if (!this.assetSelected || !this.newReleaseFileObject) return;
-  
+
     this.assetService.uploadReleaseDocumentation(this.newReleaseFileObject).subscribe({
       next: (docPath) => {
         const payload = {
@@ -209,7 +220,7 @@ export class DetailAssetComponent {
           documentation: docPath,
           fileUrl: "/uploads/fake-path.zip" 
         };
-  
+
         this.assetService.uploadAssetReleaseFull(payload).subscribe({
           next: () => {
             this.loadReleases(this.assetSelected!.id);
@@ -224,7 +235,6 @@ export class DetailAssetComponent {
       error: (err) => console.error('Failed to upload PDF:', err)
     });
   }
-  
 
   createStarDisplay(average: number): string[] {
     const stars: string[] = [];
@@ -239,8 +249,9 @@ export class DetailAssetComponent {
   }
 
   getIcon(img?: string): string {
-    return img ? `assets/images/${img}` : 'assets/images/default3.jpg';
+    return img ? `assets${img}` : 'assets/images/default3.jpg';
   }
+
   toggleRelease(releaseId: number): void {
     if (this.selectedRelease?.id === releaseId) {
       this.selectedRelease = null;
@@ -248,7 +259,6 @@ export class DetailAssetComponent {
       const match = this.assetSelected?.releases?.find(r => r.id === releaseId);
       if (match) {
         this.selectedRelease = match;
-  
         if (typeof match.releasedAsset === 'string') {
           this.assetService.getAssetById(match.releasedAsset).subscribe({
             next: (fullReleasedAsset) => {
@@ -260,50 +270,31 @@ export class DetailAssetComponent {
       }
     }
   }
-  
-  
+
   selectRelease(release: any): void {
     this.selectedRelease = release;
-  }  
+  }
+
   onReleaseDocSelect(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.releaseDocFile = input.files[0];
     }
   }
+
   onNewReleaseFileSelected(event: any) {
     this.newReleaseFileObject = event.target.files[0];
   }
+
   getSafeDoc(docPath: string): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl('http://localhost:8080' + docPath);
+    return this.sanitizer.bypassSecurityTrustResourceUrl('http://localhost:8081' + docPath);
   }
 
- 
-  
   getSafeDocDirect(docPath: string): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl('http://localhost:8080' + docPath);
+    return this.sanitizer.bypassSecurityTrustResourceUrl('http://localhost:8081' + docPath);
   }
 
   goBack() {
     window.history.back();
   }
-  // onNewReleaseFileSelected(event: Event): void {
-  //   const input = event.target as HTMLInputElement;
-  //   if (input.files && input.files.length > 0) {
-  //     const file = input.files[0];
-      
-  //     // Optionally: upload the file via a service and store path
-  //     const formData = new FormData();
-  //     formData.append('file', file);
-  
-  //     this.assetService.uploadReleaseDoc(formData).subscribe({
-  //       next: (path: string) => {
-  //         this.newReleaseDoc = path;
-  //         console.log('Uploaded doc path:', path);
-  //       },
-  //       error: (err) => console.error('Failed to upload doc:', err)
-  //     });
-  //   }
-  // }
-  
 }

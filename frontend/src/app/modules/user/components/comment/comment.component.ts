@@ -29,6 +29,7 @@ export class CommentComponent implements OnInit {
   selectedReviewId!: number;
   liked = false;
   likesCount = 0;
+  profanityWarning: string = '';
 
   private vcr = inject(ViewContainerRef);
 
@@ -86,7 +87,7 @@ export class CommentComponent implements OnInit {
 
   sendReply(): void {
     if (!this.replyText.trim() || !this.currentUserId) return;
-
+  
     this.commentService.replyToReview(this.comment.id, {
       userId: this.currentUserId,
       comment: this.replyText
@@ -94,10 +95,18 @@ export class CommentComponent implements OnInit {
       next: () => {
         this.replyText = '';
         this.replying = false;
+        this.profanityWarning = ''; // clear warning on success
       },
-      error: (err) => console.error('Error replying to comment', err)
+      error: (err) => {
+        if (err.status === 400 && err.error === 'Reply contains inappropriate language.') {
+          this.profanityWarning = '⚠️ Your reply contains inappropriate language.';
+        } else {
+          console.error('Error replying to comment', err);
+        }
+      }
     });
   }
+  
 
   toggleShowFull(): void {
     this.showFullComment = true;

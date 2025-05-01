@@ -6,7 +6,7 @@ import { Rating } from '../models/rating';
   providedIn: 'root'
 })
 export class RatingService {
-  private baseUrl = 'http://localhost:8080/api/ratings';
+  private baseUrl = 'http://localhost:8081/api/ratings';
   constructor(private http:HttpClient) { }
   private getAuthHeaders(): HttpHeaders {
       if (typeof window !== 'undefined') {

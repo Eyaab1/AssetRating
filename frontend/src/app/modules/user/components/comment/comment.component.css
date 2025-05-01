@@ -223,3 +223,12 @@
 } */
 
 
+.error-message {
+  color: #d9534f;
+  background-color: #fbeaea;
+  padding: 6px 10px;
+  margin: 6px 0;
+  border-left: 4px solid #d9534f;
+  font-weight: 500;
+  border-radius: 4px;
+}

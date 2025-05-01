@@ -174,3 +174,12 @@
   background: #7c3aed;
   color: white;
 }
+.error-message {
+  color: #ff4d4d;
+  background-color: #ffe6e6;
+  padding: 8px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  font-weight: bold;
+}

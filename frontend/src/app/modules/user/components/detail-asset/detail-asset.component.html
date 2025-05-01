@@ -87,7 +87,7 @@
     <!-- REVIEW PART -->
       <div class="review-header">
         <h3>Comments</h3>
-        <button class="add-btn" (click)="reviewModal.open()">Add Review</button>
+        <button class="add-btn" (click)="reviewModal.open(assetSelected?.id || '')">Add Review</button>
       </div>
       <app-review-component [assetId]="assetSelected?.id || ''"></app-review-component>
     </div>
@@ -113,5 +113,5 @@
     </div>
   </div>
 
-  <app-review-popup #reviewModal (reviewSubmitted)="handleReviewSubmit({ review: $event })"></app-review-popup>
+  <app-review-popup #reviewModal (reviewSubmitted)="onReviewSubmitted()"></app-review-popup>
 </div>

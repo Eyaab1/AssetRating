@@ -9,7 +9,7 @@ import { AssetRelease } from '../models/asset-release';
 })
 export class AssetServiceService {
 
-  private baseUrl = 'http://localhost:8080/api/assets';
+  private baseUrl = 'http://localhost:8081/api/assets';
 
   constructor(private http: HttpClient) {}
 
@@ -56,7 +56,7 @@ export class AssetServiceService {
   }
 
   uploadDocumentationFile(fileData: FormData): Observable<string> {
-    return this.http.post<string>('http://localhost:8080/api/assets/docs/upload', fileData, {
+    return this.http.post<string>('http://localhost:8081/api/assets/docs/upload', fileData, {
       headers: this.getAuthHeaders()
     });
   }
@@ -64,7 +64,7 @@ export class AssetServiceService {
     const formData = new FormData();
     formData.append('file', file);
     const token = localStorage.getItem('token');
-    return this.http.post('http://localhost:8080/api/assets/releases/docs/upload', formData, {
+    return this.http.post('http://localhost:8081/api/assets/releases/docs/upload', formData, {
       headers: this.getAuthHeaders(),
       responseType: 'text'
     });

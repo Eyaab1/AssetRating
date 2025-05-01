@@ -45,11 +45,17 @@
     <!-- Reply Form -->
     <div *ngIf="replying" class="reply-form">
       <textarea [(ngModel)]="replyText" rows="2" placeholder="Write your reply..."></textarea>
+
+      <div *ngIf="profanityWarning" class="error-message">
+        {{ profanityWarning }}
+      </div>
+
       <div class="reply-buttons">
         <button class="send-btn" (click)="sendReply()">Send</button>
         <button class="cancel-btn" (click)="cancelReply()">Cancel</button>
       </div>
     </div>
+
 
     <!-- Replies Section -->
     <div class="replies" *ngIf="showReplies">

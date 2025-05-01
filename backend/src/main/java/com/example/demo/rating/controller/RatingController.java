@@ -29,6 +29,11 @@ public class RatingController {
             return ResponseEntity.badRequest().body("Asset with ID " + request.getAssetId() + " does not exist.");
         }
 
+        boolean alreadyRated = ratingService.hasUserRatedAsset(request.getUserId(), request.getAssetId());
+        if (alreadyRated) {
+            return ResponseEntity.badRequest().body("You have already rated this asset.");
+        }
+
         ratingService.rateAsset(
             request.getUserId(),
             request.getAssetId(),
@@ -37,8 +42,10 @@ public class RatingController {
             request.getIntegration(),
             request.getDocumentation()
         );
+
         return ResponseEntity.ok("Rating submitted successfully");
     }
+
 
     @GetMapping("/average/{assetId}")
     public ResponseEntity<Integer> getOverallRating(@PathVariable("assetId") String assetId) {
