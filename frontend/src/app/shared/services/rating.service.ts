@@ -32,9 +32,27 @@ export class RatingService {
     integration: number;
     documentation: number;
   }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/rate`, ratingPayload);
+    return this.http.post(`${this.baseUrl}/rate`, ratingPayload, {
+      headers: this.getAuthHeaders()
+    });
   }
+  
   getAverageRatingPerCategory(assetId: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/averageBycategory/${assetId}`, { headers: this.getAuthHeaders() } );
   }
+  getAveragerating(assetId:string):Observable<any>{
+    return this.http.get(`${this.baseUrl}/average/${assetId}`, { headers: this.getAuthHeaders() } );
+  }
+  getUserRating(userId: number, assetId: string) {
+    return this.http.get<any>(`${this.baseUrl}/user/${userId}/asset/${assetId}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+  
+  updateRating(ratingPayload: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/update`, ratingPayload, {
+      headers: this.getAuthHeaders()
+    });
+  }
+  
 }

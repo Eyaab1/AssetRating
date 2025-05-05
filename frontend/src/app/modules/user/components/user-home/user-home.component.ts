@@ -5,6 +5,8 @@ import { AssetServiceService } from '../../../../shared/services/asset-service.s
 import { Asset } from '../../../../shared/models/asset';
 import { FormsModule } from '@angular/forms';
 import { TagAndcategoryService } from '../../../../shared/services/tag-andcategory.service';
+import { DecodedToken } from '../../../../shared/decoded-token';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-user-home',
@@ -31,7 +33,8 @@ export class UserHomeComponent implements OnInit {
 
   constructor(
     private assetService: AssetServiceService,
-    private tagCatgService: TagAndcategoryService
+    private tagCatgService: TagAndcategoryService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -93,6 +96,14 @@ export class UserHomeComponent implements OnInit {
     this.updateSections();
   }
 
+  getAssetDetailLink(assetId: string): string {
+    const decoded: DecodedToken | null = this.authService.decodeToken();
+    const role = decoded?.role || '';
+    return role === 'CONTRIBUTOR' 
+      ? `/contributorLayout/detail/${assetId}` 
+      : `/detail/${assetId}`;
+  }
+  
   filterAssets(): void {
     const query = this.searchQuery.trim().toLowerCase();
     this.filteredAssets = this.assets.filter(asset =>

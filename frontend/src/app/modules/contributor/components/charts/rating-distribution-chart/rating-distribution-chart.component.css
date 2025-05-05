@@ -1,0 +1,23 @@
+.chart-card {
+    flex: 1 1 100%;
+    background: #f9fafb;
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+  }
+  
+  .chart-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1f2937;
+  }
+  
+  canvas {
+    display: block;
+    width: 100% !important;
+    height: 300px !important;
+    border-radius: 10px;
+  }
+  

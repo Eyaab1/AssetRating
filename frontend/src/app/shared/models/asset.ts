@@ -27,6 +27,8 @@ export class Asset {
           public parentAsset: Asset | null = null,
           public ratings?:Rating[],
           public comments?:Comment[],
+          public averageRating?: number,
+          public reviewsCount?: number,
         ) {
          
         }

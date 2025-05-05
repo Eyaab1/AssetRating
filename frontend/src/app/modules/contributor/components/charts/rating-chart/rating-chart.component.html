@@ -1,0 +1,12 @@
+<div class="chart-toggle-container">
+  <button (click)="toggleShowAll()" class="toggle-btn">
+    {{ showAll ? 'Show Top 3' : 'Show All' }}
+  </button>
+</div>
+
+<canvas
+  baseChart
+  [data]="chartData"
+  [options]="chartOptions"
+  [type]="'bar'">
+</canvas>

@@ -2,8 +2,11 @@ package com.example.demo.rating.controller;
 
 import com.example.demo.asset.repository.AssetRepository;
 import com.example.demo.dto.RatingRequest;
+import com.example.rating.model.Rating;
+import com.example.rating.model.UserRatingResponse;
 import com.example.rating.service.RatingService;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +26,19 @@ public class RatingController {
     }
 
     @PostMapping("/rate")
-    public ResponseEntity<String> rateAsset(@RequestBody RatingRequest request) {
+    public ResponseEntity<Map<String, String>> rateAsset(@RequestBody RatingRequest request) {
         boolean assetExists = assetRepository.existsById(request.getAssetId());
         if (!assetExists) {
-            return ResponseEntity.badRequest().body("Asset with ID " + request.getAssetId() + " does not exist.");
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "Asset with ID " + request.getAssetId() + " does not exist.");
+            return ResponseEntity.badRequest().body(response);
         }
 
         boolean alreadyRated = ratingService.hasUserRatedAsset(request.getUserId(), request.getAssetId());
         if (alreadyRated) {
-            return ResponseEntity.badRequest().body("You have already rated this asset.");
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "You have already rated this asset.");
+            return ResponseEntity.badRequest().body(response);
         }
 
         ratingService.rateAsset(
@@ -43,9 +50,10 @@ public class RatingController {
             request.getDocumentation()
         );
 
-        return ResponseEntity.ok("Rating submitted successfully");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Rating submitted successfully");
+        return ResponseEntity.ok(response);
     }
-
 
     @GetMapping("/average/{assetId}")
     public ResponseEntity<Integer> getOverallRating(@PathVariable("assetId") String assetId) {
@@ -53,11 +61,58 @@ public class RatingController {
         return ResponseEntity.ok(average);
     }
     
+    
     @GetMapping("/averageBycategory/{assetId}")
     public ResponseEntity<Map<String, Double>> getCategoryAverages(@PathVariable("assetId") String assetId) {
         Map<String, Double> averages = ratingService.getAverageScoresByCategory(assetId);
         return ResponseEntity.ok(averages);
     }
+    
+    @GetMapping("/user/{userId}/asset/{assetId}")
+    public ResponseEntity<?> getUserRatingForAsset(
+            @PathVariable Long userId,
+            @PathVariable String assetId) {
+
+        Rating rating = ratingService.getUserRatingForAsset(userId, assetId);
+        if (rating == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        UserRatingResponse dto = new UserRatingResponse(
+            rating.getFunctionalityScore(),
+            rating.getPerformanceScore(),
+            rating.getIntegrationScore(),
+            rating.getDocumentationScore()
+        );
+
+        return ResponseEntity.ok(dto);
+    }
+//Update 
+    @PutMapping("/update")
+    public ResponseEntity<?> updateRating(@RequestBody RatingRequest request) {
+        boolean assetExists = assetRepository.existsById(request.getAssetId());
+        if (!assetExists) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Asset not found."));
+        }
+
+        Rating existing = ratingService.getUserRatingForAsset(request.getUserId(), request.getAssetId());
+        if (existing == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "No existing rating found to update."));
+        }
+
+        existing.setFunctionalityScore(request.getFunctionality());
+        existing.setPerformanceScore(request.getPerformance());
+        existing.setIntegrationScore(request.getIntegration());
+        existing.setDocumentationScore(request.getDocumentation());
+        existing.setTimestamp(new java.util.Date());
+
+        ratingService.save(existing); // Create this method or reuse repository.save()
+
+        return ResponseEntity.ok(Map.of("message", "Rating updated successfully."));
+    }
+
+
+
 
 
 }

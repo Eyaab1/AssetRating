@@ -5,6 +5,14 @@
     align-items: center;
     background: #0d0d0d; 
     padding: 20px 40px ;
+    height: 93px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+    
+    
 
     color: white;
   
@@ -86,59 +94,66 @@
       position: relative;
     }
     
-    .dropdown {
-      position: absolute;
-      right: 0;
-      top: 40px;
-      background: #fff;
-      color: #333;
-      width: 250px;
-      max-height: 300px;
-      overflow-y: auto;
-      border-radius: 8px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      z-index: 1000;
+ 
+    .section-title {
+      font-weight: bold;
+      padding: 8px 16px;
+      color: #666;
+      font-size: 14px;
     }
     
-    .notif-item {
-      padding: 10px 12px;
-      border-bottom: 1px solid #eee;
+    .notif-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f2f2f2;
+      padding: 10px 14px;
+      margin: 6px 12px;
+      border-radius: 12px;
+      gap: 12px;
       cursor: pointer;
     }
-    
-    .notif-item.unread {
-      background-color: #f3f0ff;
-      font-weight: bold;
-    }
-    
-    .notif-date {
-      font-size: 11px;
-      color: #666;
-    }
-    
-    .notif-empty {
-      padding: 12px;
-      text-align: center;
-      color: #888;
-    }
-    
-    .notif-badge {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      background: red;
-      color: white;
+    .notif-icon {
+      font-size: 20px;
+      color: black;
+      background: #d9d9d9;
       border-radius: 50%;
-      width: 9px;
-      height: 9px;
+      padding: 10px;
     }
+    
+    .notif-text  {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    }
+  
+    
+    .notif-content {
+      font-size: 14px;
+      color: black;
+      flex: 1;
+    }
+    .notif-content-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    
+    .notif-time {
+      font-size: 12px;
+      color: #888;
+      white-space: nowrap;
+    }
+    
     .dropdown {
       position: absolute;
       right: 0;
       top: 48px;
       background: white;
       color: #333;
-      width: 320px;
+      width: 450px;
       max-height: 360px;
       overflow-y: auto;
       border-radius: 12px;

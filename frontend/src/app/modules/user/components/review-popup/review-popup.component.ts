@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgIf, NgFor, CommonModule } from '@angular/common';
 import { CommentService } from '../../../../shared/services/comment.service';
@@ -15,12 +15,16 @@ import { jwtDecode } from 'jwt-decode';
 export class ReviewPopupComponent {
   @Output() reviewSubmitted = new EventEmitter<void>();
 
-  isVisible: boolean = false;
-  reviewText: string = '';
-  errorMessage: string = '';
+  isVisible = false;
+  reviewText = '';
+  errorMessage = '';
+  addComment = false;
+  hasPreviousRating = false;
+  isEditing = false;
+
   stars = Array(5).fill(0);
   userId: number | null = null;
-  assetId: string = '';
+  assetId = '';
 
   ratings = {
     functionality: 0,
@@ -46,6 +50,25 @@ export class ReviewPopupComponent {
       const decoded: any = jwtDecode(token);
       this.userId = decoded.userId ?? null;
     }
+
+    if (this.userId !== null) {
+      this.ratingService.getUserRating(this.userId, this.assetId).subscribe({
+        next: (rating) => {
+          if (rating) {
+            this.hasPreviousRating = true;
+            this.ratings = {
+              functionality: rating.functionality,
+              performance: rating.performance,
+              integration: rating.integration,
+              documentation: rating.documentation
+            };
+          }
+        },
+        error: () => {
+          this.hasPreviousRating = false;
+        }
+      });
+    }
   }
 
   close() {
@@ -56,10 +79,11 @@ export class ReviewPopupComponent {
   onOverlayClick(event: MouseEvent) {
     this.close();
   }
-
   setRating(category: keyof typeof this.ratings, value: number): void {
+    if (!this.isEditing) return;
     this.ratings[category] = value;
   }
+  
 
   calculateOverallRating(): number {
     const values = Object.values(this.ratings);
@@ -68,22 +92,22 @@ export class ReviewPopupComponent {
   }
 
   isValidReview(): boolean {
-    return Object.values(this.ratings).every(r => r > 0) && this.reviewText.trim() !== '';
+    return Object.values(this.ratings).every(r => r > 0);
   }
 
   submitReview(): void {
     this.errorMessage = '';
-  
+
     if (!this.isValidReview()) {
-      this.errorMessage = 'Please rate all categories and write a review.';
+      this.errorMessage = 'Please rate all categories.';
       return;
     }
-  
+
     if (!this.userId || !this.assetId) {
       this.errorMessage = 'Missing user or asset information.';
       return;
     }
-  
+
     const ratingPayload = {
       userId: this.userId,
       assetId: this.assetId,
@@ -92,43 +116,44 @@ export class ReviewPopupComponent {
       integration: this.ratings.integration,
       documentation: this.ratings.documentation
     };
-  
+
     const commentPayload = {
       userId: this.userId,
       assetId: this.assetId,
-      comment: this.reviewText
+      comment: this.reviewText.trim()
     };
-  
-    // ✅ FIRST: check comment for profanity
-    this.commentService.addComment(commentPayload).subscribe({
+
+    const handleSuccess = () => {
+      this.reviewSubmitted.emit();
+      this.isEditing = false;
+      this.close();
+    };
+    
+
+    const request$ = this.hasPreviousRating
+      ? this.ratingService.updateRating(ratingPayload)
+      : this.ratingService.addRating(ratingPayload);
+
+    request$.subscribe({
       next: () => {
-        // ✅ ONLY if comment passed, submit the rating
-        this.ratingService.addRating(ratingPayload).subscribe({
-          next: () => {
-            this.reviewSubmitted.emit();
-            this.close();
-          },
-          error: (err) => {
-            if (err.status === 400 && err.error === 'You have already rated this asset.') {
-              this.errorMessage = '⚠️ You have already rated this asset.';
-            } else {
-              this.errorMessage = 'Failed to submit rating.';
-              console.error(err);
+        if (this.addComment && this.reviewText.trim()) {
+          this.commentService.addComment(commentPayload).subscribe({
+            next: handleSuccess,
+            error: (err) => {
+              console.error('Comment error:', err);
+              this.errorMessage = '⚠️ ' + (err.error?.error || err.message || 'Failed to submit comment.');
             }
-          }
-        });
+          });
+        } else {
+          handleSuccess();
+        }
       },
       error: (err) => {
-        if (err.status === 400 && err.error === 'Review contains inappropriate language.') {
-          this.errorMessage = '⚠️ Your review contains inappropriate language.';
-        } else {
-          this.errorMessage = 'Failed to submit comment.';
-          console.error(err);
-        }
+        console.error('Rating error:', err);
+        this.errorMessage = '⚠️ ' + (err.error?.error || err.message || 'Failed to submit rating.');
       }
     });
   }
-  
 
   private resetForm(): void {
     this.ratings = {
@@ -139,5 +164,9 @@ export class ReviewPopupComponent {
     };
     this.reviewText = '';
     this.errorMessage = '';
+    this.addComment = false;
+    this.hasPreviousRating = false;
+    this.isEditing = false;
+
   }
 }

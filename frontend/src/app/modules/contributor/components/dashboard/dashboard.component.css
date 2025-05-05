@@ -1,150 +1,174 @@
-.dashboard-container {
-    padding: 2rem;
-    min-height: 100vh;
-    background: #0d0b16;
-    color: #fff;
-    font-family: 'Segoe UI', sans-serif;
-  }
+.dashboard-wrapper {
+  padding: 2rem;
+  background: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.dashboard-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.upload-btn {
+  background-color: #4F46E5;
+  color: white;
+  padding: 0.6rem 1.4rem;
+  border-radius: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.2);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+.upload-btn:hover {
+  background-color: #4338CA;
+  box-shadow: 0 8px 24px rgba(67, 56, 202, 0.35);
+}
+
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+.stat-card:hover {
+  transform: translateY(-4px);
+}
+.stat-card .icon {
+  font-size: 2rem;
+  padding: 1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+.stat-card.blue .icon { background: #4F46E5; }
+.stat-card.green .icon { background: #10B981; }
+.stat-card.orange .icon { background: #F59E0B; }
+
+.stat-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+.stat-card h3, .stat-card h4 {
+  margin: 0.2rem 0;
+  font-size: 1.4rem;
+  color: #111827;
+}
+
+.icon.highlight {
+  background-color: #4F46E5;
+  color: white;
+}
+
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.badge {
+  font-weight: 500;
+
   
-  .title {
-    font-size: 2.2rem;
-    font-weight: bold;
-    margin-bottom: 2rem;
-  }
-  
-  .stats-grid {
-    display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 2.5rem;
-  }
-  
-  .stat-card {
-    flex: 1;
-    min-width: 240px;
-    display: flex;
-    background: #1a1a2e;
-    border-radius: 16px;
-    padding: 1.5rem;
-    align-items: center;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-  }
-  
-  .stat-icon {
-    font-size: 1.8rem;
-    background: #333;
-    border-radius: 50%;
-    padding: 1rem;
-    margin-right: 1rem;
-  }
-  
-  .stat-icon.total {
-    background-color: #007bff;
-  }
-  .stat-icon.published {
-    background-color: #28a745;
-  }
-  .stat-icon.unpublished {
-    background-color: #ffc107;
-  }
-  
-  .stat-info p {
-    margin: 0;
-    font-size: 0.95rem;
-    color: #ccc;
-  }
-  .stat-info h3 {
-    font-size: 1.7rem;
-    margin: 0.2rem 0 0;
-  }
-  
-  .section {
-    margin-top: 2rem;
-  }
-  
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  
-  .section-header h3 {
-    font-size: 1.5rem;
-  }
-  
-  .upload-btn {
-    background-color: #0066ff;
-    color: white;
-    padding: 0.6rem 1.2rem;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: background-color 0.3s;
-  }
-  
-  .upload-btn:hover {
-    background-color: #0044cc;
-  }
-  
-  .assets-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #1c1c2b;
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  
-  .assets-table th, .assets-table td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid #333;
-  }
-  
-  .assets-table th {
-    background-color: #252540;
-    font-weight: 600;
-    color: #aaa;
-  }
-  
-  .badge {
-    padding: 0.3rem 0.7rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    text-transform: capitalize;
-  }
-  
-  .badge.published {
-    background-color: #28a745;
-  }
-  .badge.unpublished {
-    background-color: #ffc107;
-    color: #111;
-  }
-  .badge.deleted {
-    background-color: #dc3545;
-  }
-  
-  .btn {
-    padding: 0.4rem 0.6rem;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    color: white;
-    margin-left: 0.3rem;
-    font-size: 1rem;
-  }
-  
-  .btn.edit {
-    background-color: #17a2b8;
-  }
-  .btn.delete {
-    background-color: #dc3545;
-  }
-  
-  .no-assets-text {
-    color: #999;
-    margin-top: 1rem;
-    text-align: center;
-  }
-  
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+.badge.published    { background: #D1FAE5; color: #065F46; }
+.badge.unpublished  { background: #FEF3C7; color: #92400E; }
+.badge.deleted      { background: #FECACA; color: #991B1B; }
+.badge.green        { background: #ECFDF5; color: #10B981; }
+.badge.orange       { background: #FFFBEB; color: #F59E0B; }
+
+.asset-table-container {
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+  margin-top: 1.5rem;
+}
+
+.asset-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.asset-table th,
+.asset-table td {
+  padding: 1rem;
+  text-align: left;
+}
+.asset-table th {
+  background-color: #f1f5f9;
+  color: #374151;
+  font-weight: 600;
+}
+.asset-table tr:hover {
+  background-color: #f9fafb;
+}
+
+.text-gold {
+  color: gold;
+}
+
+.btn-icon {
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 0.6rem;
+  margin-right: 0.3rem;
+  cursor: pointer;
+  color: white;
+  font-size: 0.95rem;
+  transition: background 0.2s ease;
+}
+.btn-icon.blue   { background: #3B82F6; }
+.btn-icon.purple { background: #8B5CF6; }
+.btn-icon:hover  { opacity: 0.9; }
+
+.charts-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.chart-card {
+  flex: 1 1 48%;
+  background: #f9fafb;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+  min-width: 100px;
+  width:100px;
+}
+.chart-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}

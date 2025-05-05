@@ -1,85 +1,93 @@
-<div class="dashboard-container">
-    <h2 class="title">Contributor Dashboard</h2>
-  
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon total">
-          <i class="fas fa-layer-group"></i>
-        </div>
-        <div class="stat-info">
-          <p>Total Assets</p>
-          <h3>{{ allAssets.length }}</h3>
-        </div>
-      </div>
-  
-      <div class="stat-card">
-        <div class="stat-icon published">
-          <i class="fas fa-upload"></i>
-        </div>
-        <div class="stat-info">
-          <p>Published</p>
-          <h3>{{ publishedCount }}</h3>
-        </div>
-      </div>
-  
-      <div class="stat-card">
-        <div class="stat-icon unpublished">
-          <i class="fas fa-eye-slash"></i>
-        </div>
-        <div class="stat-info">
-          <p>Unpublished</p>
-          <h3>{{ unpublishedCount }}</h3>
-        </div>
+<div class="dashboard-wrapper">
+  <div class="dashboard-header">
+    <h2 class="dashboard-title">Dashboard</h2>
+    <a routerLink="/contributorLayout/contributorLayout" class="upload-btn"> Upload Asset</a>
+  </div>
+
+  <div class="stats-cards">
+    <div class="stat-card blue">
+      <i class="fas fa-layer-group icon"></i>
+      <div>
+        <p>Total Assets</p>
+        <h3>{{ allAssets.length }}</h3>
       </div>
     </div>
   
-    <div class="section">
-      <div class="section-header">
-        <h3>Recent Assets</h3>
-        <a routerLink="/add-asset" class="upload-btn">
-          <i class="fas fa-plus-circle"></i> Upload Asset
-        </a>
+    <div class="stat-card">
+      <div class="icon highlight">
+        <i class="fas fa-star"></i>
       </div>
-  
-      <div *ngIf="recentAssets.length > 0; else noAssets">
-        <table class="assets-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Date</th>
-              <th class="text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let asset of recentAssets">
-              <td>{{ asset.name }}</td>
-              <td>{{ asset.type }}</td>
-              <td>
-                <span class="badge" [ngClass]="{
-                  'published': asset.status === 'published',
-                  'unpublished': asset.status === 'unpublished',
-                  'deleted': asset.status === 'deleted'
-                }">{{ asset.status }}</span>
-              </td>
-              <td>{{ asset.publishDate | date:'yyyy-MM-dd' }}</td>
-              <td class="text-right">
-                <button class="btn edit" (click)="editAsset(asset.id)">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn delete" (click)="deleteAsset(asset.id)">
-                  <i class="fas fa-trash-alt"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div>
+        <p>Top Rated</p>
+        <h4>{{ topRatedAsset?.name || 'N/A' }}</h4>
+        <small>{{ topRatedAsset?.averageRating?.toFixed(1) || 0 }}/5</small>
       </div>
+    </div>
   
-      <ng-template #noAssets>
-        <p class="no-assets-text">No assets uploaded yet.</p>
-      </ng-template>
+    <div class="stat-card">
+      <div class="icon highlight">
+        <i class="fas fa-comments"></i>
+      </div>
+      <div>
+        <p>Most Feedback</p>
+        <h4>{{ mostReviewedAsset?.name || 'N/A' }}</h4>
+        <small>{{ mostReviewedAsset?.reviewsCount || 0 }} reviews</small>
+      </div>
+    </div>
+   
+  </div>
+  <div class="charts-row">
+    <div class="chart-card">
+      <h3 class="chart-title">Top Rated Tags</h3>
+      <app-rating-distribution-chart [distribution]="getRatingDistribution()"></app-rating-distribution-chart>
+    </div>
+    <div class="chart-card">
+      <h3 class="chart-title">Top Rated Categories</h3>
+      <app-rating-chart [mode]="'category'"></app-rating-chart>
+    </div>
+  
+    <div class="chart-card">
+      <h3 class="chart-title">Top Rated Tags</h3>
+      <app-rating-chart [mode]="'tag'"></app-rating-chart>
     </div>
   </div>
   
+  
+  
+
+  
+
+  <div class="filter-bar">
+    <label><input type="checkbox" [(ngModel)]="showMyAssetsOnly" /> Show My Assets Only</label>
+    <span class="badge green">Published: {{ publishedCount }}</span>
+    <span class="badge orange">Unpublished: {{ unpublishedCount }}</span>
+  </div>
+
+  <div class="asset-table-container">
+    <table class="asset-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Rating</th>
+          <th>Reviews</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let asset of filteredAssets()">
+          <td>{{ asset.name }}</td>
+          <td>{{ asset.type }}</td>
+          <td><span class="badge" [ngClass]="asset.status.toLowerCase()">{{ asset.status }}</span></td>
+          <td><i class="fas fa-star text-gold"></i> {{ asset.averageRating || 0 }}/5</td>
+          <td>{{ asset.reviewsCount || 0 }}</td>
+          <td>
+            <a [routerLink]="['/contributorLayout/edit', asset.id]"><button class="btn-icon blue"><i class="fas fa-edit"></i></button></a>
+            <button class="btn-icon purple"><i class="fas fa-chart-line"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

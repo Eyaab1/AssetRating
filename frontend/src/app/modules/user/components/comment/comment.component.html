@@ -2,14 +2,14 @@
   <!-- Avatar with initial -->
   <div class="comment-avatar">
     <span class="initial">
-      {{ userC.firstName ? userC.firstName.charAt(0).toUpperCase() : '?' }}
+      {{ userC?.firstName ? userC.firstName.charAt(0).toUpperCase() : '?' }}
     </span>
   </div>
 
   <div class="comment-body">
     <!-- Meta: Author, Verified badge, Date -->
     <div class="comment-meta">
-      <span class="author">{{ userC.firstName }} {{ userC.lastName }}</span>
+      <span class="author">{{ userC?.firstName }} {{ userC?.lastName }}</span>
       <span class="verified" *ngIf="userC"><i class="fa-solid fa-circle-check"></i></span>
       <span class="date">{{ comment.date | date:'mediumDate' }}</span>
     </div>
@@ -58,17 +58,23 @@
 
 
     <!-- Replies Section -->
-    <div class="replies" *ngIf="showReplies">
-      <div *ngFor="let reply of comment.replies" class="reply-card">
-        <div class="reply-meta">
-          <span class="reply-author">User {{ reply.userId }}</span> 
-          <span class="reply-date">{{ reply.date | date:'short' }}</span>
-        </div>
-        <div class="reply-text">
-          {{ reply.comment }}
-        </div>
+   <!-- Replies Section -->
+   <div class="replies" *ngIf="showReplies">
+    <div *ngFor="let reply of comment.replies" class="reply-card">
+      <div class="reply-meta">
+        <span class="reply-author">
+          {{ getReplyUser(reply.userId)?.firstName || 'User' }}
+          {{ getReplyUser(reply.userId)?.lastName || '' }}
+        </span>
+        
+        <span class="reply-date">{{ reply.date | date:'short' }}</span>
+      </div>
+      <div class="reply-text">
+        {{ reply.comment }}
       </div>
     </div>
+  </div>
+  
 
   </div> <!-- comment-body -->
 </div> <!-- comment-container -->

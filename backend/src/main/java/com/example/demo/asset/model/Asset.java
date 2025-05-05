@@ -52,7 +52,7 @@ public abstract class Asset {
 
     private String image;
 
-    @Column(length = 2000)
+    @Column(length = 3000)
     private String description;
 
     private String documentation;

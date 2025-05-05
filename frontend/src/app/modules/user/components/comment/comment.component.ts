@@ -14,13 +14,12 @@ import { ReportModelComponent } from '../../../common/components/report-model/re
   templateUrl: './comment.component.html',
   styleUrl: './comment.component.css'
 })
-// <app-review-component [assetId]="assetSelected?.id || ''"></app-review-component>
 export class CommentComponent implements OnInit {
   @Input() comment!: Comment;
 
   userC!: User;
   currentUserId: number | null = null;
-
+  replyUsers: Record<number, User> = {};
   replying = false;
   replyText = '';
   reportReason = '';
@@ -39,25 +38,41 @@ export class CommentComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Fetch main comment author
     this.userService.getUserById(Number(this.comment.userId)).subscribe({
       next: (user) => {
         if (user) this.userC = user;
       },
       error: (error) => console.error('Error fetching user:', error)
     });
-
+  
+    // Fetch each reply user
+    this.comment.replies?.forEach(reply => {
+      const userId = Number(reply.userId); // safely convert once
+      if (!this.replyUsers[userId]) {
+        this.userService.getUserById(userId).subscribe({
+          next: (user) => {
+            if (user) {
+              this.replyUsers[userId] = user;
+            }
+          },
+          error: (error) => console.error(`Error fetching user ${userId}`, error)
+        });
+      }
+    });
+    
+    
+  
     const token = localStorage.getItem('token');
     if (token) {
       const decoded: any = jwtDecode(token);
       this.currentUserId = decoded.userId ? Number(decoded.userId) : null;
     }
-
-    this.likesCount = this.comment.likes ? this.comment.likes.length : 0;
-
-    if (this.comment.likes?.includes(this.currentUserId!)) {
-      this.liked = true;
-    }
+  
+    this.likesCount = this.comment.likes?.length ?? 0;
+    this.liked = this.comment.likes?.includes(this.currentUserId!) ?? false;
   }
+  
 
   toggleLikeComment(): void {
     if (!this.currentUserId) return;
@@ -80,6 +95,12 @@ export class CommentComponent implements OnInit {
       });
     }
   }
+  getReplyUser(userId: number | string): User | undefined {
+    const id = Number(userId);
+    return this.replyUsers[id];
+  }
+  
+  
 
   replyToComment(): void {
     this.replying = true;

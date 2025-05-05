@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +24,18 @@ export class LoginComponent {
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
         this.authService.saveToken(response.token);
+
+      const decoded: any = jwtDecode(response.token);
+      const role = decoded.role; 
+        console.log('role', role);
+      localStorage.setItem('role', role);    
+      if (role === 'CONTRIBUTOR') {
+        this.router.navigate(['/contributorLayout']);
+      } else {
         this.router.navigate(['/marketplace']);
+      }
+  
+
       },
       error: (error) => {
         console.error('Login error', error);

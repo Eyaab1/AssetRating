@@ -1,5 +1,8 @@
 <div class="detail-container">
+
+  <!--  LEFT COLUMN  -->
   <div class="left-column">
+    <!-- Header -->
     <div class="header">
       <img [src]="getIcon(assetSelected?.image)" alt="Asset Icon" class="asset-icon" />
       <div>
@@ -9,12 +12,15 @@
       </div>
     </div>
 
+    <!-- Tabs -->
     <div class="tabs">
       <button [class.active]="activeTab === 'docs'" (click)="activeTab = 'docs'">Documentation</button>
       <button [class.active]="activeTab === 'releases'" (click)="activeTab = 'releases'">Releases</button>
     </div>
 
+    <!-- Tab Content -->
     <div class="tab-content">
+      <!--  Documentation Tab  -->
       <ng-container *ngIf="activeTab === 'docs'">
         <div class="doc-preview" *ngIf="assetSelected?.documentation; else noDoc">
           <iframe 
@@ -23,95 +29,93 @@
             height="600px" 
             frameborder="0">
           </iframe>
-
         </div>
         <ng-template #noDoc>
           <p>No documentation available.</p>
         </ng-template>
       </ng-container>
 
+      <!-- Releases Tab ""-->
       <ng-container *ngIf="activeTab === 'releases'">
         <div *ngIf="assetSelected?.releases?.length; else noReleases">
-          <div 
-            *ngFor="let release of assetSelected?.releases" 
-            class="release-card"
-          >
+          <div *ngFor="let release of assetSelected?.releases" class="release-card">
             <div class="release-header" (click)="toggleRelease(release.id)">
               <span class="arrow" [class.expanded]="selectedRelease?.id === release.id">▶</span>
               Version {{ release.releaseVersion }}
               <span class="release-date">{{ release.publishedDate | date: 'longDate' }}</span>
             </div>
-      
-            <div class="release-doc" *ngIf="selectedRelease?.id === release.id">
-              <div class="release-doc" *ngIf="selectedRelease?.id === release.id">
-                <iframe 
-                  *ngIf="(selectedRelease?.releasedAsset?.documentation || selectedRelease?.asset?.documentation)" 
-                  [src]="getSafeDocDirect(selectedRelease?.releasedAsset?.documentation || selectedRelease?.asset?.documentation || '')" 
-                  class="doc-viewer">
-                </iframe>
-                <div *ngIf="!(selectedRelease?.releasedAsset?.documentation || selectedRelease?.asset?.documentation)">
-                  <p>No documentation available for this release.</p>
-                </div>
-              </div>
-              
 
+            <div class="release-doc" *ngIf="selectedRelease?.id === release.id">
+              <iframe 
+                *ngIf="(selectedRelease?.releasedAsset?.documentation || selectedRelease?.asset?.documentation)" 
+                [src]="getSafeDocDirect(selectedRelease?.releasedAsset?.documentation || selectedRelease?.asset?.documentation || '')" 
+                class="doc-viewer">
+              </iframe>
+              <div *ngIf="!(selectedRelease?.releasedAsset?.documentation || selectedRelease?.asset?.documentation)">
+                <p>No documentation available for this release.</p>
+              </div>
             </div>
-            
           </div>
         </div>
-      
+
         <ng-template #noReleases>
           <p>No releases available for this asset.</p>
         </ng-template>
       </ng-container>
-      
-      
     </div>
 
-    <div class="review-section">
-      <div class="rating-section">
-        <h3>Average Ratings</h3>
-        <div class="rating-category" *ngFor="let category of ratingCategories">
-          <label>{{ category.label }}</label>
-          <div class="stars">
-            <ng-container *ngFor="let star of createStarDisplay(categoryAverages[category.field] || 0)">
-              <span *ngIf="star === 'full'" class="star full">★</span>
-              <span *ngIf="star === 'half'" class="star half">⯪</span>
-              <span *ngIf="star === 'empty'" class="star empty">☆</span>
-            </ng-container>
-          </div>
-          <small>{{ categoryAverages[category.field] | number:'1.1-1' }}/5</small>
-        </div>
-      </div>
-    </div>
-    <!-- REVIEW PART -->
-      <div class="review-header">
-        <h3>Comments</h3>
-        <button class="add-btn" (click)="reviewModal.open(assetSelected?.id || '')">Add Review</button>
-      </div>
-      <app-review-component [assetId]="assetSelected?.id || ''"></app-review-component>
+    <!--  Review Section  -->
+    <div class="review-header">
+      <h3>Comments</h3>
+      <button class="add-btn" (click)="reviewModal.open(assetSelected?.id || '')">Add Review</button>
     </div>
 
-   <!-- RIGHT PART WHERE  -->
+    <app-review-component [assetId]="assetSelected?.id || ''"></app-review-component>
+  </div>
 
+  <!--  RIGHT COLUMN  -->
   <div class="right-column">
+    <!-- Asset Meta Info -->
     <div class="asset-meta">
       <h4>About this asset</h4>
       <p><i class="fa fa-user"></i> {{ assetSelected?.publisher }}</p>
       <p><i class="fa fa-calendar"></i> {{ assetSelected?.publishDate | date: 'mediumDate' }}</p>
     </div>
 
-    <div class="same-category-section" *ngIf="sameCategoryAssets.length">
-      <h4>Same Category</h4>
-      <div class="same-category-item" *ngFor="let item of sameCategoryAssets">
-        <img [src]="getIcon(item.image)" class="same-icon" />
-        <div>
+    <!-- Average Ratings -->
+    <div class="rating-section">
+      <h3>Average Ratings</h3>
+      <div class="rating-category" *ngFor="let category of ratingCategories">
+        <label>{{ category.label }}</label>
+        <div class="stars">
+          <ng-container *ngFor="let star of createStarDisplay(categoryAverages[category.field] || 0)">
+            <span *ngIf="star === 'full'" class="star full">★</span>
+            <span *ngIf="star === 'half'" class="star half">⯪</span>
+            <span *ngIf="star === 'empty'" class="star empty">☆</span>
+          </ng-container>
+        </div>
+        <small>{{ categoryAverages[category.field] | number:'1.1-1' }}/5</small>
+      </div>
+    </div>
+
+    <!-- Same Category Assets -->
+    <div class="same-category-header">
+      <h4>Same category</h4>
+      <a class="view-more">View more <i class="fas fa-chevron-right"></i></a>
+    </div>
+
+    <div class="same-category-list" *ngIf="sameCategoryAssets.length">
+      <div class="same-category-card" *ngFor="let item of sameCategoryAssets">
+        <img [src]="getIcon(item.image)" class="category-icon" />
+        <div class="category-text">
           <strong>{{ item.label }}</strong>
-          <p>{{ item.description.slice(0, 60) }}...</p>
+          <p>{{ item.description }}</p>
         </div>
       </div>
     </div>
   </div>
 
+  <!--  Review Popup Modal  -->
   <app-review-popup #reviewModal (reviewSubmitted)="onReviewSubmitted()"></app-review-popup>
+
 </div>

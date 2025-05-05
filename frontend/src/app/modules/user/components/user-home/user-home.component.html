@@ -50,9 +50,10 @@
         <div 
         class="asset-item" 
         *ngFor="let asset of group.assets"
-        [routerLink]="['/detail', asset.id]"
+        [routerLink]="getAssetDetailLink(asset.id)"
         style="cursor: pointer;"
-      >          <img
+      >
+               <img
             [src]="getIcon(asset.image)"
             alt="asset icon"
             (error)="onImageError($event)"

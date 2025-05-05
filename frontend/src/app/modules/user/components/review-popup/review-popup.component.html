@@ -2,7 +2,10 @@
   <div class="modal" (click)="$event.stopPropagation()">
     <button class="close-btn" (click)="close()">×</button>
     <h2>Leave a Review</h2>
-
+    <div class="edit-toggle" *ngIf="hasPreviousRating && !isEditing">
+      <button (click)="isEditing = true">Edit Your Rating</button>
+    </div>
+    
     <div class="rating-categories">
       <div class="rating-category">
         <label>Functionality:</label>
@@ -10,9 +13,9 @@
           <span
             *ngFor="let star of stars; index as i"
             [class.active]="i < ratings.functionality"
-            (click)="setRating('functionality', i + 1)"
-          >★</span>
-        </div>
+            [class.disabled]="!isEditing"
+            (click)="setRating('functionality', i + 1)">★</span>
+
       </div>
 
       <div class="rating-category">
@@ -21,6 +24,7 @@
           <span
             *ngFor="let star of stars; index as i"
             [class.active]="i < ratings.performance"
+            [class.disabled]="!isEditing"
             (click)="setRating('performance', i + 1)"
           >★</span>
         </div>
@@ -32,6 +36,7 @@
           <span
             *ngFor="let star of stars; index as i"
             [class.active]="i < ratings.integration"
+            [class.disabled]="!isEditing"
             (click)="setRating('integration', i + 1)"
           >★</span>
         </div>
@@ -43,28 +48,40 @@
           <span
             *ngFor="let star of stars; index as i"
             [class.active]="i < ratings.documentation"
+            [class.disabled]="!isEditing"
             (click)="setRating('documentation', i + 1)"
           >★</span>
         </div>
       </div>
     </div>
-
-    <div class="overall-rating">
+    
+    <div class="overall-rating" *ngIf="isValidReview()">
       <label>Overall Rating: {{ calculateOverallRating() }}/5</label>
+    </div>
+    
+
+    <div class="comment-toggle">
+      <button (click)="addComment = !addComment" [class.active]="addComment">
+        {{ addComment ? ' Comment' : ' Add a Comment' }}
+      </button>
     </div>
 
     <textarea
+      *ngIf="addComment"
       [(ngModel)]="reviewText"
       rows="4"
-      placeholder="Write your review here..."
+      placeholder="Write your comment here..."
     ></textarea>
+
 
     <div *ngIf="errorMessage" class="error-message">
       {{ errorMessage }}
-    </div>
+    </div>    
 
-    <button class="submit-btn" (click)="submitReview()">
-      Submit Review
+    <button class="submit-btn" (click)="submitReview()" [disabled]="hasPreviousRating && !isEditing">
+      {{ hasPreviousRating ? (isEditing ? 'Update Review' : 'Update Review') : 'Submit Review' }}
     </button>
+    
+    
   </div>
 </div>

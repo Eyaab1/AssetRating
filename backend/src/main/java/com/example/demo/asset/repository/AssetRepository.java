@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import com.example.demo.analytics.TopRatedDTO;
 import com.example.demo.asset.model.Asset;
 import com.example.demo.asset.model.Framework;
 import com.example.demo.asset.model.Status;
@@ -30,6 +32,63 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
     //get assets that have the same category 
     @Query("SELECT a FROM Asset a JOIN a.categories c WHERE c.id = :categoryId")
     List<Asset> findAssetsByCategoryId(@Param("categoryId") Long categoryId);
+    
+    
+    //topRtaed categ
+    @Query("""
+    	    SELECT new com.example.demo.analytics.TopRatedDTO(
+    	        c.name,
+    	        AVG((r.functionalityScore + r.performanceScore + r.integrationScore + r.documentationScore) / 4.0)
+    	    )
+    	    FROM Asset a
+    	    JOIN a.categories c
+    	    JOIN Rating r ON a.id = r.assetId
+    	    GROUP BY c.name
+    	    ORDER BY 2 DESC
+    	""")
+    	List<TopRatedDTO> findTopRatedCategory();
+
+
+   	//topTag
+    @Query("""
+    	    SELECT new com.example.demo.analytics.TopRatedDTO(
+    	        t.name,
+    	        AVG((r.functionalityScore + r.performanceScore + r.integrationScore + r.documentationScore) / 4.0)
+    	    )
+    	    FROM Asset a
+    	    JOIN a.tags t
+    	    JOIN Rating r ON a.id = r.assetId
+    	    GROUP BY t.name
+    	    ORDER BY 2 DESC
+    	""")
+    	List<TopRatedDTO> findTopRatedTag();
+ //testing something 
+    @Query("""
+    	    SELECT new com.example.demo.analytics.TopRatedDTO(
+    	        c.name,
+    	        AVG((r.functionalityScore + r.performanceScore + r.integrationScore + r.documentationScore) / 4.0)
+    	    )
+    	    FROM Asset a
+    	    JOIN a.categories c
+    	    JOIN Rating r ON a.id = r.assetId
+    	    GROUP BY c.name
+    	    ORDER BY 2 DESC
+    	""")
+    	List<TopRatedDTO> findAllRatedCategories();
+    @Query("""
+    	    SELECT new com.example.demo.analytics.TopRatedDTO(
+    	        t.name,
+    	        AVG((r.functionalityScore + r.performanceScore + r.integrationScore + r.documentationScore) / 4.0)
+    	    )
+    	    FROM Asset a
+    	    JOIN a.tags t
+    	    JOIN Rating r ON a.id = r.assetId
+    	    GROUP BY t.name
+    	    ORDER BY 2 DESC
+    	""")
+    	List<TopRatedDTO> findAllRatedTags();
+
+
 
 
 }

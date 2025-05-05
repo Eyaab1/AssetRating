@@ -51,9 +51,10 @@ export class AssetServiceService {
     fileUrl: string;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/release/full`, payload, {
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders().set('Content-Type', 'application/json')
     });
   }
+  
 
   uploadDocumentationFile(fileData: FormData): Observable<string> {
     return this.http.post<string>('http://localhost:8081/api/assets/docs/upload', fileData, {
@@ -71,6 +72,11 @@ export class AssetServiceService {
   }
   
   
+  updateAsset(id: string, asset: Asset): Observable<Asset> {
+    return this.http.put<Asset>(`${this.baseUrl}/edit/${id}`, asset, {
+      headers: this.getAuthHeaders()
+    });
+  }
   
   
   }

@@ -6,5 +6,5 @@ public enum NotificationType {
     COMMENT_REPLIED,
     REVIEW_ADDED,
     ASSET_PUBLISHED,
-    ASSET_UPDATED
+    ASSET_UPDATED 
 }
