@@ -7,9 +7,9 @@ import com.example.demo.dto.ReplyRequest;
 import com.example.demo.asset.repository.AssetRepository;
 import com.example.demo.auth.AuthRepository;
 import com.example.demo.auth.User;
-import com.example.review.model.Review;
-import com.example.review.repository.ReviewRepository;
-import com.example.review.service.ReviewService;
+import com.example.review.model.ReviewComment;
+import com.example.review.repository.ReviewCommentRepository;
+import com.example.review.service.ReviewCommentService;
 import com.example.demo.review.ReviewAnalysisClient;
 import com.example.demo.notification.NotificationService;
 import com.example.demo.notification.NotificationType;
@@ -27,25 +27,25 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/reviews")
 @CrossOrigin(origins = "*")
-public class ReviewController {
+public class ReviewCommentController {
 
-    private final ReviewService reviewService;
+    private final ReviewCommentService reviewService;
     private final AssetRepository assetRepository;
     private final ReviewAnalysisClient reviewModerationService;
     private final NotificationService notificationService;
     private final AuthRepository authRepository;
-    private final ReviewRepository reviewRepository;
+    private final ReviewCommentRepository reviewRepository;
 
     // Profanity service URL (Flask microservice)
     private final String PROFANITY_SERVICE_URL = "http://localhost:5000/check_profanity";
 
-    public ReviewController(
-            ReviewService reviewService,
+    public ReviewCommentController(
+            ReviewCommentService reviewService,
             AssetRepository assetRepository,
             ReviewAnalysisClient reviewModerationService,
             NotificationService notificationService,
             AuthRepository authRepository,
-            ReviewRepository reviewRepository
+            ReviewCommentRepository reviewRepository
     ) {
         this.reviewService = reviewService;
         this.assetRepository = assetRepository;
@@ -59,14 +59,12 @@ public class ReviewController {
     private boolean checkProfanity(String assetId, String reviewText) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);  // Set Content-Type to application/json
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // Create the JSON object to send to Flask
         String jsonBody = "{\"assetId\": \"" + assetId + "\", \"comment\": \"" + reviewText + "\"}";
         
         HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
         
-        // Log the request body to check the format
         System.out.println("Sending request to Flask with body: " + jsonBody);
         
         try {
@@ -95,8 +93,8 @@ public class ReviewController {
         User reviewer = authRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Review review = new Review(reviewer.getId(), request.getAssetId(), request.getComment());
-        Review savedReview = reviewService.addReview(review);
+        ReviewComment review = new ReviewComment(reviewer.getId(), request.getAssetId(), request.getComment());
+        ReviewComment savedReview = reviewService.addReview(review);
 
         notificationService.notifyContributorByAssetId(
             request.getAssetId(),
@@ -114,7 +112,7 @@ public class ReviewController {
 
         reviewService.addLike(reviewId, liker.getId());
 
-        Review review = reviewRepository.findById(reviewId)
+        ReviewComment review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
         notificationService.notifyUserOfLikedReview(review, liker);
@@ -124,7 +122,7 @@ public class ReviewController {
 
     @PostMapping("/{reviewId}/reply")
     public ResponseEntity<?> addReply(@PathVariable Long reviewId, @RequestBody ReplyRequest replyRequest, Principal principal) {
-        Review parent = reviewService.getReviewById(reviewId);
+        ReviewComment parent = reviewService.getReviewById(reviewId);
 
         User replier = authRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -134,7 +132,7 @@ public class ReviewController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Reply contains inappropriate language.");
         }
 
-        Review reply = new Review(replier.getId(), parent.getAssetId(), replyRequest.getComment());
+        ReviewComment reply = new ReviewComment(replier.getId(), parent.getAssetId(), replyRequest.getComment());
         reviewService.addReply(reviewId, reply);
 
         notificationService.notifyUserOfReply(parent, replier);
@@ -149,14 +147,14 @@ public class ReviewController {
             return ResponseEntity.badRequest().body("Asset with ID " + assetId + " does not exist.");
         }
 
-        List<Review> reviews = reviewService.getReviewsByAssetId(assetId);
+        List<ReviewComment> reviews = reviewService.getReviewsByAssetId(assetId);
         return ResponseEntity.ok(reviews);
     }
 
     @GetMapping("/{reviewId}")
     public ResponseEntity<?> getReview(@PathVariable Long reviewId) {
         try {
-            Review review = reviewService.getReviewById(reviewId);
+            ReviewComment review = reviewService.getReviewById(reviewId);
             ModerationResult analysis = reviewModerationService.analyzeReview(review.getComment());
 
             Map<String, Object> response = new HashMap<>();
@@ -170,7 +168,7 @@ public class ReviewController {
 
     @PutMapping("/{reviewId}")
     public ResponseEntity<?> updateReview(@PathVariable Long reviewId, @RequestBody ReplyRequest request) {
-        Review updated = reviewService.updateReview(reviewId, request.getComment());
+        ReviewComment updated = reviewService.updateReview(reviewId, request.getComment());
         return ResponseEntity.ok(updated);
     }
 
@@ -181,7 +179,7 @@ public class ReviewController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Review>> getReviewsByUser(@PathVariable Long userId) {
+    public ResponseEntity<List<ReviewComment>> getReviewsByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(reviewService.getReviewsByUser(userId));
     }
 }

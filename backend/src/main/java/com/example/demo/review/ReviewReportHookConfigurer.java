@@ -1,6 +1,6 @@
 package com.example.demo.review;
 
-import com.example.review.service.ReviewReportService;
+import com.example.review.service.ReviewCommentReportService;
 import com.example.demo.notification.NotificationService;
 import com.example.demo.notification.NotificationType;
 import com.example.demo.asset.model.Asset;
@@ -22,7 +22,7 @@ public class ReviewReportHookConfigurer {
 
     @PostConstruct
     public void init() {
-        ReviewReportService.setOnReviewReported((assetId, reason) -> {
+        ReviewCommentReportService.setOnReviewReported((assetId, reason) -> {
             Asset asset = assetRepository.findById(assetId)
                 .orElseThrow(() -> new RuntimeException("Asset not found: " + assetId));
 
