@@ -1,6 +1,7 @@
 package com.example.demo.analytics;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -37,4 +38,14 @@ public class AnalyticsController {
     public ResponseEntity<List<TopRatedDTO>> getAllRatedTags() {
         return ResponseEntity.ok(analyticsService.getalltopRatedTags());
     }
+    @GetMapping("/top-rated-assets")
+    public ResponseEntity<List<TopRatedDTO>> getTopRatedAssets() {
+        return ResponseEntity.ok(analyticsService.getTopRatedAssets());
+    }
+
+    @GetMapping("/asset-status-distribution")
+    public ResponseEntity<Map<String, Long>> getAssetStatusDistribution() {
+        return ResponseEntity.ok(analyticsService.getAssetStatusDistribution());
+    }
+
 }

@@ -1,0 +1,41 @@
+<div class="filter-bar">
+    <label>
+      <input type="checkbox" [(ngModel)]="showMyAssetsOnly" />
+      Show My Assets Only
+    </label>
+    <span class="badge green">Published: {{ publishedCount }}</span>
+    <span class="badge orange">Unpublished: {{ unpublishedCount }}</span>
+  </div>
+  
+  <div class="asset-table-container">
+    <table class="asset-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Rating</th>
+          <th>Reviews</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let asset of filteredAssets()">
+          <td>{{ asset.name }}</td>
+          <td>{{ asset.type }}</td>
+          <td>
+            <span class="badge" [ngClass]="asset.status.toLowerCase()">{{ asset.status }}</span>
+          </td>
+          <td><i class="fas fa-star text-gold"></i> {{ asset.averageRating || 0 }}/5</td>
+          <td>{{ asset.reviewsCount || 0 }}</td>
+          <td>
+            <a [routerLink]="['/contributorLayout/edit', asset.id]">
+              <button class="btn-icon blue"><i class="fas fa-edit"></i></button>
+            </a>
+            <button class="btn-icon purple"><i class="fas fa-chart-line"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

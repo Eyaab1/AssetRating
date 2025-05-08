@@ -11,6 +11,7 @@ import { ContributerLayoutComponent } from './modules/contributor/components/con
 import { onlyGuardGuard } from './core/auth/guard/only-guard.guard';
 import { EditAssetComponent } from './modules/contributor/components/edit-asset/edit-asset.component';
 import path from 'path';
+import { FullAssetListComponent } from './modules/contributor/components/full-asset-list/full-asset-list.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -33,6 +34,8 @@ export const routes: Routes = [
         { path: 'contributorLayout', component: AddAssetFormComponent },
         { path: 'detail/:id', component: DetailAssetComponent},
         {path:'edit/:id',component:EditAssetComponent},
+        {path: 'full-assets',component:FullAssetListComponent}
+        
 
       ]
     },

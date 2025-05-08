@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { Asset } from '../../../../shared/models/asset';
 import { AssetServiceService } from '../../../../shared/services/asset-service.service';
@@ -24,8 +24,8 @@ export class DashboardComponent {
   recentAssets: Asset[] = [];
   topRatedAsset: Asset | null = null;
   mostReviewedAsset: Asset | null = null;
-  constructor(private assetService: AssetServiceService,public ratingService: RatingService,public commentService:CommentService) {}
-
+  constructor(private router: Router,private assetService: AssetServiceService,public ratingService: RatingService,public commentService:CommentService) {}
+  
   ngOnInit(): void {
     const token = localStorage.getItem('token');
     if (token) {
@@ -106,7 +106,9 @@ getRatingDistribution(): number[] {
   return distribution;
 }
 
-
+goToFullList(): void {
+  this.router.navigate(['/contributorLayout/full-asset-list']);
+}
 
 
 

@@ -36,4 +36,17 @@ export class AnalyticsService {
   getAllRatedTags(){
     return this.http.get<any[]>(`${this.baseUrl}/allToRatedTags`,{headers: this.getAuthHeaders()});
   }
+  getTopRatedAssets(): Observable<{ name: string; averageRating: number }[]> {
+    return this.http.get<{ name: string; averageRating: number }[]>(
+      `${this.baseUrl}/top-rated-assets`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+  getAssetStatusDistribution(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/asset-status-distribution`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+  
+    
 }
