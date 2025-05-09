@@ -11,6 +11,7 @@ import { AccessDeniedComponent } from './modules/common/components/access-denied
 import { ContributerLayoutComponent } from './modules/contributor/components/contributer-layout/contributer-layout.component';
 import { EditAssetComponent } from './modules/contributor/components/edit-asset/edit-asset.component';
 import { onlyGuardGuard } from './core/auth/guard/only-guard.guard';
+import { FullAssetListComponent } from './modules/contributor/components/full-asset-list/full-asset-list.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -32,6 +33,8 @@ export const routes: Routes = [
         { path: 'addAsset', component: AddAssetFormComponent },
         { path: 'detail/:id', component: DetailAssetComponent},
         {path:'edit/:id',component:EditAssetComponent},
+        {path: 'full-assets',component:FullAssetListComponent}
+        
 
       ]
     },

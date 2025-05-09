@@ -322,7 +322,8 @@ export class DetailAssetComponent {
   }
 
   getIcon(img?: string): string {
-    return img ? `assets/images/${img}` : '';
+    console.log(img);
+    return img ? `assets${img}` :  'assets/images/default3.jpg';
   }
 
   goBack(): void {

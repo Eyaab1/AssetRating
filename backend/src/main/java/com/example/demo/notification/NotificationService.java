@@ -4,7 +4,7 @@ import com.example.demo.asset.model.Asset;
 import com.example.demo.asset.repository.AssetRepository;
 import com.example.demo.auth.AuthRepository;
 import com.example.demo.auth.User;
-import com.example.review.model.Review;
+import com.example.review.model.ReviewComment;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -92,7 +92,7 @@ if (!shouldReceiveNotification(recipient, actor, type, asset)) return;
         });
     }
 
-    public void notifyContributorOfReportedReview(Review review, String reason, User commenter) {
+    public void notifyContributorOfReportedReview(ReviewComment review, String reason, User commenter) {
         Asset asset = assetRepository.findById(review.getAssetId())
                 .orElseThrow(() -> new RuntimeException("Asset not found: " + review.getAssetId()));
 
@@ -108,9 +108,7 @@ if (!shouldReceiveNotification(recipient, actor, type, asset)) return;
         }
     }
 
-    
-
-    public void notifyUserOfLikedReview(Review review, User liker) {
+    public void notifyUserOfLikedReview(ReviewComment review, User liker) {
         User author = authRepository.findById(review.getUserId())
                 .orElseThrow(() -> new RuntimeException("Review author not found"));
 
@@ -123,7 +121,7 @@ if (!shouldReceiveNotification(recipient, actor, type, asset)) return;
         notifyUser(author, liker, content, NotificationType.REVIEW_LIKED, review.getId().toString(), asset.getId(), asset);
     }
 
-    public void notifyUserOfReply(Review parentReview, User replier) {
+    public void notifyUserOfReply(ReviewComment parentReview, User replier) {
         User originalCommenter = authRepository.findById(parentReview.getUserId())
                 .orElseThrow(() -> new RuntimeException("Original commenter not found"));
 

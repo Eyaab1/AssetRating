@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.example.demo.asset.model.Status;
 import com.example.demo.asset.repository.AssetRepository;
 
 
@@ -43,6 +44,20 @@ public class analyticsService {
         	return results;
         }
     }
-    
+    public List<TopRatedDTO> getTopRatedAssets() {
+        return assetRepository.findTopRatedAssets(); // You will define this query below
+    }
+
+    public Map<String, Long> getAssetStatusDistribution() {
+        List<Object[]> results = assetRepository.countAssetsByStatus();
+        Map<String, Long> statusCountMap = new HashMap<>();
+        for (Object[] row : results) {
+            Status status = (Status) row[0];     // Safely cast to enum
+            Long count = (Long) row[1];
+            statusCountMap.put(status.name(), count);  // Convert enum to String
+        }
+        return statusCountMap;
+    }
+
 
 }

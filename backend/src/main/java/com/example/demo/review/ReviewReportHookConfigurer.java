@@ -1,6 +1,6 @@
 package com.example.demo.review;
 
-import com.example.review.service.ReviewReportService;
+import com.example.review.service.ReviewCommentReportService;
 import com.example.demo.notification.NotificationService;
 import com.example.demo.notification.NotificationType;
 import com.example.demo.asset.model.Asset;

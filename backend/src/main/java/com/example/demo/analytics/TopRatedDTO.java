@@ -1,23 +1,14 @@
 package com.example.demo.analytics;
 
 public class TopRatedDTO {
-	private String category;
+	private String label;
     private Double averageRating;
-
     // Constructors
-    public TopRatedDTO(String category, Double averageRating) {
-        this.category = category;
+    public TopRatedDTO(String label, Double averageRating) {
+        this.label = label;
         this.averageRating = averageRating;
     }
 
-    // Getters and setters
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
 
     public Double getAverageRating() {
         return averageRating;
@@ -26,4 +17,12 @@ public class TopRatedDTO {
     public void setAverageRating(Double averageRating) {
         this.averageRating = averageRating;
     }
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
 }

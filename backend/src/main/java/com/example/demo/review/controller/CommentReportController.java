@@ -1,8 +1,8 @@
 package com.example.demo.review.controller;
 
-import com.example.review.model.Review;
-import com.example.review.service.ReviewReportService;
-import com.example.review.repository.ReviewRepository;
+import com.example.review.model.ReviewComment;
+import com.example.review.service.ReviewCommentReportService;
+import com.example.review.repository.ReviewCommentRepository;
 import com.example.demo.auth.AuthRepository;
 import com.example.demo.auth.User;
 import com.example.demo.notification.NotificationService;
@@ -17,15 +17,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/reviews")
-public class ReviewReportController {
+public class CommentReportController {
 
-    private final ReviewReportService reviewReportService;
-    private final ReviewRepository reviewRepository;
+    private final ReviewCommentReportService reviewReportService;
+    private final ReviewCommentRepository reviewRepository;
     private final AuthRepository authRepository;
     private final NotificationService notificationService;
 
     
-    public ReviewReportController(ReviewReportService reviewReportService, ReviewRepository reviewRepository,
+    public CommentReportController(ReviewCommentReportService reviewReportService, ReviewCommentRepository reviewRepository,
 			AuthRepository authRepository,NotificationService notificationService) {
 		this.reviewReportService = reviewReportService;
 		this.reviewRepository = reviewRepository;
@@ -45,7 +45,7 @@ public class ReviewReportController {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Long reporterId = reporter.getId();
 
-        Review review = reviewRepository.findById(reviewId)
+        ReviewComment review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
         User commenter = authRepository.findById(review.getUserId())

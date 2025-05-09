@@ -1,6 +1,6 @@
-<div class="chart-toggle-container">
+<div class="chart-toggle-container" *ngIf="mode === 'top-rated-assets'">
   <button (click)="toggleShowAll()" class="toggle-btn">
-    {{ showAll ? 'Show Top 3' : 'Show All' }}
+    {{ showAll ? 'Show Top 5' : 'Show All' }}
   </button>
 </div>
 

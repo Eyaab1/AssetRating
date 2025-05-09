@@ -88,7 +88,21 @@ SELECT new com.example.demo.analytics.TopRatedDTO(
     	""")
     	List<TopRatedDTO> findAllRatedTags();
 
+    @Query("""
+    	    SELECT new com.example.demo.analytics.TopRatedDTO(
+    	        a.name,
+    	        AVG((r.functionalityScore + r.performanceScore + r.integrationScore + r.documentationScore) / 4.0)
+    	    )
+    	    FROM Rating r
+    	    JOIN Asset a ON a.id = r.assetId
+    	    GROUP BY a.name
+    	    ORDER BY AVG((r.functionalityScore + r.performanceScore + r.integrationScore + r.documentationScore) / 4.0) DESC
+    	""")
+    	List<TopRatedDTO> findTopRatedAssets();
 
+
+    	@Query("SELECT a.status, COUNT(a) FROM Asset a GROUP BY a.status")
+    	List<Object[]> countAssetsByStatus();
 
 
 }
