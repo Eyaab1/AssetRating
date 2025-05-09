@@ -179,14 +179,15 @@
   border-radius: 14px;
   padding: 1rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
-  height: 250px;
+  height: 400px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
 .chart-card-small canvas {
-  max-height: 140px !important;
+  max-height: 400px !important;
+
 }
 
 .chart-title {

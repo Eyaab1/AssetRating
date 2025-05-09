@@ -31,7 +31,7 @@ export const routes: Routes = [
         {path: '', redirectTo: 'dashboard', pathMatch: 'full' },
         { path: 'marketplace', component: UserHomeComponent},
         { path: 'dashboard', component: DashboardComponent },
-        { path: 'contributorLayout', component: AddAssetFormComponent },
+        { path: 'addAsset', component: AddAssetFormComponent },
         { path: 'detail/:id', component: DetailAssetComponent},
         {path:'edit/:id',component:EditAssetComponent},
         {path: 'full-assets',component:FullAssetListComponent}
