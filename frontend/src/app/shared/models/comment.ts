@@ -3,10 +3,13 @@ export class Comment {
         public id: number,
         public comment: string,
         public userId: string,
-        public date: Date,
+        public created_at: Date,
         public likes: number[],
         public replies: Comment[],
         public parentReviewId: number ,
+        public userRating?: {
+         average: number,
+        }
       ) {}
     
       

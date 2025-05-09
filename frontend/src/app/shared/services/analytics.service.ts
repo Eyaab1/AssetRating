@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TopRatedDTO } from '../models/top-rated-dto';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { getSafeLocalStorage } from '../utils/localstorage';
 
 @Injectable({
   providedIn: 'root'
@@ -12,17 +13,20 @@ export class AnalyticsService {
   
 
   private getAuthHeaders(): HttpHeaders {
-        if (typeof window !== 'undefined') {
-          const token = localStorage.getItem('token');
-          if (token) {
-            return new HttpHeaders({
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            });
-          }
-        }
-        return new HttpHeaders();
-      }
+    const token = getSafeLocalStorage()?.getItem('token');
+  
+    const headersConfig: Record<string, string> = {
+      'Content-Type': 'application/json'
+    };
+  
+    if (token) {
+      headersConfig['Authorization'] = `Bearer ${token}`;
+    }
+  
+    return new HttpHeaders(headersConfig);
+  }
+  
+      
   getTopRatedCategory(): Observable<TopRatedDTO> {
     return this.http.get<TopRatedDTO>(`${this.baseUrl}/top-category`,{headers: this.getAuthHeaders()});
   }

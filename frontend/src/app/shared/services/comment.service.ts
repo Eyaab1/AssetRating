@@ -79,10 +79,18 @@ export class CommentService {
       headers: this.getAuthHeaders()
     });
   }
-  reportReview(reviewId: number, reason: string) {
+  reportReview(commentId: number, reason: string) {
     return this.http.post(
-      `${this.baseUrl}/${reviewId}/report`,{ reason: reason },{ headers: this.getAuthHeaders() } 
+      `${this.baseUrl}/${commentId}/report`,{ reason: reason },{ headers: this.getAuthHeaders() } 
     );
   }
+  addReviewForRelease(comment: Comment): Observable<any> {
+    return this.http.post(`${this.baseUrl}/reviews/release`, comment);
+  }
+  
+  getReviewsForRelease(releasedAssetId: string): Observable<Comment[]> {
+    return this.http.get<Comment[]>(`${this.baseUrl}/reviews/release/${releasedAssetId}`);
+  }
+  
   
 }

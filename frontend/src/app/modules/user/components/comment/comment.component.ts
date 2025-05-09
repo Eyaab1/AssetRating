@@ -7,6 +7,7 @@ import { CommentService } from '../../../../shared/services/comment.service';
 import { jwtDecode } from 'jwt-decode';
 import { FormsModule } from '@angular/forms';
 import { ReportModelComponent } from '../../../common/components/report-model/report-model.component';
+import { RatingService } from '../../../../shared/services/rating.service';
 @Component({
   selector: 'app-comment',
   standalone: true,
@@ -15,7 +16,7 @@ import { ReportModelComponent } from '../../../common/components/report-model/re
   styleUrl: './comment.component.css'
 })
 export class CommentComponent implements OnInit {
-  @Input() comment!: Comment;
+  @Input() comment!: Comment & { userRating?: { average: number } };
 
   userC!: User;
   currentUserId: number | null = null;
@@ -34,7 +35,8 @@ export class CommentComponent implements OnInit {
 
   constructor(
     private userService: UserServiceService,
-    private commentService: CommentService
+    private commentService: CommentService,
+    private ratingService: RatingService
   ) {}
 
   ngOnInit(): void {
@@ -45,7 +47,7 @@ export class CommentComponent implements OnInit {
       },
       error: (error) => console.error('Error fetching user:', error)
     });
-  
+  console.log(this.comment);
     // Fetch each reply user
     this.comment.replies?.forEach(reply => {
       const userId = Number(reply.userId); // safely convert once
@@ -100,6 +102,17 @@ export class CommentComponent implements OnInit {
     return this.replyUsers[id];
   }
   
+  createStarDisplay(average: number): string[] {
+    const stars: string[] = [];
+    const fullStars = Math.floor(average);
+    const hasHalf = average - fullStars >= 0.5;
+  
+    for (let i = 0; i < fullStars; i++) stars.push('full');
+    if (hasHalf) stars.push('half');
+    while (stars.length < 5) stars.push('empty');
+  
+    return stars;
+  }
   
 
   replyToComment(): void {
@@ -171,6 +184,45 @@ export class CommentComponent implements OnInit {
   cancelReport(): void {
     document.body.style.overflow = 'auto';
   }
+
+  // edit and delete logic 
+  editing = false;
+editText = '';
+
+startEditing(): void {
+  this.editing = true;
+  this.editText = this.comment.comment;
+}
+
+cancelEdit(): void {
+  this.editing = false;
+  this.editText = '';
+}
+
+submitEdit(): void {
+  if (!this.editText.trim()) return;
+
+  this.commentService.updateReview(this.comment.id, this.editText).subscribe({
+    next: () => {
+      this.comment.comment = this.editText;
+      this.editing = false;
+    },
+    error: err => console.error('Edit failed', err)
+  });
+}
+
+deleteComment(): void {
+  if (confirm('Are you sure you want to delete this comment?')) {
+    this.commentService.deleteReview(this.comment.id).subscribe({
+      next: () => {
+        // Optionally emit an event to parent to reload comments
+        alert('Comment deleted');
+      },
+      error: err => console.error('Delete failed', err)
+    });
+  }
+}
+
 }
 
 

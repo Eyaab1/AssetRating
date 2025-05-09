@@ -35,8 +35,7 @@ export class RatingChartComponent implements OnInit {
     }
   };
 
-
-  constructor(private analyticsService: AnalyticsService) {}
+constructor(private analyticsService: AnalyticsService) {}
 toggleShowAll() {
   this.showAll = !this.showAll;
   this.updateChart();

@@ -13,10 +13,13 @@ import com.example.demo.asset.model.Utility;
 import com.example.demo.asset.model.Widget;
 import com.example.demo.asset.repository.AssetReleaseRepository;
 import com.example.demo.asset.repository.AssetRepository;
+import com.example.demo.auth.AuthService;
+import com.example.demo.auth.User;
 import com.example.demo.dto.AssetReleaseRequest;
 import com.example.rating.service.RatingService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,14 +47,16 @@ public class AssetService {
     private final TagService tagService;
     private final CategoryService categoryService;
     private final NotificationService notificationService;
+    private final AuthService authservice;
 
     @Autowired
-    public AssetService(AssetRepository assetRepository, RatingService ratingService,TagService tagService, CategoryService categoryService, NotificationService notificationService) {
+    public AssetService(AssetRepository assetRepository, RatingService ratingService,TagService tagService, CategoryService categoryService, NotificationService notificationService,AuthService authservice) {
         this.assetRepository = assetRepository;
         this.ratingService= ratingService;
         this.tagService=tagService;
         this.categoryService=categoryService;
         this.notificationService =notificationService;
+        this.authservice=authservice;
     }
     @Autowired
     private AssetReleaseRepository assetReleaseRepository;
@@ -122,7 +127,9 @@ public class AssetService {
         asset.setTags(tags);
 
         Asset saved = assetRepository.save(asset);
-        notificationService.notifyAllUsersOfAsset(saved, NotificationType.ASSET_PUBLISHED);
+        User actor = authservice.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+        	    .orElseThrow(() -> new RuntimeException("User not found"));
+        	notificationService.notifyAllUsersOfAsset(saved, actor, NotificationType.ASSET_PUBLISHED);
         return saved;
 
     }
@@ -208,8 +215,10 @@ public class AssetService {
         releaseRecord.setReleasedAsset(savedRelease); 
 
         assetReleaseRepository.save(releaseRecord);
-        notificationService.notifyAllUsersOfAsset(original, NotificationType.ASSET_UPDATED);
+        User actor = this.authservice.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
+        notificationService.notifyAllUsersOfAsset(original, actor, NotificationType.ASSET_UPDATED);
         return savedRelease;
     }
 

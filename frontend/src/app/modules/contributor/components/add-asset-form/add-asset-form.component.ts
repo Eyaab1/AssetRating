@@ -24,6 +24,7 @@ export class AddAssetFormComponent implements OnInit {
   statusOptions = Object.values(StatusType);
   projectTypes = Object.values(ProjectType);
   frameworks = Object.values(Framework);
+  showRelatedType: boolean = false;
 
   imageFile: File | null = null;
   imagePreview: string | null = null;
@@ -83,7 +84,10 @@ onDocumentationSelect(event: Event): void {
     this.addSubtypeFields(this.assetForm.get('assetType')?.value);
 
     this.tagCatgService.getAllTags().subscribe({
-      next: (data) => this.allTags = data,
+      next: (data) => {
+        this.allTags = data;
+        console.log(data);
+      },
       error: (err) => console.error('Tag fetch error:', err)
     });
 
@@ -96,7 +100,20 @@ onDocumentationSelect(event: Event): void {
   getTodayDate(): string {
     return new Date().toISOString().split('T')[0];
   }
-
+  
+  toggleTag(tag: string) {
+    const currentTags: string[] = this.assetForm.get('tags')?.value || [];
+    if (currentTags.includes(tag)) {
+      this.assetForm.patchValue({ tags: currentTags.filter(t => t !== tag) });
+    } else {
+      this.assetForm.patchValue({ tags: [...currentTags, tag] });
+    }
+  }
+  
+  isTagSelected(tag: string): boolean {
+    return this.assetForm.get('tags')?.value?.includes(tag);
+  }
+  
   addSubtypeFields(type: string) {
     const controls = this.assetForm.controls;
     ['icon', 'framework', 'format', 'themeType', 'primaryColor', 'templateCategory', 'preconfigured', 'dependencies']
@@ -310,7 +327,11 @@ onDocumentationSelect(event: Event): void {
   }
   
   
-
+  removeTag(tag: string) {
+    const tags = this.assetForm.get('tags')?.value || [];
+    this.assetForm.patchValue({ tags: tags.filter((t: string) => t !== tag) });
+  }
+  
   generateId(): string {
     return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
   }

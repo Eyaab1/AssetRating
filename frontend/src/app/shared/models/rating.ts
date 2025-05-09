@@ -8,6 +8,7 @@ export class Rating {
         public documentationQuality: number,
         public timestamp: Date,
         public userId: string,
+        
     ){}
     // Example method to calculate the average rating   
     getAverageRating(): number {

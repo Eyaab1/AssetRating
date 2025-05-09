@@ -64,7 +64,7 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
     	List<TopRatedDTO> findTopRatedTag();
  //testing something 
     @Query("""
-    	    SELECT new com.example.demo.analytics.TopRatedDTO(
+SELECT new com.example.demo.analytics.TopRatedDTO(
     	        c.name,
     	        AVG((r.functionalityScore + r.performanceScore + r.integrationScore + r.documentationScore) / 4.0)
     	    )

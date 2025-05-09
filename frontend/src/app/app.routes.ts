@@ -5,20 +5,19 @@ import { AddAssetFormComponent } from './modules/contributor/components/add-asse
 import { LoginComponent } from './core/auth/login/login.component';
 import { DashboardComponent } from './modules/contributor/components/dashboard/dashboard.component';
 import { authGuardGuard } from './core/auth/guard/auth-guard.guard';
+import { userGuardGuard } from './core/auth/guard/user-guard.guard';
 import { contributorGuardGuard } from './core/auth/guard/contributor-guard.guard';
 import { AccessDeniedComponent } from './modules/common/components/access-denied/access-denied.component';
 import { ContributerLayoutComponent } from './modules/contributor/components/contributer-layout/contributer-layout.component';
-import { onlyGuardGuard } from './core/auth/guard/only-guard.guard';
 import { EditAssetComponent } from './modules/contributor/components/edit-asset/edit-asset.component';
-import path from 'path';
+import { onlyGuardGuard } from './core/auth/guard/only-guard.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
   
     // Public login page with guard
     { path: 'login', component: LoginComponent, canActivate: [authGuardGuard] },
-  
-    // USER-only routes
+
     { path: 'marketplace', component: UserHomeComponent, canActivate: [onlyGuardGuard] },
     { path: 'detail/:id', component: DetailAssetComponent, canActivate: [onlyGuardGuard] },
   
@@ -30,7 +29,7 @@ export const routes: Routes = [
         {path: '', redirectTo: 'dashboard', pathMatch: 'full' },
         { path: 'marketplace', component: UserHomeComponent},
         { path: 'dashboard', component: DashboardComponent },
-        { path: 'contributorLayout', component: AddAssetFormComponent },
+        { path: 'addAsset', component: AddAssetFormComponent },
         { path: 'detail/:id', component: DetailAssetComponent},
         {path:'edit/:id',component:EditAssetComponent},
 

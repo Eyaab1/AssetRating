@@ -78,15 +78,21 @@ public class RatingController {
             return ResponseEntity.notFound().build();
         }
 
-        UserRatingResponse dto = new UserRatingResponse(
-            rating.getFunctionalityScore(),
-            rating.getPerformanceScore(),
-            rating.getIntegrationScore(),
-            rating.getDocumentationScore()
-        );
+        double average = (rating.getFunctionalityScore() +
+                          rating.getPerformanceScore() +
+                          rating.getIntegrationScore() +
+                          rating.getDocumentationScore()) / 4.0;
+
+        Map<String, Object> dto = new HashMap<>();
+        dto.put("average", Math.round(average * 10.0) / 10.0); 
+        dto.put("functionality", rating.getFunctionalityScore());
+        dto.put("performance", rating.getPerformanceScore());
+        dto.put("integration", rating.getIntegrationScore());
+        dto.put("documentation", rating.getDocumentationScore());
 
         return ResponseEntity.ok(dto);
     }
+
 //Update 
     @PutMapping("/update")
     public ResponseEntity<?> updateRating(@RequestBody RatingRequest request) {
@@ -106,13 +112,33 @@ public class RatingController {
         existing.setDocumentationScore(request.getDocumentation());
         existing.setTimestamp(new java.util.Date());
 
-        ratingService.save(existing); // Create this method or reuse repository.save()
+        ratingService.save(existing); 
 
         return ResponseEntity.ok(Map.of("message", "Rating updated successfully."));
     }
+  
+    
+    @PostMapping("/release")
+    public ResponseEntity<?> rateRelease(@RequestBody RatingRequest request) {
+        ratingService.rateAsset(
+            request.getUserId(),
+            request.getAssetId(),
+            request.getFunctionality(),
+            request.getPerformance(),
+            request.getIntegration(),
+            request.getDocumentation()
+        );
+        return ResponseEntity.ok("Rating submitted for release.");
+    }
+    @GetMapping("/release/{releasedAssetId}/average")
+    public ResponseEntity<?> getReleaseRating(@PathVariable String releasedAssetId) {
+        int overallRating = ratingService.getOverallRating(releasedAssetId);
+        Map<String, Double> categoryRatings = ratingService.getAverageScoresByCategory(releasedAssetId);
 
+        Map<String, Object> response = new HashMap<>();
+        response.put("overall", overallRating);
+        response.put("categories", categoryRatings);
 
-
-
-
+        return ResponseEntity.ok(response);
+    }
 }

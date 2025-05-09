@@ -142,7 +142,7 @@ export class UserHomeComponent implements OnInit {
   }
 
   getIcon(img: string): string {
-    return img ? `assets/images${img}` : 'assets/images/default3.jpg';
+    return img ? `assets/images/${img}` : 'assets/images/default3.jpg';
   }
 
   onImageError(event: any): void {

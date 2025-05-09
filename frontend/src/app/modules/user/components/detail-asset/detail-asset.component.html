@@ -35,42 +35,80 @@
         </ng-template>
       </ng-container>
 
-      <!-- Releases Tab ""-->
-      <ng-container *ngIf="activeTab === 'releases'">
-        <div *ngIf="assetSelected?.releases?.length; else noReleases">
-          <div *ngFor="let release of assetSelected?.releases" class="release-card">
-            <div class="release-header" (click)="toggleRelease(release.id)">
-              <span class="arrow" [class.expanded]="selectedRelease?.id === release.id">▶</span>
-              Version {{ release.releaseVersion }}
-              <span class="release-date">{{ release.publishedDate | date: 'longDate' }}</span>
-            </div>
+      <!-- Releases Tab -->
+      <!-- Releases Tab -->
+<ng-container *ngIf="activeTab === 'releases'">
+  <div *ngIf="assetSelected?.releases?.length; else noReleases">
+    <div 
+    *ngFor="let release of assetSelected?.releases" 
+    class="release-card" 
+    [class.selected]="selectedRelease?.id === release.id">
+        <div class="release-header" (click)="toggleRelease(release.id)">
+        <span class="arrow" [class.expanded]="selectedRelease?.id === release.id">▶</span>
+        Version {{ release.releaseVersion }} —
+        <span *ngIf="releaseRatings[release.id] != null">
+          ⭐ {{ releaseRatings[release.id] }}/5
+        </span>
+                <span class="release-date">{{ release.publishedDate | date: 'longDate' }}</span>
+      </div>
 
-            <div class="release-doc" *ngIf="selectedRelease?.id === release.id">
-              <iframe 
-                *ngIf="(selectedRelease?.releasedAsset?.documentation || selectedRelease?.asset?.documentation)" 
-                [src]="getSafeDocDirect(selectedRelease?.releasedAsset?.documentation || selectedRelease?.asset?.documentation || '')" 
-                class="doc-viewer">
-              </iframe>
-              <div *ngIf="!(selectedRelease?.releasedAsset?.documentation || selectedRelease?.asset?.documentation)">
-                <p>No documentation available for this release.</p>
-              </div>
-            </div>
-          </div>
+      <!-- Show content only if selected -->
+      <div *ngIf="selectedRelease?.id === release.id">
+        <!-- Tabs inside the release -->
+        <div class="tab-buttons">
+          <button [class.active]="activeReleaseTabs[release.id] === 'docs'" (click)="setReleaseTab(release.id, 'docs')">📄 Documentation</button>
+          <button [class.active]="activeReleaseTabs[release.id] === 'feedback'" (click)="setReleaseTab(release.id, 'feedback')">💬 Feedback</button>
         </div>
 
-        <ng-template #noReleases>
-          <p>No releases available for this asset.</p>
-        </ng-template>
-      </ng-container>
+        <!-- Tab Content -->
+        <div class="tab-content">
+          <!-- Docs Tab -->
+          <div *ngIf="activeReleaseTabs[release.id] === 'docs'">
+            <iframe 
+              *ngIf="release.releasedAsset?.documentation || release.asset?.documentation" 
+              [src]="getSafeDocDirect(release.releasedAsset?.documentation || release.asset?.documentation || '')" 
+              class="doc-viewer">
+            </iframe>
+            <p *ngIf="!(release.releasedAsset?.documentation || release.asset?.documentation)">
+              No documentation available for this release.
+            </p>
+          </div>
+
+          <!-- Feedback Tab -->
+          <div *ngIf="activeReleaseTabs[release.id] === 'feedback'">
+            <div class="review-header">
+              <div class="text-header">
+                <h3 class="section-title">What People Are Saying</h3>
+                <p class="subtitle">Share your thoughts on this release.</p>
+              </div>
+              <button class="add-btn" (click)="openReleaseReview(release.releasedAsset.id, release.releaseVersion)">
+                Add Review
+              </button>
+            </div>
+            <app-review-component [assetId]="release.releasedAsset.id"></app-review-component>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noReleases>
+    <p>No releases available for this asset.</p>
+  </ng-template>
+</ng-container>
+
     </div>
 
     <!--  Review Section  -->
-    <div class="review-header">
-      <h3>Comments</h3>
+    <div class="review-header"     *ngIf="activeTab !== 'releases'" >
+      <div class="text-header">
+      <h3 class="section-title">What People Are Saying</h3>
+      <p class="subtitle">Share your thoughts and experiences with this asset.</p>
+    </div>
       <button class="add-btn" (click)="reviewModal.open(assetSelected?.id || '')">Add Review</button>
     </div>
 
-    <app-review-component [assetId]="assetSelected?.id || ''"></app-review-component>
+    <app-review-component     *ngIf="activeTab !== 'releases'" [assetId]="assetSelected?.id || ''"></app-review-component>
   </div>
 
   <!--  RIGHT COLUMN  -->
@@ -103,7 +141,6 @@
       <h4>Same category</h4>
       <a class="view-more">View more <i class="fas fa-chevron-right"></i></a>
     </div>
-
     <div class="same-category-list" *ngIf="sameCategoryAssets.length">
       <div class="same-category-card" *ngFor="let item of sameCategoryAssets">
         <img [src]="getIcon(item.image)" class="category-icon" />
@@ -113,6 +150,11 @@
         </div>
       </div>
     </div>
+    
+    <!-- 🔁 Moved average rating here -->
+    
+  
+    
   </div>
 
   <!--  Review Popup Modal  -->

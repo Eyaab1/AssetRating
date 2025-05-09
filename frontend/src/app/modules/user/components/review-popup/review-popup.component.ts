@@ -16,11 +16,13 @@ export class ReviewPopupComponent {
   @Output() reviewSubmitted = new EventEmitter<void>();
 
   isVisible = false;
-  reviewText = '';
+  commentText = '';
   errorMessage = '';
   addComment = false;
   hasPreviousRating = false;
   isEditing = false;
+
+  @Input() versionLabel: string = '';
 
   stars = Array(5).fill(0);
   userId: number | null = null;
@@ -38,12 +40,12 @@ export class ReviewPopupComponent {
     private ratingService: RatingService
   ) {}
 
-  open(assetId: string | null) {
+  open(assetId: string | null, versionLabel: string = '') {
     if (!assetId) return;
-
-    this.assetId = assetId;
-    this.isVisible = true;
-    this.resetForm();
+  this.assetId = assetId;
+  this.versionLabel = versionLabel;
+  this.isVisible = true;
+  this.resetForm();
 
     const token = localStorage.getItem('token');
     if (token) {
@@ -56,19 +58,24 @@ export class ReviewPopupComponent {
         next: (rating) => {
           if (rating) {
             this.hasPreviousRating = true;
+            this.isEditing = false; // require clicking "Edit"
             this.ratings = {
               functionality: rating.functionality,
               performance: rating.performance,
               integration: rating.integration,
               documentation: rating.documentation
             };
+          } else {
+            this.isEditing = true; 
           }
         },
         error: () => {
           this.hasPreviousRating = false;
+          this.isEditing = true;
         }
       });
     }
+    
   }
 
   close() {
@@ -120,7 +127,7 @@ export class ReviewPopupComponent {
     const commentPayload = {
       userId: this.userId,
       assetId: this.assetId,
-      comment: this.reviewText.trim()
+      comment: '__REVIEW__ ' + this.commentText.trim()
     };
 
     const handleSuccess = () => {
@@ -136,7 +143,7 @@ export class ReviewPopupComponent {
 
     request$.subscribe({
       next: () => {
-        if (this.addComment && this.reviewText.trim()) {
+        if (this.addComment && this.commentText.trim()) {
           this.commentService.addComment(commentPayload).subscribe({
             next: handleSuccess,
             error: (err) => {
@@ -154,6 +161,7 @@ export class ReviewPopupComponent {
       }
     });
   }
+  
 
   private resetForm(): void {
     this.ratings = {
@@ -162,7 +170,7 @@ export class ReviewPopupComponent {
       integration: 0,
       documentation: 0
     };
-    this.reviewText = '';
+    this.commentText = '';
     this.errorMessage = '';
     this.addComment = false;
     this.hasPreviousRating = false;
