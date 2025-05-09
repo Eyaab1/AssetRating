@@ -54,5 +54,13 @@ export class RatingService {
       headers: this.getAuthHeaders()
     });
   }
+  addRatingForRelease(rating: Rating): Observable<any> {
+    return this.http.post(`${this.baseUrl}/release`, rating);
+  }
+  
+  getAverageRatingForRelease(releasedAssetId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/release/${releasedAssetId}/average`);
+  }
+  
   
 }

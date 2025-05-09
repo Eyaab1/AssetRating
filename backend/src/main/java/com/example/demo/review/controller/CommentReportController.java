@@ -53,7 +53,6 @@ public class CommentReportController {
 
         reviewReportService.reportReview(reporterId, review, reason);
 
-        notificationService.notifyContributorOfReportedReview(review, reason, commenter);
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "Review reported successfully.");

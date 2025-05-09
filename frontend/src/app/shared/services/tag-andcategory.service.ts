@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Tag } from '../models/tag';
+import { getSafeLocalStorage } from '../utils/localstorage';
 
 @Injectable({
   providedIn: 'root'
@@ -12,12 +13,11 @@ export class TagAndcategoryService {
   constructor( private http: HttpClient) { }
   
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
+    const token = getSafeLocalStorage()?.getItem('token');
     return new HttpHeaders({
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token ?? ''}`,
     });
   }
-  
   getAllTags(): Observable<Tag[]> {
     return this.http.get<Tag[]>(this.apiUrl1, { headers: this.getAuthHeaders() });
   }

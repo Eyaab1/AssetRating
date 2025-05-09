@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -61,6 +61,7 @@ export class DetailAssetComponent {
   newReleaseFile = '';
   releaseDocFile: File | null = null;
   newReleaseDate: string = '';
+  releaseRatings: { [releaseId: number]: number } = {};
 
   // Constructor 
   constructor(
@@ -102,7 +103,12 @@ export class DetailAssetComponent {
       });
     }
   }
-
+  activeMainTab: 'docs' | 'releases' = 'docs';
+  activeReleaseTabs: { [releaseId: number]: 'docs' | 'feedback' } = {};
+  
+  setReleaseTab(releaseId: number, tab: 'docs' | 'feedback') {
+    this.activeReleaseTabs[releaseId] = tab;
+  }
   //  Loaders 
   loadComments(): void {
     const assetId = this.assetSelected?.id;
@@ -130,11 +136,27 @@ export class DetailAssetComponent {
 
   loadReleases(assetId: string): void {
     this.assetService.getReleasesByAsset(assetId).subscribe({
-      next: data => this.assetReleases = data,
-      error: err => console.error('Error loading releases', err)
+      next: (data) => {
+        this.assetReleases = data;
+        data.forEach((release) => {
+          const releasedAssetId = typeof release.releasedAsset === 'string'
+            ? release.releasedAsset
+            : release.releasedAsset?.id;
+  
+          if (releasedAssetId) {
+            this.ratingService.getAverageRatingForRelease(releasedAssetId).subscribe({
+              next: (ratingResponse) => {
+                this.releaseRatings[release.id] = ratingResponse.overall;
+              },
+              error: (err) => console.error('Error fetching rating for release', err)
+            });
+          }
+        });
+      },
+      error: (err) => console.error('Error loading releases', err)
     });
   }
-
+  
   loadSameCategoryAssets(categoryId: number): void {
     this.assetService.getAssetsByCategory(categoryId).subscribe({
       next: assets => {
@@ -197,6 +219,8 @@ export class DetailAssetComponent {
       }
     });
   }
+  
+  
 
   onReviewSubmitted(): void {
     if (this.assetSelected?.id) {
@@ -243,15 +267,23 @@ export class DetailAssetComponent {
       const match = this.assetSelected?.releases?.find(r => r.id === releaseId);
       if (match) {
         this.selectedRelease = match;
+  
+        // If it's a string, fetch full releasedAsset
         if (typeof match.releasedAsset === 'string') {
           this.assetService.getAssetById(match.releasedAsset).subscribe({
             next: data => this.selectedRelease!.releasedAsset = data,
             error: err => console.error('Failed to fetch released asset:', err)
           });
         }
+  
+        // ✅ Initialize the tab for this release if not already
+        if (!this.activeReleaseTabs[releaseId]) {
+          this.activeReleaseTabs[releaseId] = 'docs';
+        }
       }
     }
   }
+  
 
   selectRelease(release: AssetRelease): void {
     this.selectedRelease = release;
@@ -297,4 +329,11 @@ export class DetailAssetComponent {
   goBack(): void {
     window.history.back();
   }
+  @ViewChild('reviewModal') reviewModal!: ReviewPopupComponent;
+
+  openReleaseReview(releasedAssetId: string, versionLabel: string) {
+    this.reviewModal.open(releasedAssetId, versionLabel);
+  }
+  
+
 }

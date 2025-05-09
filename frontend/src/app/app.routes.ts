@@ -5,12 +5,12 @@ import { AddAssetFormComponent } from './modules/contributor/components/add-asse
 import { LoginComponent } from './core/auth/login/login.component';
 import { DashboardComponent } from './modules/contributor/components/dashboard/dashboard.component';
 import { authGuardGuard } from './core/auth/guard/auth-guard.guard';
+import { userGuardGuard } from './core/auth/guard/user-guard.guard';
 import { contributorGuardGuard } from './core/auth/guard/contributor-guard.guard';
 import { AccessDeniedComponent } from './modules/common/components/access-denied/access-denied.component';
 import { ContributerLayoutComponent } from './modules/contributor/components/contributer-layout/contributer-layout.component';
-import { onlyGuardGuard } from './core/auth/guard/only-guard.guard';
 import { EditAssetComponent } from './modules/contributor/components/edit-asset/edit-asset.component';
-import path from 'path';
+import { onlyGuardGuard } from './core/auth/guard/only-guard.guard';
 import { FullAssetListComponent } from './modules/contributor/components/full-asset-list/full-asset-list.component';
 
 export const routes: Routes = [
@@ -18,8 +18,7 @@ export const routes: Routes = [
   
     // Public login page with guard
     { path: 'login', component: LoginComponent, canActivate: [authGuardGuard] },
-  
-    // USER-only routes
+
     { path: 'marketplace', component: UserHomeComponent, canActivate: [onlyGuardGuard] },
     { path: 'detail/:id', component: DetailAssetComponent, canActivate: [onlyGuardGuard] },
   

@@ -14,7 +14,7 @@ export const authGuardGuard: CanActivateFn = (route, state) => {
 
   const decoded = authService.decodeToken();
   if (decoded?.role === 'CONTRIBUTOR') {
-    router.navigate(['/ContributorLayout']);
+    router.navigate(['/contributorLayout']);
   } else {
     router.navigate(['/marketplace']);
   }

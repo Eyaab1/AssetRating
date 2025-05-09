@@ -1,81 +1,95 @@
 <div class="comment-container">
-  <!-- Avatar with initial -->
+  <!-- Avatar -->
   <div class="comment-avatar">
-    <span class="initial">
-      {{ userC?.firstName ? userC.firstName.charAt(0).toUpperCase() : '?' }}
-    </span>
+    <span class="initial">{{ userC?.firstName ? userC.firstName.charAt(0).toUpperCase() : '?' }}</span>
   </div>
 
+  <!-- Comment Body -->
   <div class="comment-body">
-    <!-- Meta: Author, Verified badge, Date -->
+    <!-- Meta -->
     <div class="comment-meta">
-      <span class="author">{{ userC?.firstName }} {{ userC?.lastName }}</span>
-      <span class="verified" *ngIf="userC"><i class="fa-solid fa-circle-check"></i></span>
-      <span class="date">{{ comment.date | date:'mediumDate' }}</span>
+      <div class="left-meta">
+        <span class="author">{{ userC?.firstName }} {{ userC?.lastName }}</span>
+        <span class="date">{{ comment.created_at | date:'short' }}</span>
+      </div>
+      <div class="right-meta" *ngIf="comment.userRating">
+        <span class="user-rating">⭐ {{ comment.userRating.average }}/5</span>
+      </div>
     </div>
 
-    <!-- Comment Text -->
-    <div class="comment-text">
-      {{ showFullComment ? comment.comment : (comment.comment | slice:0:100) }}
-      <span *ngIf="!showFullComment && comment.comment.length > 100" class="view-more" (click)="toggleShowFull()">... View more</span>
+    <!-- Editable Textarea -->
+    <div *ngIf="editing; else commentView">
+      <textarea [(ngModel)]="editText" rows="3" placeholder="Edit your comment..."></textarea>
+      <div class="reply-buttons">
+        <button class="send-btn" (click)="submitEdit()">Save</button>
+        <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+      </div>
     </div>
 
-    <!-- Like + Reply -->
+    <!-- Default View Mode -->
+    <ng-template #commentView>
+      <div class="comment-text">
+        {{ showFullComment ? comment.comment.replace('__REVIEW__ ', '') : (comment.comment | slice:0:100) }}
+        <span *ngIf="!showFullComment && comment.comment.length > 100" class="view-more" (click)="toggleShowFull()">... View more</span>
+      </div>
+
+      <!-- Edit/Delete Actions (inline with meta) -->
+        <!-- <div class="edit-delete-actions" *ngIf="currentUserId === +comment.userId">
+          <button class="icon-btn" (click)="startEditing()">
+            <i class="fa-solid fa-pen-to-square"></i> <span>Edit</span>
+          </button>
+          <button class="icon-btn delete" (click)="deleteComment()">
+            <i class="fa-solid fa-trash"></i> <span>Delete</span>
+          </button>
+        </div> -->
+
+    </ng-template>
+
+    <!-- Like, Reply, Report -->
     <div class="comment-actions-row">
       <div class="left-actions">
         <span class="like" [class.liked]="liked" (click)="toggleLikeComment()">
           <i class="fa" [ngClass]="liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
         </span>
         <span class="like-count">{{ likesCount }}</span>
-      
-        <button class="reply-btn" (click)="replyToComment()">
-          <i class="fa-solid fa-reply"></i> Reply
-        </button>
-    <!-- Report button -->
-        <button class="report-btn" (click)="openReportPopup()" >
-          <i class="fa-solid fa-flag"></i> Report
-        </button>
+
+        <button class="reply-btn" (click)="replyToComment()"><i class="fa-solid fa-reply"></i> Reply</button>
+        <button class="report-btn" (click)="openReportPopup()"><i class="fa-solid fa-flag"></i> Report</button>
       </div>
       <div class="right-actions">
-        <button *ngIf="comment?.replies?.length ?? 0 > 0" class="toggle-replies-btn" (click)="showReplies = !showReplies">
+        <button *ngIf="comment?.replies?.length && comment.replies.length > 0" class="toggle-replies-btn" (click)="showReplies = !showReplies">
           {{ showReplies ? 'Hide Replies' : 'View Replies (' + comment.replies.length + ')' }}
         </button>
+        <div class="edit-delete-actions" *ngIf="currentUserId === +comment.userId">
+          <button class="icon-btn" (click)="startEditing()">
+            <i class="fa-solid fa-pen-to-square"></i> <span>Edit</span>
+          </button>
+          <button class="icon-btn delete" (click)="deleteComment()">
+            <i class="fa-solid fa-trash"></i> 
+          </button>
+        </div>
       </div>
     </div>
+
     <!-- Reply Form -->
     <div *ngIf="replying" class="reply-form">
       <textarea [(ngModel)]="replyText" rows="2" placeholder="Write your reply..."></textarea>
-
-      <div *ngIf="profanityWarning" class="error-message">
-        {{ profanityWarning }}
-      </div>
-
+      <div *ngIf="profanityWarning" class="error-message">{{ profanityWarning }}</div>
       <div class="reply-buttons">
         <button class="send-btn" (click)="sendReply()">Send</button>
         <button class="cancel-btn" (click)="cancelReply()">Cancel</button>
       </div>
     </div>
 
-
-    <!-- Replies Section -->
-   <!-- Replies Section -->
-   <div class="replies" *ngIf="showReplies">
-    <div *ngFor="let reply of comment.replies" class="reply-card">
-      <div class="reply-meta">
-        <span class="reply-author">
-          {{ getReplyUser(reply.userId)?.firstName || 'User' }}
-          {{ getReplyUser(reply.userId)?.lastName || '' }}
-        </span>
-        
-        <span class="reply-date">{{ reply.date | date:'short' }}</span>
-      </div>
-      <div class="reply-text">
-        {{ reply.comment }}
+    <!-- Replies -->
+    <div class="replies" *ngIf="showReplies">
+      <div *ngFor="let reply of comment.replies" class="reply-card">
+        <div class="reply-meta">
+          <span class="reply-author">{{ getReplyUser(reply.userId)?.firstName || 'User' }} {{ getReplyUser(reply.userId)?.lastName }}</span>
+          <span class="reply-date">{{ reply.created_at | date:'short' }}</span>
+        </div>
+        <div class="reply-text">{{ reply.comment }}</div>
       </div>
     </div>
   </div>
-  
-
-  </div> <!-- comment-body -->
-</div> <!-- comment-container -->
-
+</div>

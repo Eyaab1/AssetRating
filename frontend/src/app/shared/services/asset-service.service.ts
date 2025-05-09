@@ -4,6 +4,7 @@ import { forkJoin, map, Observable } from 'rxjs';
 import { Asset } from '../models/asset';
 import { Widget } from '../models/widget';
 import { AssetRelease } from '../models/asset-release';
+import { getSafeLocalStorage } from '../utils/localstorage';
 @Injectable({
   providedIn: 'root'
 })

@@ -30,10 +30,13 @@ export class LoginComponent {
         console.log('role', role);
       localStorage.setItem('role', role);    
       if (role === 'CONTRIBUTOR') {
+        console.log('Navigating to /contributorLayout');
         this.router.navigate(['/contributorLayout']);
       } else {
+        console.log('Navigating to /marketplace');
         this.router.navigate(['/marketplace']);
       }
+      
   
 
       },

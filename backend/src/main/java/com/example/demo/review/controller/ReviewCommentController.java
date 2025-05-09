@@ -97,10 +97,12 @@ public class ReviewCommentController {
         ReviewComment savedReview = reviewService.addReview(review);
 
         notificationService.notifyContributorByAssetId(
-            request.getAssetId(),
-            reviewer.getFirstName() + " " + reviewer.getLastName() + " added a new review on your asset.",
-            NotificationType.REVIEW_ADDED
-        );
+        	    request.getAssetId(),
+        	    reviewer,
+        	    reviewer.getFirstName() + " " + reviewer.getLastName() + " added a new review on your asset.",
+        	    NotificationType.REVIEW_ADDED
+        	);
+
 
         return ResponseEntity.ok(savedReview);
     }
@@ -181,5 +183,22 @@ public class ReviewCommentController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ReviewComment>> getReviewsByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(reviewService.getReviewsByUser(userId));
+    }
+    @PostMapping("/release")
+    public ResponseEntity<?> reviewRelease(@RequestBody ReviewRequest request) {
+        Review review = new Review();
+        review.setUserId(request.getUserId());
+        review.setAssetId(request.getAssetId()); // use releasedAsset.id here
+        review.setComment(request.getComment());
+
+        reviewService.addReview(review);
+        return ResponseEntity.ok("Review submitted for release.");
+    }
+
+
+    @GetMapping("/release/{releasedAssetId}")
+    public ResponseEntity<List<Review>> getReviewsForRelease(@PathVariable String releasedAssetId) {
+        List<Review> reviews = reviewService.getReviewsByAssetId(releasedAssetId);
+        return ResponseEntity.ok(reviews);
     }
 }

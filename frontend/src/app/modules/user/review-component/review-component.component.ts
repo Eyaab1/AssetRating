@@ -6,7 +6,8 @@ import { CommentService } from '../../../shared/services/comment.service';
 import { RatingService } from '../../../shared/services/rating.service';
 import { Comment } from '../../../shared/models/comment';
 import { CommentComponent } from '../components/comment/comment.component';
-
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 @Component({
   selector: 'app-review-component',
   standalone: true,
@@ -17,14 +18,16 @@ import { CommentComponent } from '../components/comment/comment.component';
 export class ReviewComponentComponent implements OnChanges {
   @Input() assetId!: string;
 
-  comments: Comment[] = [];
+  allComments: any[] = [];        
+  visibleComments: any[] = [];    
+  showAllComments = false;
+  maxVisible = 3;
+
   commentText: string = '';
   userId: string = '';
   averageRating: number = 0;
   loading = false;
-  visibleCommentsCount = 3;
-  showAllComments = false;
-  errorMessage: string = ''; // ✅ Inline error field
+  errorMessage: string = '';
 
   constructor(
     private commentService: CommentService,
@@ -55,20 +58,73 @@ export class ReviewComponentComponent implements OnChanges {
     this.loading = true;
 
     this.commentService.getCommentsByAsset(this.assetId).subscribe({
-      next: data => {
-        this.comments = data;
-        this.loading = false;
-        console.log('Loaded top-level comments:', this.comments);
+      next: (data) => {
+        const ratingRequests = data.map((c: any) => {
+          const isReview = c.comment.startsWith('__REVIEW__ ');
+          const cleanedComment = isReview ? c.comment.replace('__REVIEW__ ', '') : c.comment;
+
+          const baseComment = {
+            ...c,
+            comment: cleanedComment
+          };
+
+          return isReview
+            ? this.ratingService.getUserRating(Number(c.userId), this.assetId).pipe(
+                map((rating) => ({
+                  ...baseComment,
+                  userRating: { average: rating.average }
+                })),
+                catchError(() =>
+                  of({
+                    ...baseComment,
+                    userRating: undefined
+                  })
+                )
+              )
+            : of(baseComment);
+        });
+
+        forkJoin(ratingRequests).subscribe({
+          next: (mergedComments) => {
+            this.allComments = mergedComments.sort((a, b) =>
+              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            );
+            this.updateVisibleComments();
+            this.loading = false;
+          },
+          error: (err) => {
+            console.error('Error loading ratings/comments', err);
+            this.loading = false;
+          }
+        });
       },
-      error: err => {
+      error: (err) => {
         console.error('Error loading comments', err);
         this.loading = false;
       }
     });
   }
 
+  updateVisibleComments() {
+    this.visibleComments = this.showAllComments
+      ? this.allComments
+      : this.allComments.slice(0, this.maxVisible);
+  }
+
+  toggleShowAllComments() {
+    this.showAllComments = !this.showAllComments;
+    this.updateVisibleComments();
+  }
+
   loadAverageRating() {
-    // You can implement this if needed
+    this.ratingService.getAveragerating(this.assetId).subscribe({
+      next: (avg: number) => {
+        this.averageRating = avg;
+      },
+      error: (err) => {
+        console.error('Failed to load average rating', err);
+      }
+    });
   }
 
   submitComment() {
@@ -77,13 +133,13 @@ export class ReviewComponentComponent implements OnChanges {
     const payload = {
       userId: Number(this.userId),
       assetId: this.assetId,
-      comment: this.commentText,
+      comment: this.commentText.trim()
     };
 
     this.commentService.addComment(payload).subscribe({
       next: () => {
         this.commentText = '';
-        this.errorMessage = ''; // ✅ Clear error on success
+        this.errorMessage = '';
         this.loadComments();
       },
       error: (err) => {
@@ -98,15 +154,5 @@ export class ReviewComponentComponent implements OnChanges {
         }
       }
     });
-  }
-
-  get visibleComments() {
-    return this.showAllComments
-      ? this.comments
-      : this.comments.slice(0, this.visibleCommentsCount);
-  }
-
-  toggleShowAllComments(): void {
-    this.showAllComments = !this.showAllComments;
   }
 }

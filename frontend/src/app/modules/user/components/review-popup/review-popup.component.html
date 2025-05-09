@@ -1,7 +1,7 @@
 <div class="modal-overlay" *ngIf="isVisible" (click)="onOverlayClick($event)">
   <div class="modal" (click)="$event.stopPropagation()">
     <button class="close-btn" (click)="close()">×</button>
-    <h2>Leave a Review</h2>
+    <h2>Leave a Review {{ versionLabel ? 'for version ' + versionLabel : '' }}</h2>
     <div class="edit-toggle" *ngIf="hasPreviousRating && !isEditing">
       <button (click)="isEditing = true">Edit Your Rating</button>
     </div>
@@ -68,7 +68,7 @@
 
     <textarea
       *ngIf="addComment"
-      [(ngModel)]="reviewText"
+      [(ngModel)]="commentText"
       rows="4"
       placeholder="Write your comment here..."
     ></textarea>

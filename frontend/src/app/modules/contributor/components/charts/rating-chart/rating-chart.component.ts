@@ -34,7 +34,11 @@ export class RatingChartComponent implements OnInit {
     }
   };
 
-  constructor(private analyticsService: AnalyticsService) {}
+constructor(private analyticsService: AnalyticsService) {}
+toggleShowAll() {
+  this.showAll = !this.showAll;
+  this.updateChart();
+}
 
   ngOnInit(): void {
     if (this.mode === 'top-rated-assets') {
@@ -52,10 +56,7 @@ export class RatingChartComponent implements OnInit {
     }
   }
 
-  toggleShowAll() {
-    this.showAll = !this.showAll;
-    this.updateChart();
-  }
+
 
   updateChart() {
     const displayedData = this.showAll ? this.fullData : this.fullData.slice(0, 5);

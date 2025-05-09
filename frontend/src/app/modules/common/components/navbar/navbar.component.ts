@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { Notification } from '../../../../shared/models/notification';
 import { NotificationType } from '../../../../shared/enums/notification-type';
+import { getSafeLocalStorage } from '../../../../shared/utils/localstorage';
 
 @Component({
   selector: 'app-navbar',
@@ -30,7 +31,22 @@ export class NavbarComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.fetchNotifications();
+    const token = getSafeLocalStorage()?.getItem('token');
+    if (!token) return;
+  
+    const decoded: any = JSON.parse(atob(token.split('.')[1]));
+    const role = decoded?.role;
+    const userId = decoded?.id; // 👈 make sure the token has user ID
+  
+    console.log('Decoded token:', decoded);
+    console.log('User role:', role);
+  
+    // ✅ SSR-safe: Only connect to socket on client
+    if (typeof window !== 'undefined' && userId) {
+      // this.notificationService.connectToSocket(userId);
+    }
+  
+    this.fetchNotifications(); // fetch only after checking token
   }
   groupNotificationsByDate(notifs: Notification[]) {
     const now = new Date();
@@ -77,7 +93,7 @@ getGroupedSections() {
 }
 
 fetchNotifications() {
-  const token = localStorage.getItem('token');
+  const token = getSafeLocalStorage()?.getItem('token');
   if (!token) return;
 
   const decoded: any = JSON.parse(atob(token.split('.')[1]));

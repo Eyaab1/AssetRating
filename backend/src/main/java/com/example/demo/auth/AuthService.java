@@ -47,6 +47,9 @@ public class AuthService {
         }
         return "Invalid or missing token.";
     }
+    public Optional<User> findByEmail(String email) {
+        return authRepository.findByEmail(email);
+    }
 
 
 }
