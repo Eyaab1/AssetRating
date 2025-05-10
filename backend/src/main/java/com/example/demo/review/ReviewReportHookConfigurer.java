@@ -26,7 +26,7 @@ public class ReviewReportHookConfigurer {
 
     @PostConstruct
     public void init() {
-        ReviewReportService.setOnReviewReported((assetId, reason, reporterId) -> {
+    	ReviewCommentReportService.setOnReviewReported((assetId, reason, reporterId) -> {
             Asset asset = assetRepository.findById(assetId)
                 .orElseThrow(() -> new RuntimeException("Asset not found: " + assetId));
 

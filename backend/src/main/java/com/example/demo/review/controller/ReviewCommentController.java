@@ -186,7 +186,7 @@ public class ReviewCommentController {
     }
     @PostMapping("/release")
     public ResponseEntity<?> reviewRelease(@RequestBody ReviewRequest request) {
-        Review review = new Review();
+    	ReviewComment review = new ReviewComment();
         review.setUserId(request.getUserId());
         review.setAssetId(request.getAssetId()); // use releasedAsset.id here
         review.setComment(request.getComment());
@@ -197,8 +197,8 @@ public class ReviewCommentController {
 
 
     @GetMapping("/release/{releasedAssetId}")
-    public ResponseEntity<List<Review>> getReviewsForRelease(@PathVariable String releasedAssetId) {
-        List<Review> reviews = reviewService.getReviewsByAssetId(releasedAssetId);
+    public ResponseEntity<List<ReviewComment>> getReviewsForRelease(@PathVariable String releasedAssetId) {
+        List<ReviewComment> reviews = reviewService.getReviewsByAssetId(releasedAssetId);
         return ResponseEntity.ok(reviews);
     }
 }

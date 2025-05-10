@@ -80,7 +80,10 @@ public class Notification {
 	public void setRecipient(User recipient) {
 		this.recipient = recipient;
 	}
-
+	@ManyToOne
+	@JoinColumn(name = "actor_id")
+	private User actor;
+	
 	public NotificationType getType() {
 		return type;
 	}
@@ -103,6 +106,13 @@ public class Notification {
 
 	public void setRelatedAssetId(String relatedAssetId) {
 		this.relatedAssetId = relatedAssetId;
+	}
+	public User getActor() {
+	    return actor;
+	}
+
+	public void setActor(User actor) {
+	    this.actor = actor;
 	}
 	
     

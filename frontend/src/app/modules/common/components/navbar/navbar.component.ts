@@ -5,6 +5,7 @@ import { NotificationService } from '../../../../shared/services/notification.se
 import { Notification } from '../../../../shared/models/notification';
 import { NotificationType } from '../../../../shared/enums/notification-type';
 import { getSafeLocalStorage } from '../../../../shared/utils/localstorage';
+type GroupKey = 'today' | 'yesterday' | 'thisWeek' | 'thisMonth' | 'earlier';
 
 @Component({
   selector: 'app-navbar',
@@ -16,13 +17,13 @@ import { getSafeLocalStorage } from '../../../../shared/utils/localstorage';
 export class NavbarComponent implements OnInit {
   notifications: Notification[] = [];
   showDropdown = false;
-
-  groupedNotifications = {
-    today: [] as Notification[],
-    yesterday: [] as Notification[],
-    thisWeek: [] as Notification[],
-    thisMonth: [] as Notification[],
-    earlier: [] as Notification[],
+  private role: string | null = null;
+  groupedNotifications: Record<GroupKey, Notification[]> = {
+    today: [],
+    yesterday: [],
+    thisWeek: [],
+    thisMonth: [],
+    earlier: [],
   };
   
   constructor(
@@ -31,23 +32,39 @@ export class NavbarComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const token = getSafeLocalStorage()?.getItem('token');
+    const token = localStorage?.getItem('token');
     if (!token) return;
-  
+
+    const decoded: any = JSON.parse(atob(token.split('.')[1]));
+    this.role= decoded?.role;
+    const userId = decoded?.id; 
+
+    this.fetchNotifications(); 
+  }
+
+  fetchNotifications() {
+    const token = localStorage?.getItem('token');
+    if (!token) return;
+
     const decoded: any = JSON.parse(atob(token.split('.')[1]));
     const role = decoded?.role;
-    const userId = decoded?.id; // 👈 make sure the token has user ID
-  
-    console.log('Decoded token:', decoded);
-    console.log('User role:', role);
-  
-    // ✅ SSR-safe: Only connect to socket on client
-    if (typeof window !== 'undefined' && userId) {
-      // this.notificationService.connectToSocket(userId);
-    }
-  
-    this.fetchNotifications(); // fetch only after checking token
+
+    this.notificationService.getNotifications().subscribe({
+      next: (notifs) => {
+        this.notifications = notifs.filter(n => {
+          if (role === 'CONTRIBUTOR') return true;
+          return n.type === 'COMMENT_REPLIED' || n.type === 'REVIEW_LIKED';
+        });
+
+        this.notifications = this.notifications.sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        this.groupNotificationsByDate(this.notifications);
+      },
+      error: (err) => console.error('Error loading notifications', err)
+    });
   }
+
   groupNotificationsByDate(notifs: Notification[]) {
     const now = new Date();
     const today = new Date(now);
@@ -67,7 +84,9 @@ export class NavbarComponent implements OnInit {
     };
 
     for (const notif of notifs) {
-      const created = new Date(notif.createdAt);
+      const created = notif.createdAt instanceof Date
+        ? notif.createdAt
+        : new Date(notif.createdAt);
 
       if (created.toDateString() === today.toDateString()) {
         this.groupedNotifications.today.push(notif);
@@ -82,48 +101,28 @@ export class NavbarComponent implements OnInit {
       }
     }
   }
-getGroupedSections() {
-  return [
-    { key: 'today', label: 'Today' },
-    { key: 'yesterday', label: 'Yesterday' },
-    { key: 'thisWeek', label: 'This Week' },
-    { key: 'thisMonth', label: 'This Month' },
-    { key: 'earlier', label: 'Earlier' }
-  ];
-}
 
-fetchNotifications() {
-  const token = getSafeLocalStorage()?.getItem('token');
-  if (!token) return;
-
-  const decoded: any = JSON.parse(atob(token.split('.')[1]));
-  const role = decoded?.role;
-  console.log('Decoded token:', decoded);
-  console.log('User role:', role);
-  this.notificationService.getNotifications().subscribe({
-    next: (notifs) => {
-      this.notifications = notifs.filter(n => {
-        if (role === 'CONTRIBUTOR') return true;
-        return n.type === 'COMMENT_REPLIED' || n.type === 'REVIEW_LIKED';
-      });
-
-      this.notifications = this.notifications.sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-      this.groupNotificationsByDate(this.notifications);
-    },
-    error: (err) => console.error('Error loading notifications', err)
-  });
-}
-
-
+  getGroupedSections(): { key: GroupKey; label: string }[] {
+    return [
+      { key: 'today', label: 'Today' },
+      { key: 'yesterday', label: 'Yesterday' },
+      { key: 'thisWeek', label: 'This Week' },
+      { key: 'thisMonth', label: 'This Month' },
+      { key: 'earlier', label: 'Earlier' }
+    ];
+  }
 
   hasUnread(): boolean {
     return this.notifications.some(n => !n.read);
   }
-  
+
   goHome() {
+  if (this.role === 'USER') {
     this.router.navigate(['/marketplace']);
+  } else {
+    this.router.navigate(['/contributorLayout/marketplace']);
+  
+}
   }
 
   logout() {
@@ -139,17 +138,37 @@ fetchNotifications() {
     if (!notification.read) {
       this.notificationService.markAsRead(notification.id).subscribe(() => {
         notification.read = true;
+      }, err => {
+        console.error('Failed to mark as read', err);
       });
     }
   }
-  
-getRelativeTime(date: Date | string): string {
-  const d = new Date(date);
-  const diff = Math.floor((Date.now() - d.getTime()) / 1000);
 
-  if (diff < 60) return 'just now';
-  if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
-  return `${Math.floor(diff / 86400)} day${Math.floor(diff / 86400) > 1 ? 's' : ''} ago`;
+  getRelativeTime(date: Date | string): string {
+    const d = new Date(date);
+    const diff = Math.floor((Date.now() - d.getTime()) / 1000);
+
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+    return `${Math.floor(diff / 86400)} day${Math.floor(diff / 86400) > 1 ? 's' : ''} ago`;
+  }
+  expandedSections: { [key in GroupKey]?: boolean } = {};
+notificationsLimit = 5;
+
+toggleSectionExpand(section: GroupKey) {
+  this.expandedSections[section] = !this.expandedSections[section];
 }
+goToFullNotifications() {
+  if (this.role === 'USER') {
+    this.router.navigate(['/notificationAll']);
+  } else {
+    this.router.navigate(['/contributorLayout/notificationAll']);
+  }
+}
+markAllAsRead() {
+  const unread = this.notifications.filter(n => !n.read);
+  unread.forEach(n => this.markAsRead(n));
+}
+
 }

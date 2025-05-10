@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { map, Observable, Subject } from 'rxjs';
 import{Notification} from '../models/notification';
 import { NotificationType } from '../enums/notification-type';
@@ -14,7 +14,7 @@ function getSafeLocalStorage(): Storage | null {
   providedIn: 'root'
 })
 
-export class NotificationService {
+export class NotificationService implements OnInit{
   
   private baseUrl = `http://localhost:8081/api/notifications`;
   private socketUrl = `http://localhost:8081/ws`;
@@ -23,6 +23,9 @@ export class NotificationService {
   public notifications$ = this.notificationSubject.asObservable();
 
   constructor(private http: HttpClient) {}
+  ngOnInit(): void {
+    
+  }
 
   private getAuthHeaders(): HttpHeaders {
     const token = getSafeLocalStorage()?.getItem('token');
@@ -33,22 +36,22 @@ export class NotificationService {
   
 
   getNotifications(): Observable<Notification[]> {
-    return this.http.get<any[]>(this.baseUrl, {
-      headers: this.getAuthHeaders()
-    }).pipe(
-      map(data => data.map(n =>
-        new Notification(
-          n.id,
-          n.content,
-          n.read,
-          new Date(n.createdAt),
-          n.type as NotificationType,
-          n.relatedEntityId
-        )
-      ))
-    );
-    
-  }
+  return this.http.get<any[]>(this.baseUrl, {
+    headers: this.getAuthHeaders()
+  }).pipe(
+    map(data => data.map(n =>
+      new Notification(
+        n.id,
+        n.content,
+        n.read,
+        new Date(n.createdAt),
+        n.type as NotificationType,
+        n.relatedEntityId,
+        n.actor?.id ?? 0 // ✅ Extract actorId safely
+      )
+    ))
+  );
+}
 
   markAsRead(id: number): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/${id}/read`, {}, {
@@ -56,39 +59,6 @@ export class NotificationService {
     });
   }
 
-  // connectToSocket(userId: number): void {
-  //   if (typeof window === 'undefined') return; // ✅ SSR-safe
-  
-  //   this.stompClient = new Client({
-  //     brokerURL: this.socketUrl,
-  //     webSocketFactory: () => new SockJS(this.socketUrl),
-  //     reconnectDelay: 5000,
-  //     debug: (str) => console.log('[WebSocket Debug]', str),
-  //     onConnect: () => {
-  //       console.log('WebSocket connected!');
-  //       this.stompClient.subscribe(`/topic/notifications/${userId}`, (message: IMessage) => {
-  //         const n = JSON.parse(message.body);
-  //         const notification = new Notification(
-  //           n.id,
-  //           n.content,
-  //           n.read,
-  //           new Date(n.createdAt),
-  //           n.type as NotificationType,
-  //           n.relatedEntityId
-  //         );
-  //         this.notificationSubject.next(notification);
-  //       });
-  //     }
-  //   });
-  
-  //   this.stompClient.activate();
-  // }
-  
-
-  // disconnectSocket(): void {
-  //   if (this.stompClient?.active) {
-  //     this.stompClient.deactivate();
-  //   }
-  // }
+ 
   
 }

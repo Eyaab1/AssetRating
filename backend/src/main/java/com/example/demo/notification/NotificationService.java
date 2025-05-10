@@ -54,14 +54,14 @@ public class NotificationService {
             String relatedEntityId, String relatedAssetId, Asset asset) {
 if (!shouldReceiveNotification(recipient, actor, type, asset)) return;
 
-		Notification n = new Notification();
-		n.setRecipient(recipient);
-		n.setContent(content);
-		n.setCreatedAt(new Date());
-		n.setRead(false);
-		n.setType(type);
-		n.setRelatedEntityId(relatedEntityId);
-		n.setRelatedAssetId(relatedAssetId);
+			Notification n = new Notification();
+			n.setRecipient(recipient);
+			n.setActor(actor);
+			n.setContent(content);
+			n.setCreatedAt(new Date());
+			n.setType(type);
+			n.setRelatedEntityId(relatedEntityId);
+			n.setRelatedAssetId(relatedAssetId);
 		
 		notificationRepository.save(n);
 		messagingTemplate.convertAndSend("/topic/notifications/" + recipient.getId(), n);
