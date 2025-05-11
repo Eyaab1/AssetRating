@@ -170,33 +170,34 @@ markAllAsRead() {
   const unread = this.notifications.filter(n => !n.read);
   unread.forEach(n => this.markAsRead(n));
 }
-navigateBasedOnNotification(notification: Notification): void {
-  this.markAsRead(notification); // ✅ ensure marked as read
 
+navigateBasedOnNotification(notification: Notification): void {
   const assetId = notification.relatedAssetId;
-  const entityId = notification.relatedEntityId;
+  const reviewId = notification.relatedEntityId;
+
+  const baseRoute = this.role === 'CONTRIBUTOR' ? '/contributorLayout/detail' : '/detail';
 
   switch (notification.type) {
     case NotificationType.ASSET_PUBLISHED:
     case NotificationType.ASSET_UPDATED:
-      this.router.navigate([`/detail/${assetId}`]);
+      this.router.navigate([`${baseRoute}/${assetId}`]);
       break;
 
     case NotificationType.REVIEW_ADDED:
     case NotificationType.REVIEW_REPORTED:
     case NotificationType.REVIEW_LIKED:
     case NotificationType.COMMENT_REPLIED:
-      this.router.navigate([`/detail/${assetId}`], {
-        queryParams: { focusReviewId: entityId }
+      this.router.navigate([`${baseRoute}/${assetId}`], {
+        queryParams: { focusReviewId: reviewId }
       });
       break;
 
     default:
-      console.warn('Unknown notification type:', notification.type);
+      console.warn('No routing defined for notification type:', notification.type);
       break;
   }
+    this.showDropdown = false; // close dropdown
 
-  this.showDropdown = false; // close dropdown
 }
 
 }
