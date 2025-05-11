@@ -96,12 +96,8 @@ public class ReviewCommentController {
         ReviewComment review = new ReviewComment(reviewer.getId(), request.getAssetId(), request.getComment());
         ReviewComment savedReview = reviewService.addReview(review);
 
-        notificationService.notifyContributorByAssetId(
-        	    request.getAssetId(),
-        	    reviewer,
-        	    reviewer.getFirstName() + " " + reviewer.getLastName() + " added a new review on your asset.",
-        	    NotificationType.REVIEW_ADDED
-        	);
+        notificationService.notifyContributorOfNewReview(savedReview, reviewer);
+
 
 
         return ResponseEntity.ok(savedReview);

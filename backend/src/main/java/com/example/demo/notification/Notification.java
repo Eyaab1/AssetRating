@@ -32,6 +32,7 @@ public class Notification {
 	@JoinColumn(name = "actor_id")
 	private User actor;
 	
+
     public Notification() {
 		super();}
     
@@ -84,7 +85,6 @@ public class Notification {
 		this.recipient = recipient;
 	}
 
-	
 	public NotificationType getType() {
 		return type;
 	}

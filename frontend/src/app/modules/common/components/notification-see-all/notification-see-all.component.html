@@ -45,7 +45,7 @@
       No notifications found.
     </div>
 
-    <div *ngFor="let notif of filteredNotifications" class="notif-card" (click)="markAsRead(notif)">
+    <div *ngFor="let notif of filteredNotifications" class="notif-card" (click)="markAsRead(notif); navigateBasedOnNotification(notif)">
       <i class="fas fa-flag notif-icon"></i>
       <div class="notif-text">
         <div class="notif-content">{{ notif.content }}</div>

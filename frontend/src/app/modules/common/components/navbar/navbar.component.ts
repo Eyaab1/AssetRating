@@ -170,5 +170,33 @@ markAllAsRead() {
   const unread = this.notifications.filter(n => !n.read);
   unread.forEach(n => this.markAsRead(n));
 }
+navigateBasedOnNotification(notification: Notification): void {
+  this.markAsRead(notification); // ✅ ensure marked as read
+
+  const assetId = notification.relatedAssetId;
+  const entityId = notification.relatedEntityId;
+
+  switch (notification.type) {
+    case NotificationType.ASSET_PUBLISHED:
+    case NotificationType.ASSET_UPDATED:
+      this.router.navigate([`/detail/${assetId}`]);
+      break;
+
+    case NotificationType.REVIEW_ADDED:
+    case NotificationType.REVIEW_REPORTED:
+    case NotificationType.REVIEW_LIKED:
+    case NotificationType.COMMENT_REPLIED:
+      this.router.navigate([`/detail/${assetId}`], {
+        queryParams: { focusReviewId: entityId }
+      });
+      break;
+
+    default:
+      console.warn('Unknown notification type:', notification.type);
+      break;
+  }
+
+  this.showDropdown = false; // close dropdown
+}
 
 }

@@ -51,8 +51,9 @@
         <div
           *ngFor="let notif of sectionGroup | slice:0:(expandedSections[section.key] ? sectionGroup.length : notificationsLimit)"
           class="notif-card"
-          (click)="markAsRead(notif)"
+          (click)="navigateBasedOnNotification(notif)"
         >
+
           <i class="fas fa-flag notif-icon"></i>
           <div class="notif-text">
             <div class="notif-content-wrapper">

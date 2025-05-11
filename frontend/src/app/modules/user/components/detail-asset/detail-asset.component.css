@@ -332,6 +332,13 @@
 .release-review-btn:hover {
   background-color: #0b6fc2;
 }
+
+.highlight-review {
+  background-color: #fffae6;
+  border-left: 4px solid #ffa500;
+  transition: all 0.3s ease;
+}
+
 .tab-buttons {
   display: flex;
   gap: 20px;

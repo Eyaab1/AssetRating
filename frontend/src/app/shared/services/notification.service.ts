@@ -47,6 +47,7 @@ export class NotificationService implements OnInit{
         new Date(n.createdAt),
         n.type as NotificationType,
         n.relatedEntityId,
+        n.relatedAssetId,
         n.actor?.id ?? 0 // ✅ Extract actorId safely
       )
     ))
