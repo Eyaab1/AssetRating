@@ -4,13 +4,14 @@ import { CommonModule } from '@angular/common';
 import { Notification } from '../../../../shared/models/notification';
 import { NotificationType } from '../../../../shared/enums/notification-type';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 type TimeRange = 'ALL' | 'TODAY' | 'THIS_WEEK' | 'THIS_MONTH' | 'EARLIER';
 type TypeFilter = 'ALL' | NotificationType;
 
 @Component({
   selector: 'app-notification-see-all',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule,FormsModule, RouterModule],
   templateUrl: './notification-see-all.component.html',
   styleUrl: './notification-see-all.component.css'
 })
@@ -42,7 +43,7 @@ export class NotificationSeeAllComponent implements OnInit {
     { label: 'Asset Updated', value: NotificationType.ASSET_UPDATED }
   ];
 
-  constructor(private notificationService: NotificationService) {}
+  constructor(private notificationService: NotificationService, private router: Router) {}
 
   ngOnInit(): void {
     const token = localStorage.getItem('token');
@@ -124,4 +125,29 @@ export class NotificationSeeAllComponent implements OnInit {
       });
     }
   }
+  navigateBasedOnNotification(notification: Notification): void {
+  const assetId = notification.relatedAssetId;
+  const reviewId = notification.relatedEntityId;
+
+  switch (notification.type) {
+    case NotificationType.ASSET_PUBLISHED:
+    case NotificationType.ASSET_UPDATED:
+      this.router.navigate([`/detail/${assetId}`]);
+      break;
+
+    case NotificationType.REVIEW_ADDED:
+    case NotificationType.REVIEW_REPORTED:
+    case NotificationType.REVIEW_LIKED:
+    case NotificationType.COMMENT_REPLIED:
+      this.router.navigate([`/detail/${assetId}`], {
+        queryParams: { focusReviewId: reviewId }
+      });
+      break;
+
+    default:
+      console.warn('No routing defined for notification type:', notification.type);
+      break;
+  }
+}
+
 }

@@ -8,6 +8,7 @@ export class Notification {
     public createdAt: Date,
     public type: NotificationType,
     public relatedEntityId: string,
+    public relatedAssetId: string,
     public actorId: number 
   ) {}
 }

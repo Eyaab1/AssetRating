@@ -14,6 +14,12 @@
   background: #f8f8fc;
   /* transform: translateY(-2px); 
 } */
+.highlight-review {
+  background-color: #fff6cc;
+  border-left: 4px solid #ff9800;
+  padding-left: 12px;
+  transition: background-color 0.5s ease;
+}
 
 .comment-avatar {
   width: 50px;
