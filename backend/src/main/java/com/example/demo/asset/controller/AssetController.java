@@ -120,5 +120,10 @@ public class AssetController {
         List<Asset> assets = assetService.getAssetsByCategory(categoryId);
         return ResponseEntity.ok(assets);
     }
+    @GetMapping("/recommended")
+    public ResponseEntity<List<Asset>> getRecommendedAssets(@RequestParam Long userId) {
+        List<Asset> recommended = assetService.getRecommendedAssetsForUser(userId);
+        return ResponseEntity.ok(recommended);
+    }
 
 }

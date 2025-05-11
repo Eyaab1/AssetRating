@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { forkJoin, map, Observable } from 'rxjs';
+import { forkJoin, map, Observable, switchMap } from 'rxjs';
 import { Asset } from '../models/asset';
 import { Widget } from '../models/widget';
 import { AssetRelease } from '../models/asset-release';
@@ -78,6 +78,12 @@ export class AssetServiceService {
       headers: this.getAuthHeaders()
     });
   }
+
+  getRecommendedAssets(userId: number): Observable<Asset[]> {
+  return this.http.get<Asset[]>(`${this.baseUrl}/recommended?userId=${userId}`, { headers: this.getAuthHeaders() });
+
+}
+
   
   
   }

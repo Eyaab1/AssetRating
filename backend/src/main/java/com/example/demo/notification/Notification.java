@@ -28,7 +28,10 @@ public class Notification {
     @JoinColumn(name = "recipient_id")
     private User recipient;
 
-
+	@ManyToOne
+	@JoinColumn(name = "actor_id")
+	private User actor;
+	
     public Notification() {
 		super();}
     
@@ -80,9 +83,7 @@ public class Notification {
 	public void setRecipient(User recipient) {
 		this.recipient = recipient;
 	}
-	@ManyToOne
-	@JoinColumn(name = "actor_id")
-	private User actor;
+
 	
 	public NotificationType getType() {
 		return type;
