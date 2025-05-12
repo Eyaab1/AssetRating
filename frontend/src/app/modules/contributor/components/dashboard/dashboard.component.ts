@@ -107,7 +107,7 @@ getRatingDistribution(): number[] {
 }
 
 goToFullList(): void {
-  this.router.navigate(['/contributorLayout/full-asset-list']);
+  this.router.navigate(['/contributorLayout/full-assets']);
 }
 
 

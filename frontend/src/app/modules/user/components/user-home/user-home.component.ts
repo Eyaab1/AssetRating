@@ -7,6 +7,8 @@ import { FormsModule } from '@angular/forms';
 import { TagAndcategoryService } from '../../../../shared/services/tag-andcategory.service';
 import { DecodedToken } from '../../../../shared/decoded-token';
 import { AuthService } from '../../../../core/auth/services/auth.service';
+import { RatingService } from '../../../../shared/services/rating.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-user-home',
@@ -18,8 +20,11 @@ import { AuthService } from '../../../../core/auth/services/auth.service';
 export class UserHomeComponent implements OnInit {
   assets: Asset[] = [];
   filteredAssets: Asset[] = [];
-  topRatedAssets: Asset[] = [];
+
   availableAssets: Asset[] = [];
+  recommendedAssets: Asset[] = [];
+  trendingAssets: Asset[] = [];
+loadingRecommendations = true;
 
   groupedAssets: { label: string; assets: Asset[] }[] = [];
 
@@ -34,10 +39,12 @@ export class UserHomeComponent implements OnInit {
   constructor(
     private assetService: AssetServiceService,
     private tagCatgService: TagAndcategoryService,
-    private authService: AuthService
+    private authService: AuthService,
+    private ratingService: RatingService
   ) {}
 
   ngOnInit(): void {
+
     this.assetService.getAllAssets().subscribe({
       next: (data) => {
         this.assets = data;
@@ -57,8 +64,20 @@ export class UserHomeComponent implements OnInit {
       next: (data) => this.allTags = data,
       error: (err) => console.error('Failed to fetch tags:', err)
     });
-  }
+    const decoded: DecodedToken | null = this.authService.decodeToken();
+    if (decoded) {
+      const userId = decoded.userId;
+      this.assetService.getRecommendedAssets(userId).subscribe({
+        next: (assets) => {
+          this.recommendedAssets = assets;
+          this.loadingRecommendations = false;
+        },
+        error: () => this.loadingRecommendations = false
+      });
+    }
 
+  }
+  
   onFilterChange(type: 'tags' | 'categories', event: Event): void {
     const checkbox = event.target as HTMLInputElement;
   
@@ -111,17 +130,36 @@ export class UserHomeComponent implements OnInit {
     );
     this.groupByType();
     this.updateSections();
-  }
-
-  updateSections(): void {
-    this.topRatedAssets = [...this.filteredAssets]
+        this.trendingAssets = [...this.filteredAssets]
       .sort((a, b) => (b.ratings?.length || 0) - (a.ratings?.length || 0))
       .slice(0, 5);
-
-    this.availableAssets = [...this.filteredAssets].filter(
-      asset => !this.topRatedAssets.includes(asset)
-    );
   }
+
+ updateSections(): void {
+  const ratingRequests = this.filteredAssets.map(asset =>
+    this.ratingService.getAveragerating(asset.id).pipe()
+  );
+
+  forkJoin(ratingRequests).subscribe((averages) => {
+    const ratedAssets = this.filteredAssets.map((asset, index) => ({
+      asset,
+      average: averages[index] || 0
+    }));
+
+    const trendingSorted = ratedAssets
+      .filter(entry => entry.average > 0)
+      .sort((a, b) => b.average - a.average)
+      .slice(0, 5)
+      .map(entry => entry.asset);
+
+    this.trendingAssets = trendingSorted;
+
+    this.availableAssets = this.filteredAssets.filter(
+      asset => !this.trendingAssets.includes(asset)
+    );
+  });
+}
+
 
   groupByType(): void {
     const grouped: any = {};

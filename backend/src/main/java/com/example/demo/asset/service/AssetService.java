@@ -48,15 +48,17 @@ public class AssetService {
     private final CategoryService categoryService;
     private final NotificationService notificationService;
     private final AuthService authservice;
+    private final RecommendationUser recommendationUser;
 
     @Autowired
-    public AssetService(AssetRepository assetRepository, RatingService ratingService,TagService tagService, CategoryService categoryService, NotificationService notificationService,AuthService authservice) {
+    public AssetService(AssetRepository assetRepository, RatingService ratingService,TagService tagService, CategoryService categoryService, NotificationService notificationService,AuthService authservice,RecommendationUser recommendationUser) {
         this.assetRepository = assetRepository;
         this.ratingService= ratingService;
         this.tagService=tagService;
         this.categoryService=categoryService;
         this.notificationService =notificationService;
         this.authservice=authservice;
+        this.recommendationUser=recommendationUser;
     }
     @Autowired
     private AssetReleaseRepository assetReleaseRepository;
@@ -303,6 +305,11 @@ public class AssetService {
         }
 
         return "/docs/" + docFilename;
+    }
+    
+    public List<Asset> getRecommendedAssetsForUser(Long userId) {
+        List<String> ids = recommendationUser.getRecommendedAssetIds(userId);
+        return assetRepository.findAllById(ids);
     }
 
 

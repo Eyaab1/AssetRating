@@ -22,8 +22,8 @@ export class NotificationSeeAllComponent implements OnInit {
   timeRange: TimeRange = 'ALL';
   typeFilter: TypeFilter = 'ALL';
   tab: 'ALL' | 'UNREAD' | 'READ' = 'ALL';
-
   currentUserId: number | null = null;
+  role: string | null = null;
 
   timeOptions: { label: string; value: TimeRange }[] = [
     { label: 'All', value: 'ALL' },
@@ -46,11 +46,14 @@ export class NotificationSeeAllComponent implements OnInit {
   constructor(private notificationService: NotificationService, private router: Router) {}
 
   ngOnInit(): void {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded: any = JSON.parse(atob(token.split('.')[1]));
-      this.currentUserId = decoded?.id;
-    }
+   const token = localStorage?.getItem('token');
+    if (!token) return;
+
+    const decoded: any = JSON.parse(atob(token.split('.')[1]));
+    this.currentUserId = decoded?.userId;
+    this.role= decoded?.role;
+    console.log(this.currentUserId);
+    this.role= decoded?.role;
 
     this.loadNotifications();
   }
@@ -129,17 +132,19 @@ export class NotificationSeeAllComponent implements OnInit {
   const assetId = notification.relatedAssetId;
   const reviewId = notification.relatedEntityId;
 
+  const baseRoute = this.role === 'CONTRIBUTOR' ? '/contributorLayout/detail' : '/detail';
+
   switch (notification.type) {
     case NotificationType.ASSET_PUBLISHED:
     case NotificationType.ASSET_UPDATED:
-      this.router.navigate([`/detail/${assetId}`]);
+      this.router.navigate([`${baseRoute}/${assetId}`]);
       break;
 
     case NotificationType.REVIEW_ADDED:
     case NotificationType.REVIEW_REPORTED:
     case NotificationType.REVIEW_LIKED:
     case NotificationType.COMMENT_REPLIED:
-      this.router.navigate([`/detail/${assetId}`], {
+      this.router.navigate([`${baseRoute}/${assetId}`], {
         queryParams: { focusReviewId: reviewId }
       });
       break;
@@ -167,5 +172,6 @@ getIconClass(type: NotificationType): string {
       return 'fas fa-bell';
   }
 }
+
 
 }

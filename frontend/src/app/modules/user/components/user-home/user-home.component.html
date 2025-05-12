@@ -1,6 +1,8 @@
 <div class="marketplace-page">
+  
   <!-- Sidebar -->
   <aside class="sidebar">
+
     <div class="filter-group">
       <h4>Categories ({{ allCategories.length }})</h4>
       <label *ngFor="let category of allCategories">
@@ -39,7 +41,42 @@
       />
       
     </div>
+<!-- Recommended Section -->
+ <div *ngIf="loadingRecommendations" class="loading-placeholder">
+  <p>Loading recommendations...</p>
+</div>
+<div *ngIf="recommendedAssets.length > 0" class="group-section">
+  <h3> Recommended for You</h3>
+  <div class="asset-list">
+    <div 
+      class="asset-item" 
+      *ngFor="let asset of recommendedAssets"
+      [routerLink]="getAssetDetailLink(asset.id)">
+      <img [src]="getIcon(asset.image)" (error)="onImageError($event)" />
+      <div>
+        <strong>{{ asset.name }}</strong><br />
+        <span>{{ asset.description }}</span>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- Trending Section -->
+<div *ngIf="trendingAssets.length > 0" class="group-section">
+  <h3>📈 Trending Assets</h3>
+  <div class="asset-list">
+    <div 
+      class="asset-item" 
+      *ngFor="let asset of trendingAssets"
+      [routerLink]="getAssetDetailLink(asset.id)">
+      <img [src]="getIcon(asset.image)" (error)="onImageError($event)" />
+      <div>
+        <strong>{{ asset.name }}</strong><br />
+        <span>{{ asset.description }}</span>
+      </div>
+    </div>
+  </div>
+</div>
     <div *ngIf="groupedAssets.length === 0">
       <p>No assets found.</p>
     </div>
