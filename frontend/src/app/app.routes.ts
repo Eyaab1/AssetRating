@@ -13,6 +13,7 @@ import { EditAssetComponent } from './modules/contributor/components/edit-asset/
 import { onlyGuardGuard } from './core/auth/guard/only-guard.guard';
 import { FullAssetListComponent } from './modules/contributor/components/full-asset-list/full-asset-list.component';
 import { NotificationSeeAllComponent } from './modules/common/components/notification-see-all/notification-see-all.component';
+import { ReportComponent } from './modules/contributor/components/reports/report.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -36,7 +37,7 @@ export const routes: Routes = [
         {path:'edit/:id',component:EditAssetComponent},
         {path: 'full-assets',component:FullAssetListComponent},
         {path: 'notificationAll',component:NotificationSeeAllComponent},
-
+        { path: 'reports', component: ReportComponent },
         
 
       ]

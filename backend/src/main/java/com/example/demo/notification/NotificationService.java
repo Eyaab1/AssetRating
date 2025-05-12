@@ -5,12 +5,12 @@ import com.example.demo.asset.repository.AssetRepository;
 import com.example.demo.auth.AuthRepository;
 import com.example.demo.auth.User;
 import com.example.review.model.ReviewComment;
-
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class NotificationService {
@@ -40,11 +40,19 @@ public class NotificationService {
         };
     }
 
+    // ✅ Overload with forced string ID
     public void notifyUser(User recipient, User actor, String content, NotificationType type,
-                           String relatedEntityId, String relatedAssetId, Asset asset) {
+                           String relatedEntityId, String relatedAssetId, Asset asset, String forcedId) {
+
         if (!shouldReceiveNotification(recipient, actor, type, asset)) return;
 
         Notification n = new Notification();
+        if (forcedId != null) {
+            n.setId(forcedId); // e.g. "001"
+        }else {
+            n.setId(UUID.randomUUID().toString()); // 👈 for likes, replies, etc.
+        }
+
         n.setRecipient(recipient);
         n.setActor(actor);
         n.setContent(content);
@@ -52,12 +60,18 @@ public class NotificationService {
         n.setType(type);
         n.setRelatedEntityId(relatedEntityId);
         n.setRelatedAssetId(relatedAssetId);
+        n.setRead(false);
 
         notificationRepository.save(n);
         messagingTemplate.convertAndSend("/topic/notifications/" + recipient.getId(), n);
     }
 
-    // ✅ FIXED: correct relatedEntityId = reviewId
+    // ✅ Legacy version with auto-generated ID
+    public void notifyUser(User recipient, User actor, String content, NotificationType type,
+                           String relatedEntityId, String relatedAssetId, Asset asset) {
+        notifyUser(recipient, actor, content, type, relatedEntityId, relatedAssetId, asset, null);
+    }
+
     public void notifyContributorOfNewReview(ReviewComment review, User commenter) {
         Asset asset = assetRepository.findById(review.getAssetId())
                 .orElseThrow(() -> new RuntimeException("Asset not found"));
@@ -75,18 +89,8 @@ public class NotificationService {
         }
     }
 
-    public List<Notification> getNotificationsFor(User user) {
-        return notificationRepository.findByRecipientOrderByCreatedAtDesc(user);
-    }
-
-    public void markAsRead(Long id) {
-        notificationRepository.findById(id).ifPresent(n -> {
-            n.setRead(true);
-            notificationRepository.save(n);
-        });
-    }
-
-    public void notifyContributorOfReportedReview(ReviewComment review, String reason, User commenter) {
+    // ✅ uses padded reportId string
+    public void notifyContributorOfReportedReview(ReviewComment review, String reason, User commenter, String reportId) {
         Asset asset = assetRepository.findById(review.getAssetId())
                 .orElseThrow(() -> new RuntimeException("Asset not found: " + review.getAssetId()));
 
@@ -99,8 +103,19 @@ public class NotificationService {
                     + " on your asset \"" + asset.getName() + "\" was reported";
 
             notifyUser(contributor, commenter, content, NotificationType.REVIEW_REPORTED,
-                    review.getId().toString(), asset.getId(), asset);
+                    review.getId().toString(), asset.getId(), asset, reportId);
         }
+    }
+
+    public List<Notification> getNotificationsFor(User user) {
+        return notificationRepository.findByRecipientOrderByCreatedAtDesc(user);
+    }
+
+    public void markAsRead(String id) {
+        notificationRepository.findById(id).ifPresent(n -> {
+            n.setRead(true);
+            notificationRepository.save(n);
+        });
     }
 
     public void notifyUserOfLikedReview(ReviewComment review, User liker) {
@@ -144,6 +159,7 @@ public class NotificationService {
             notifyUser(user, actor, message, type, asset.getId(), asset.getId(), asset);
         }
     }
+
     public void notifyContributorByAssetId(String assetId, User actor, String content, NotificationType type) {
         Asset asset = assetRepository.findById(assetId)
                 .orElseThrow(() -> new RuntimeException("Asset not found"));
@@ -155,5 +171,4 @@ public class NotificationService {
             notifyUser(contributor, actor, content, type, assetId, assetId, asset);
         }
     }
-
 }

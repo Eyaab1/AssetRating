@@ -2,7 +2,7 @@ import { NotificationType } from "../enums/notification-type";
 
 export class Notification {
   constructor(
-    public id: number,
+    public id: String,
     public content: string,
     public read: boolean,
     public createdAt: Date,

@@ -10,8 +10,7 @@ import com.example.demo.auth.User;
 public class Notification {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private String content;
     private boolean read = false;
@@ -45,11 +44,11 @@ public class Notification {
 		this.type=type;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

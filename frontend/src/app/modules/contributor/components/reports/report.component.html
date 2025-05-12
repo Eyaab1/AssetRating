@@ -1,0 +1,48 @@
+<div class="notification-wrapper">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h3>Sort by Date</h3>
+    <div class="radio-option" *ngFor="let option of timeOptions">
+      <input
+        type="radio"
+        name="timeFilter"
+        [value]="option.value"
+        [(ngModel)]="timeRange"
+        (change)="setTimeRange(option.value)"
+        id="{{ option.value }}"
+      />
+      <label [for]="option.value">{{ option.label }}</label>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <section class="notification-content">
+    <h2>Reported Reviews</h2>
+
+    <div class="tabs">
+      <button [class.active]="tab === 'ALL'" (click)="setTab('ALL')">All</button>
+      <button [class.active]="tab === 'UNREAD'" (click)="setTab('UNREAD')">Unread</button>
+      <button [class.active]="tab === 'READ'" (click)="setTab('READ')">Read</button>
+    </div>
+
+    <div *ngIf="filteredReports.length === 0" class="empty-state">
+      No reports found.
+    </div>
+
+    <div
+      *ngFor="let report of filteredReports"
+      class="notif-card"
+      [class.read]="report.read"
+      (click)="goToReview(report)"
+    >
+      <i class="notif-icon fas fa-flag"></i>
+      <div class="notif-text">
+        <div class="notif-content">
+          <strong>Reason:</strong> {{ report.reason }}<br />
+          <strong>Comment:</strong> {{ report.review.comment }}
+        </div>
+        <div class="notif-time">{{ report.reportedAt | date: 'medium' }}</div>
+      </div>
+    </div>
+  </section>
+</div>

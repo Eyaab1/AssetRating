@@ -26,15 +26,18 @@ public class ReviewReportHookConfigurer {
 
     @PostConstruct
     public void init() {
-        ReviewCommentReportService.setOnReviewReported((review, reason, reporterId) -> {
-            Asset asset = assetRepository.findById(review.getAssetId())
-                .orElseThrow(() -> new RuntimeException("Asset not found"));
+    	ReviewCommentReportService.setOnReviewReported((review, reason, reporterId, reportId) -> {
+    	    Asset asset = assetRepository.findById(review.getAssetId())
+    	        .orElseThrow(() -> new RuntimeException("Asset not found"));
 
-            User reporter = authRepository.findById(reporterId)
-                .orElseThrow(() -> new RuntimeException("Reporter not found"));
+    	    User reporter = authRepository.findById(reporterId)
+    	        .orElseThrow(() -> new RuntimeException("Reporter not found"));
+    	    String paddedId = String.format("%03d", reportId);
+    	    
 
-            notificationService.notifyContributorOfReportedReview(review, reason, reporter);
-        });
+    	    notificationService.notifyContributorOfReportedReview(review, reason, reporter, paddedId);
+    	});
+
     }
 
 

@@ -149,5 +149,23 @@ export class NotificationSeeAllComponent implements OnInit {
       break;
   }
 }
+getIconClass(type: NotificationType): string {
+  switch (type) {
+    case NotificationType.REVIEW_REPORTED:
+      return 'fas fa-flag';
+    case NotificationType.REVIEW_LIKED:
+      return 'fas fa-heart';
+    case NotificationType.COMMENT_REPLIED:
+      return 'fas fa-comment-dots';
+    case NotificationType.REVIEW_ADDED:
+      return 'fas fa-pen';
+    case NotificationType.ASSET_PUBLISHED:
+      return 'fas fa-rocket';
+    case NotificationType.ASSET_UPDATED:
+      return 'fas fa-sync-alt';
+    default:
+      return 'fas fa-bell';
+  }
+}
 
 }

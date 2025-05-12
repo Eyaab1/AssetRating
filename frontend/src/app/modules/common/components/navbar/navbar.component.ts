@@ -198,5 +198,23 @@ navigateBasedOnNotification(notification: Notification): void {
 
   this.showDropdown = false; // close dropdown
 }
+getIconClass(type: NotificationType): string {
+  switch (type) {
+    case NotificationType.REVIEW_REPORTED:
+      return 'fas fa-flag'; // 🟥 keep the flag for reports
+    case NotificationType.REVIEW_LIKED:
+      return 'fas fa-heart'; // ❤️ heart for likes
+    case NotificationType.COMMENT_REPLIED:
+      return 'fas fa-comment-dots'; // 💬 comment bubble
+    case NotificationType.REVIEW_ADDED:
+      return 'fas fa-pen'; // ✍️ for a new review
+    case NotificationType.ASSET_PUBLISHED:
+      return 'fas fa-rocket'; // 🚀 for new asset
+    case NotificationType.ASSET_UPDATED:
+      return 'fas fa-sync-alt'; // 🔁 for updated asset
+    default:
+      return 'fas fa-bell'; // 🔔 fallback
+  }
+}
 
 }

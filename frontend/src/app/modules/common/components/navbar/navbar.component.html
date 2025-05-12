@@ -47,14 +47,13 @@
           <!-- <div class="see-all" (click)="goToFullNotifications()">See all</div> -->
         </div>
 
-        <!-- ✅ Use sectionGroup instead of groupedNotifications[section.key] -->
         <div
           *ngFor="let notif of sectionGroup | slice:0:(expandedSections[section.key] ? sectionGroup.length : notificationsLimit)"
           class="notif-card"
           (click)="navigateBasedOnNotification(notif)"
         >
 
-          <i class="fas fa-flag notif-icon"></i>
+          <i class="notif-icon" [ngClass]="getIconClass(notif.type)"></i>
           <div class="notif-text">
             <div class="notif-content-wrapper">
               <div class="notif-content">{{ notif.content }}</div>

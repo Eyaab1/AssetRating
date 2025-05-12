@@ -54,7 +54,7 @@ export class NotificationService implements OnInit{
   );
 }
 
-  markAsRead(id: number): Observable<void> {
+  markAsRead(id: String): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/${id}/read`, {}, {
       headers: this.getAuthHeaders()
     });

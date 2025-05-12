@@ -8,6 +8,6 @@ import com.example.demo.auth.User;
 import java.util.List;
 
 @Repository
-public interface NotificationRepository extends JpaRepository<Notification, Long> {
+public interface NotificationRepository extends JpaRepository<Notification, String> {
 	List<Notification> findByRecipientOrderByCreatedAtDesc(User user);
 }

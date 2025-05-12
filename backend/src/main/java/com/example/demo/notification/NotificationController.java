@@ -29,7 +29,7 @@ public class NotificationController {
     }
 
     @PostMapping("/{id}/read")
-    public ResponseEntity<?> markNotificationAsRead(@PathVariable Long id) {
+    public ResponseEntity<?> markNotificationAsRead(@PathVariable String id) {
         notificationService.markAsRead(id);
         return ResponseEntity.ok().build();
     }

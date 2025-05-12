@@ -46,7 +46,7 @@
     </div>
 
     <div *ngFor="let notif of filteredNotifications" class="notif-card" (click)="markAsRead(notif); navigateBasedOnNotification(notif)">
-      <i class="fas fa-flag notif-icon"></i>
+    <i class="notif-icon" [ngClass]="getIconClass(notif.type)"></i>
       <div class="notif-text">
         <div class="notif-content">{{ notif.content }}</div>
         <div class="notif-time">{{ notif.createdAt | date:'medium' }}</div>

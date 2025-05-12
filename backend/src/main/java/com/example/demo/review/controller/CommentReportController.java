@@ -58,4 +58,9 @@ public class CommentReportController {
         response.put("message", "Review reported successfully.");
         return ResponseEntity.ok(response);
     }
+    @GetMapping("/reports")
+    public ResponseEntity<?> getAllReports() {
+        return ResponseEntity.ok(reviewReportService.getAllReports());
+    }
+
 }
