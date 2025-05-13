@@ -100,7 +100,7 @@ public class NotificationService {
                     .orElseThrow(() -> new RuntimeException("User not found: " + publisherEmail));
 
             String content = "Review by " + commenter.getFirstName() + " " + commenter.getLastName()
-                    + " on your asset \"" + asset.getName() + "\" was reported";
+            + " on your asset \"" + asset.getName() + "\" was reported for: " + reason;
 
             notifyUser(contributor, commenter, content, NotificationType.REVIEW_REPORTED,
                     review.getId().toString(), asset.getId(), asset, reportId);

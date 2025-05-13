@@ -5,6 +5,7 @@ import com.example.demo.dto.ModerationResult;
 import com.example.demo.dto.ProfanityCheckResponse;
 import com.example.demo.dto.ReplyRequest;
 import com.example.demo.asset.repository.AssetRepository;
+import com.example.demo.asset.service.AssetService;
 import com.example.demo.auth.AuthRepository;
 import com.example.demo.auth.User;
 import com.example.review.model.ReviewComment;
@@ -30,7 +31,7 @@ import java.util.*;
 public class ReviewCommentController {
 
     private final ReviewCommentService reviewService;
-    private final AssetRepository assetRepository;
+    private final AssetService assetService;
     private final ReviewAnalysisClient reviewModerationService;
     private final NotificationService notificationService;
     private final AuthRepository authRepository;
@@ -40,20 +41,21 @@ public class ReviewCommentController {
     private final String PROFANITY_SERVICE_URL = "http://localhost:5000/check_profanity";
 
     public ReviewCommentController(
-            ReviewCommentService reviewService,
-            AssetRepository assetRepository,
-            ReviewAnalysisClient reviewModerationService,
-            NotificationService notificationService,
-            AuthRepository authRepository,
-            ReviewCommentRepository reviewRepository
-    ) {
-        this.reviewService = reviewService;
-        this.assetRepository = assetRepository;
-        this.reviewModerationService = reviewModerationService;
-        this.notificationService = notificationService;
-        this.authRepository = authRepository;
-        this.reviewRepository = reviewRepository;
-    }
+    	    ReviewCommentService reviewService,
+    	    AssetService assetService,
+    	    ReviewAnalysisClient reviewModerationService,
+    	    NotificationService notificationService,
+    	    AuthRepository authRepository,
+    	    ReviewCommentRepository reviewRepository
+    	) {
+    	    this.reviewService = reviewService;
+    	    this.assetService = assetService;
+    	    this.reviewModerationService = reviewModerationService;
+    	    this.notificationService = notificationService;
+    	    this.authRepository = authRepository;
+    	    this.reviewRepository = reviewRepository;
+    	}
+
 
 
     private boolean checkProfanity(String assetId, String reviewText) {
@@ -81,7 +83,7 @@ public class ReviewCommentController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addReview(@RequestBody ReviewRequest request, Principal principal) {
-        if (!assetRepository.existsById(request.getAssetId().toString())) {
+    	if (!assetService.assetExists(request.getAssetId().toString())) {
             return ResponseEntity.badRequest().body("Asset with ID " + request.getAssetId() + " does not exist.");
         }
 
@@ -141,7 +143,7 @@ public class ReviewCommentController {
 
     @GetMapping("/asset/{assetId}")
     public ResponseEntity<?> getReviews(@PathVariable String assetId) {
-        if (!assetRepository.existsById(assetId)) {
+    	if (!assetService.assetExists(assetId)){
             return ResponseEntity.badRequest().body("Asset with ID " + assetId + " does not exist.");
         }
 
@@ -184,7 +186,7 @@ public class ReviewCommentController {
     public ResponseEntity<?> reviewRelease(@RequestBody ReviewRequest request) {
     	ReviewComment review = new ReviewComment();
         review.setUserId(request.getUserId());
-        review.setAssetId(request.getAssetId()); // use releasedAsset.id here
+        review.setAssetId(request.getAssetId());
         review.setComment(request.getComment());
 
         reviewService.addReview(review);

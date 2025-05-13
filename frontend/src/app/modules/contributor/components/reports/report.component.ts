@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { ReportService } from '../../../../shared/services/report.service';
-import { Report } from '../../../../shared/models/report';
+import { Notification } from '../../../../shared/models/notification';
 import { NotificationService } from '../../../../shared/services/notification.service';
 
 @Component({
@@ -14,38 +13,32 @@ import { NotificationService } from '../../../../shared/services/notification.se
   styleUrls: ['./report.component.css']
 })
 export class ReportComponent implements OnInit {
-  reports: (Report & { read?: boolean })[] = [];
-  filteredReports: (Report & { read?: boolean })[] = [];
+  reports: Notification[] = [];
+  filteredReports: Notification[] = [];
 
-timeRange: 'ALL' | 'TODAY' | 'THIS_WEEK' | 'THIS_MONTH' | 'EARLIER' = 'ALL';
-tab: 'ALL' | 'UNREAD' | 'READ' = 'ALL';
+  timeRange: 'ALL' | 'TODAY' | 'THIS_WEEK' | 'THIS_MONTH' | 'EARLIER' = 'ALL';
+  tab: 'ALL' | 'UNREAD' | 'READ' = 'ALL';
 
-timeOptions: { label: string; value: 'ALL' | 'TODAY' | 'THIS_WEEK' | 'THIS_MONTH' | 'EARLIER' }[] = [
-  { label: 'All', value: 'ALL' },
-  { label: 'Today', value: 'TODAY' },
-  { label: 'This Week', value: 'THIS_WEEK' },
-  { label: 'This Month', value: 'THIS_MONTH' },
-  { label: 'Earlier', value: 'EARLIER' }
-];
-
+  timeOptions = [
+    { label: 'All', value: 'ALL' },
+    { label: 'Today', value: 'TODAY' },
+    { label: 'This Week', value: 'THIS_WEEK' },
+    { label: 'This Month', value: 'THIS_MONTH' },
+    { label: 'Earlier', value: 'EARLIER' }
+  ];
 
   constructor(
-    private reportService: ReportService,
-    private router: Router,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.reportService.getAllReports().subscribe({
-      next: data => {
-        this.reports = data.map(r => {
-          const report = new Report(r.id, r.reason, new Date(r.reportedAt), r.userId, r.review);
-          (report as any).read = false;
-          return report;
-        });
+    this.notificationService.getNotifications().subscribe({
+      next: notifs => {
+        this.reports = notifs.filter(n => n.type === 'REVIEW_REPORTED');
         this.filterReports();
       },
-      error: err => console.error('Failed to load reports', err)
+      error: err => console.error('Failed to load notifications', err)
     });
   }
 
@@ -59,21 +52,14 @@ timeOptions: { label: string; value: 'ALL' | 'TODAY' | 'THIS_WEEK' | 'THIS_MONTH
     this.filterReports();
   }
 
-  markAsRead(report: Report) {
-    this.notificationService.getNotifications().subscribe(notifs => {
-      const match = notifs.find(n =>
-        n.type === 'REVIEW_REPORTED' &&
-        n.relatedEntityId === report.review.id.toString()
-      );
-
-      if (match && !match.read) {
-        this.notificationService.markAsRead(match.id).subscribe(() => {
-          (report as any).read = true;
-        });
-      }
-    });
+  markAsRead(report: Notification) {
+    if (!report.read) {
+      this.notificationService.markAsRead(report.id).subscribe(() => {
+        report.read = true;
+        this.filterReports();
+      });
+    }
   }
-
 
   filterReports() {
     const now = new Date();
@@ -86,7 +72,7 @@ timeOptions: { label: string; value: 'ALL' | 'TODAY' | 'THIS_WEEK' | 'THIS_MONTH
       if (this.tab === 'UNREAD' && report.read) return false;
       if (this.tab === 'READ' && !report.read) return false;
 
-      const created = new Date(report.reportedAt);
+      const created = new Date(report.createdAt); // updated from reportedAt → createdAt
       switch (this.timeRange) {
         case 'TODAY':
           if (created.toDateString() !== today.toDateString()) return false;
@@ -106,10 +92,13 @@ timeOptions: { label: string; value: 'ALL' | 'TODAY' | 'THIS_WEEK' | 'THIS_MONTH
     });
   }
 
-  goToReview(report: Report) {
+  goToReview(report: Notification) {
     this.markAsRead(report);
-    this.router.navigate([`/detail/${report.review.assetId}`], {
-      queryParams: { focusReviewId: report.review.id }
+    this.router.navigate([`/detail/${report.relatedAssetId}`], {
+      queryParams: {
+        focusReviewId: report.relatedEntityId,
+        fromReport: true
+      }
     });
   }
 }

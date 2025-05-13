@@ -174,8 +174,10 @@ markAllAsRead() {
 navigateBasedOnNotification(notification: Notification): void {
   const assetId = notification.relatedAssetId;
   const reviewId = notification.relatedEntityId;
-
   const baseRoute = this.role === 'CONTRIBUTOR' ? '/contributorLayout/detail' : '/detail';
+
+  // ✅ Mark as read immediately
+  this.markAsRead(notification);
 
   switch (notification.type) {
     case NotificationType.ASSET_PUBLISHED:
@@ -188,7 +190,10 @@ navigateBasedOnNotification(notification: Notification): void {
     case NotificationType.REVIEW_LIKED:
     case NotificationType.COMMENT_REPLIED:
       this.router.navigate([`${baseRoute}/${assetId}`], {
-        queryParams: { focusReviewId: reviewId }
+        queryParams: {
+          focusReviewId: reviewId,
+          fromReport: notification.type === NotificationType.REVIEW_REPORTED
+        }
       });
       break;
 
@@ -196,9 +201,10 @@ navigateBasedOnNotification(notification: Notification): void {
       console.warn('No routing defined for notification type:', notification.type);
       break;
   }
-    this.showDropdown = false; // close dropdown
 
+  this.showDropdown = false;
 }
+
 getIconClass(type: NotificationType): string {
   switch (type) {
     case NotificationType.REVIEW_REPORTED:

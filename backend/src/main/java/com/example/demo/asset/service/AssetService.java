@@ -1,5 +1,6 @@
 package com.example.demo.asset.service;
 
+import com.example.demo.analytics.TopRatedDTO;
 import com.example.demo.asset.model.Asset;
 import com.example.demo.asset.model.AssetReleases;
 import com.example.demo.asset.model.Connector;
@@ -32,6 +33,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -229,6 +231,10 @@ public class AssetService {
         return assetRepository.save(asset);
     }
 
+    public boolean assetExists(String assetId) {
+        return assetRepository.existsById(assetId);
+    }
+
     public List<Asset> getAllAssets() {
         List<Asset> assets = assetRepository.findAll();
 
@@ -319,8 +325,65 @@ public class AssetService {
     }
 
 
+    
+    public List<TopRatedDTO> findTopRatedAssets() {
+        return getAllAssets().stream()
+            .filter(a -> ratingService.countRatings(a.getId()) > 0)
+            .map(asset -> new TopRatedDTO(asset.getLabel(), (double) ratingService.getOverallRating(asset.getId())))
+            .sorted((a, b) -> Double.compare(b.getAverageRating(), a.getAverageRating()))
+            .limit(5)
+            .collect(Collectors.toList());
+    }
+    public Map<Status, Long> countAssetsByStatus() {
+        return getAllAssets().stream()
+            .collect(Collectors.groupingBy(Asset::getStatus, Collectors.counting()));
+    }
 
+    public List<TopRatedDTO> findTopRatedCategory() {
+        return getAllAssets().stream()
+            .filter(a -> a.getCategories() != null && !a.getCategories().isEmpty())
+            .flatMap(asset -> asset.getCategories().stream().map(cat -> Map.entry(cat.getName(), ratingService.getOverallRating(asset.getId()))))
+            .collect(Collectors.groupingBy(Map.Entry::getKey,
+                Collectors.averagingDouble(Map.Entry::getValue)))
+            .entrySet().stream()
+            .map(e -> new TopRatedDTO(e.getKey(), e.getValue()))
+            .sorted((a, b) -> Double.compare(b.getAverageRating(), a.getAverageRating()))
+            .collect(Collectors.toList());
+    }
+    public List<TopRatedDTO> findTopRatedTag() {
+        return getAllAssets().stream()
+            .filter(asset -> asset.getTags() != null && !asset.getTags().isEmpty())
+            .flatMap(asset -> asset.getTags().stream()
+                .map(tag -> Map.entry(tag.getName(), ratingService.getOverallRating(asset.getId()))))
+            .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.averagingDouble(Map.Entry::getValue)))
+            .entrySet().stream()
+            .map(e -> new TopRatedDTO(e.getKey(), e.getValue()))
+            .sorted((a, b) -> Double.compare(b.getAverageRating(), a.getAverageRating()))
+            .collect(Collectors.toList());
+    }
 
+    public List<TopRatedDTO> findAllRatedCategories() {
+        return getAllAssets().stream()
+            .filter(asset -> asset.getCategories() != null && !asset.getCategories().isEmpty())
+            .flatMap(asset -> asset.getCategories().stream()
+                .map(cat -> Map.entry(cat.getName(), ratingService.getOverallRating(asset.getId()))))
+            .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.averagingDouble(Map.Entry::getValue)))
+            .entrySet().stream()
+            .map(e -> new TopRatedDTO(e.getKey(), e.getValue()))
+            .sorted((a, b) -> Double.compare(b.getAverageRating(), a.getAverageRating()))
+            .collect(Collectors.toList());
+    }
+    public List<TopRatedDTO> findAllRatedTags() {
+        return getAllAssets().stream()
+            .filter(asset -> asset.getTags() != null && !asset.getTags().isEmpty())
+            .flatMap(asset -> asset.getTags().stream()
+                .map(tag -> Map.entry(tag.getName(), ratingService.getOverallRating(asset.getId()))))
+            .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.averagingDouble(Map.Entry::getValue)))
+            .entrySet().stream()
+            .map(e -> new TopRatedDTO(e.getKey(), e.getValue()))
+            .sorted((a, b) -> Double.compare(b.getAverageRating(), a.getAverageRating()))
+            .collect(Collectors.toList());
+    }
 
 
 }

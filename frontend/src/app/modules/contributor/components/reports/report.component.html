@@ -8,7 +8,7 @@
         name="timeFilter"
         [value]="option.value"
         [(ngModel)]="timeRange"
-        (change)="setTimeRange(option.value)"
+        (change)="filterReports()"
         id="{{ option.value }}"
       />
       <label [for]="option.value">{{ option.label }}</label>
@@ -38,10 +38,9 @@
       <i class="notif-icon fas fa-flag"></i>
       <div class="notif-text">
         <div class="notif-content">
-          <strong>Reason:</strong> {{ report.reason }}<br />
-          <strong>Comment:</strong> {{ report.review.comment }}
+          <strong>Report:</strong> {{ report.content }}
         </div>
-        <div class="notif-time">{{ report.reportedAt | date: 'medium' }}</div>
+        <div class="notif-time">{{ report.createdAt| date: 'medium' }}</div>
       </div>
     </div>
   </section>

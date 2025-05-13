@@ -1,5 +1,7 @@
 package com.example.demo.auth;
 
+import java.util.Date;
+
 public class UserDTO {
 
 	 private Long id;
@@ -7,6 +9,15 @@ public class UserDTO {
 	    private String lastName;
 	    private String email;
 	    private Role role;
+	    private Date createdAt;
+
+	    public Date getCreatedAt() {
+	        return createdAt;
+	    }
+
+	    public void setCreatedAt(Date createdAt) {
+	        this.createdAt = createdAt;
+	    }
 
 	    public UserDTO(User user) {
 	        this.id = user.getId();
@@ -14,7 +25,8 @@ public class UserDTO {
 	        this.lastName = user.getLastName();
 	        this.email = user.getEmail();
 	        this.role = user.getRole();
-	    }
+	        this.createdAt=user.getCreatedAt();
+	        }
 
 	 
 	    public Long getId() {

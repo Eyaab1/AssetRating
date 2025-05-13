@@ -26,4 +26,10 @@ export class ReportService {
       headers: this.getAuthHeaders()
     });
   }
+  getReportsByCurrentUser(): Observable<Report[]> {
+  return this.http.get<Report[]>(this.baseUrl + '/user', {
+    headers: this.getAuthHeaders()
+  });
+}
+
 }

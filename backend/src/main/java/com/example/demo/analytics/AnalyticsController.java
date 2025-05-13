@@ -32,11 +32,11 @@ public class AnalyticsController {
     }
     @GetMapping("/allToRatedCatg")
     public ResponseEntity<List<TopRatedDTO>> getAllRatedCatg() {
-        return ResponseEntity.ok(analyticsService.getalltopRatedCatg());
+        return ResponseEntity.ok(analyticsService.getAllTopRatedCategories());
     }
     @GetMapping("/allToRatedTags")
     public ResponseEntity<List<TopRatedDTO>> getAllRatedTags() {
-        return ResponseEntity.ok(analyticsService.getalltopRatedTags());
+        return ResponseEntity.ok(analyticsService.getAllTopRatedCategories());
     }
     @GetMapping("/top-rated-assets")
     public ResponseEntity<List<TopRatedDTO>> getTopRatedAssets() {
@@ -47,5 +47,30 @@ public class AnalyticsController {
     public ResponseEntity<Map<String, Long>> getAssetStatusDistribution() {
         return ResponseEntity.ok(analyticsService.getAssetStatusDistribution());
     }
+    @GetMapping("/asset-upload-trend")
+    public ResponseEntity<Map<String, Long>> getAssetUploadTrend() {
+        return ResponseEntity.ok(analyticsService.getAssetUploadTrend());
+    }
+
+    @GetMapping("/review-activity-trend")
+    public ResponseEntity<Map<String, Long>> getReviewActivityTrend() {
+        return ResponseEntity.ok(analyticsService.getReviewActivityTrend());
+    }
+
+    @GetMapping("/rating-volume-trend")
+    public ResponseEntity<Map<String, Long>> getRatingVolumeTrend() {
+        return ResponseEntity.ok(analyticsService.getRatingVolumeTrend());
+    }
+
+    @GetMapping("/review-sentiment")
+    public ResponseEntity<Map<String, Integer>> getReviewSentimentBreakdown() {
+        return ResponseEntity.ok(analyticsService.getSentimentBreakdown());
+    }
+
+    @GetMapping("/review-spam")
+    public ResponseEntity<Map<String, Integer>> getSpamBreakdown() {
+        return ResponseEntity.ok(analyticsService.getSpamBreakdown());
+    }
+
 
 }

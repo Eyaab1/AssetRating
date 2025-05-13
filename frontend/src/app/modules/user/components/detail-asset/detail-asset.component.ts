@@ -117,7 +117,6 @@ loadAssetById(id: string): void {
   setReleaseTab(releaseId: number, tab: 'docs' | 'feedback') {
     this.activeReleaseTabs[releaseId] = tab;
   }
-  //  Loaders 
   loadComments(): void {
     const assetId = this.assetSelected?.id;
     if (!assetId) return;
