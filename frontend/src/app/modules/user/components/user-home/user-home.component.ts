@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AssetServiceService } from '../../../../shared/services/asset-service.service';
 import { Asset } from '../../../../shared/models/asset';
 import { FormsModule } from '@angular/forms';
@@ -24,8 +24,8 @@ export class UserHomeComponent implements OnInit {
   availableAssets: Asset[] = [];
   recommendedAssets: Asset[] = [];
   trendingAssets: Asset[] = [];
-loadingRecommendations = true;
-
+  loadingRecommendations = true;
+  role: string='';
   groupedAssets: { label: string; assets: Asset[] }[] = [];
 
   allCategories: { id: number; name: string }[] = [];
@@ -35,16 +35,19 @@ loadingRecommendations = true;
   selectedTagNames: string[] = [];
 
   searchQuery: string = '';
+  quickViewRating: number | null = null;
 
   constructor(
     private assetService: AssetServiceService,
     private tagCatgService: TagAndcategoryService,
     private authService: AuthService,
-    private ratingService: RatingService
+    private ratingService: RatingService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-
+    this.role = localStorage.getItem('role') || '';
+    console.log("role: "+this.role);
     this.assetService.getAllAssets().subscribe({
       next: (data) => {
         this.assets = data;
@@ -160,6 +163,9 @@ loadingRecommendations = true;
   });
 }
 
+goToDetail(assetId: string) {
+  this.router.navigate(['/contributorLayout/detail', assetId]); 
+}
 
   groupByType(): void {
     const grouped: any = {};
@@ -186,4 +192,46 @@ loadingRecommendations = true;
   onImageError(event: any): void {
     event.target.src = 'assets/images/default3.jpg';
   }
+  onDownloadClicked(assetId: string): void {
+  this.assetService.incrementDownload(assetId).subscribe({
+    next: () => {
+      const asset = this.assets.find(a => a.id === assetId);
+      if (asset) {
+        asset.downloadCount = (asset.downloadCount || 0) + 1;
+      }
+    },
+    error: err => console.error('Failed to increment download count', err)
+  });
+}
+quickViewAsset: any = null;
+
+openQuickView(asset: any) {
+  this.quickViewAsset = asset;
+  this.quickViewRating = null; // reset before loading
+
+  this.ratingService.getAveragerating(asset.id).subscribe({
+   next: (res) => {
+  console.log("resultat: ", res);
+  console.log('type:', typeof res);
+  console.log('res.overall:', res?.overall);
+
+  this.quickViewRating = res ?? 0;},
+    error: () => this.quickViewRating = null
+  });
+}
+createStarDisplay(average: number): string[] {
+  const stars: string[] = [];
+  const fullStars = Math.floor(average);
+  const hasHalfStar = average - fullStars >= 0.5;
+
+  for (let i = 0; i < fullStars; i++) stars.push('full');
+  if (hasHalfStar) stars.push('half');
+  while (stars.length < 5) stars.push('empty');
+
+  return stars;
+}
+
+
+
+
 }

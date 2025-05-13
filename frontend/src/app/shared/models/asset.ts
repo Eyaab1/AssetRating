@@ -19,6 +19,7 @@ export class Asset {
           public status: StatusType,
           public image: string,
           public description: string,
+          public downloadCount: number,
           public documentation: string,
           public projectType: ProjectType,
           public tags: Tag[],           

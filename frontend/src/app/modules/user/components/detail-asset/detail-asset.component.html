@@ -3,14 +3,25 @@
   <!--  LEFT COLUMN  -->
   <div class="left-column">
     <!-- Header -->
-    <div class="header">
-      <img [src]="getIcon(assetSelected?.image)" alt="Asset Icon" class="asset-icon" />
-      <div>
-        <h2>{{ assetSelected?.label }}</h2>
-        <p class="asset-id">ID: {{ assetSelected?.id }}</p>
-        <p class="description">{{ assetSelected?.description }}</p>
-      </div>
-    </div>
+   <div class="header">
+  <img [src]="getIcon(assetSelected?.image || '')" alt="Asset Icon" class="asset-icon" />
+  
+  <div class="asset-info">
+    <h2>{{ assetSelected?.label }}</h2>
+    <p class="asset-id">{{ assetSelected?.type }}</p>
+    <p class="asset-id">ID: {{ assetSelected?.id }}</p>
+    <p class="description">{{ assetSelected?.description }}</p>
+  </div>
+
+  <div class="download-info">
+    <button class="download-btn" (click)="onDownloadClicked(assetSelected?.id || '')">
+      <i class="fas fa-download"></i> Download
+    </button>
+    
+  </div>
+</div>
+
+
 
     <!-- Tabs -->
     <div class="tabs">
@@ -115,9 +126,12 @@
   <div class="right-column">
     <!-- Asset Meta Info -->
     <div class="asset-meta">
-      <h4>About this asset</h4>
-      <p><i class="fa fa-user"></i> {{ assetSelected?.publisher }}</p>
-      <p><i class="fa fa-calendar"></i> {{ assetSelected?.publishDate | date: 'mediumDate' }}</p>
+      <h4 class="about-title">About this asset</h4>
+      <p class="publisher"><i class="fa fa-user"></i> {{ assetSelected?.publisher }}</p>
+      <p class="publishedAt"><i class="fa fa-calendar"></i> {{ assetSelected?.publishDate | date: 'mediumDate' }}</p>
+      <p class="download-count" *ngIf="assetSelected?.downloadCount !== undefined && assetSelected?.downloadCount !== 0">
+      <i class="fas fa-arrow-down"></i>{{ assetSelected?.downloadCount }} downloaded
+    </p>
     </div>
 
     <!-- Average Ratings -->
@@ -139,14 +153,19 @@
     <!-- Same Category Assets -->
     <div class="same-category-header">
       <h4>Same category</h4>
-      <a class="view-more">View more <i class="fas fa-chevron-right"></i></a>
     </div>
-    <div class="same-category-list" *ngIf="sameCategoryAssets.length">
-      <div class="same-category-card" *ngFor="let item of sameCategoryAssets">
+    <div class="same-category-list" *ngIf="sameCategoryAssets.length" >
+      <div
+  class="same-category-card"
+  *ngFor="let item of sameCategoryAssets"
+  (click)="goTheDetail(item.id)"
+>
+
         <img [src]="getIcon(item.image)" class="category-icon" />
         <div class="category-text">
           <strong>{{ item.label }}</strong>
           <p>{{ item.description }}</p>
+          
         </div>
       </div>
     </div>

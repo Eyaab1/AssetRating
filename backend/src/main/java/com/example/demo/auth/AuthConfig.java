@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -42,6 +43,7 @@ public class AuthConfig {
 ///releases/docs/upload
             .authorizeHttpRequests(auth -> auth
             	    .requestMatchers("/auth/**").permitAll()
+            	    .requestMatchers("/api/assets/*/download").authenticated() 
             	    .requestMatchers("/api/assets/filter").authenticated() 
             	    .requestMatchers("/api/assets/**", "/api/assets", "/api/assets/").authenticated()
             	    .requestMatchers("/api/assets/**").permitAll()

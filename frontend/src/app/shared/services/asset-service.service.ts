@@ -4,7 +4,6 @@ import { forkJoin, map, Observable, switchMap } from 'rxjs';
 import { Asset } from '../models/asset';
 import { Widget } from '../models/widget';
 import { AssetRelease } from '../models/asset-release';
-import { getSafeLocalStorage } from '../utils/localstorage';
 @Injectable({
   providedIn: 'root'
 })
@@ -15,13 +14,13 @@ export class AssetServiceService {
   constructor(private http: HttpClient) {}
 
   private getAuthHeaders(): HttpHeaders {
-    if (typeof window !== 'undefined') {
+    
       const token = localStorage.getItem('token');
       if (token) {
         return new HttpHeaders({
           'Authorization': `Bearer ${token}`,
         });
-      }
+      
     }
     return new HttpHeaders();
   }
@@ -82,6 +81,13 @@ export class AssetServiceService {
   getRecommendedAssets(userId: number): Observable<Asset[]> {
   return this.http.get<Asset[]>(`${this.baseUrl}/recommended?userId=${userId}`, { headers: this.getAuthHeaders() });
 
+}
+incrementDownload(assetId: string): Observable<void> {
+  return this.http.put<void>(
+    `${this.baseUrl}/${assetId}/download`,
+    {}, 
+    { headers: this.getAuthHeaders() }
+  );
 }
 
   

@@ -22,6 +22,7 @@ export class Template extends Asset {
     status: StatusType,
     image: string,
     description: string,
+    downloadCount: number,
     documentation: string,
     projectType: ProjectType,
     tags: Tag[] = [],
@@ -36,7 +37,7 @@ export class Template extends Asset {
   ) {
     super(
       id, name, type, label, publisher, publisherMail, publishDate, license, status,
-      image, description, documentation, projectType, tags, categories, releases,
+      image, description,downloadCount, documentation, projectType, tags, categories, releases,
       parentAsset, ratings, comments, averageRating, reviewsCount
     );
   }

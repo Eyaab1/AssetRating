@@ -1,15 +1,12 @@
-/* === Redesigned Asset Detail Page CSS === */
-
 .detail-container {
   display: flex;
   justify-content: space-between;
   padding: 60px 40px;
-  gap: 60px;
-  max-width: 1440px;
+  gap: 40px;
+  max-width: 100%;
   margin: auto;
   font-family: 'Inter', sans-serif;
-  background-color: #f9f9f9;
-  min-height: 100vh;
+  background-color: #ffffff;
 }
 
 .left-column {
@@ -18,43 +15,110 @@
 
 .right-column {
   flex: 1 1 30%;
-  background: #fff;
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
 }
 
+/* Header */
 .header {
   display: flex;
-  padding: 20px 0;
-  align-items: center;
-  gap: 25px;
-  margin-bottom: 25px;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
 }
 
 .asset-icon {
   width: 100px;
-  height: 90px;
+  height: 100px;
   object-fit: contain;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+  border-radius: 12px;
+  border: 1px solid #e2e2e2;
   background-color: #fff;
 }
 
-.asset-id {
-  font-size: 14px;
-  color: #777;
-}
-
-.description {
-  color: #555;
-  margin-top: 6px;
-  font-size: 15px;
-}
-
-.tabs {
+.asset-info {
+  flex: 1;
   display: flex;
-  gap: 30px;
+  flex-direction: column;
+  margin-left: 20px;
+  gap: 6px;
+}
+
+.asset-info h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #222;
+}
+
+.asset-id,
+.description {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Download */
+.download-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #7c3aed;
+  color: #fff;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+  transition: all 0.2s ease;
+}
+
+.download-btn:hover {
+  background-color: #6a32e2;
+  transform: translateY(-1px);
+}
+
+.download-count {
+  font-size: 13px;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.download-count i {
+  color: #7c3aed;
+}
+/* About */
+.about-title{
+  margin-bottom: 10px;
+}
+.publisher , .publishedAt  {
+  font-size: 14px;
+  color: #000000;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  
+}
+/* {
+  font-size: 14px;
+  color: #000000;
+  margin-right: 5px;
+} */
+/* Tabs */
+.tabs {
+  
+  display: flex;
+  gap: 20px;
   border-bottom: 2px solid #eee;
   margin-bottom: 24px;
 }
@@ -63,10 +127,11 @@
   background: none;
   border: none;
   padding: 12px 24px;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
   border-bottom: 3px solid transparent;
-  transition: all 0.25s ease;
+  transition: 0.25s ease;
+  color: #555;
 }
 
 .tabs button.active {
@@ -77,69 +142,51 @@
 
 .tab-content {
   background: #fff;
-  padding: 30px;
+  padding: 24px 30px;
   border-radius: 12px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.04);
 }
 
 .doc-preview iframe,
-.release-doc iframe {
+.doc-viewer {
   width: 100%;
   height: 600px;
   border: none;
+  border-radius: 10px;
 }
-.doc-viewer {
-  width: 100%;
-  height: 85vh; /* Taller, uses most of screen height */
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.06);
-  background-color: #fff;
+
+/* Releases */
+.release-card {
+  background: #fdfdfd;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  transition: 0.3s;
 }
 
 .release-card.selected {
-  background-color: #f5f3ff; /* Soft lavender tone */
-  border: 1.5px solid #7c3aed;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1);
+  background: #f6f1ff;
+  border-color: #7c3aed;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.1);
 }
-
-.release-card {
-  background: #fcfcfc;
-  margin-bottom: 18px;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-  transition: all 0.2s ease;
-}
-
 
 .release-header {
   padding: 18px 24px;
   display: flex;
   justify-content: space-between;
-  background: #fff;
   font-weight: 600;
+  background: #fff;
   cursor: pointer;
   border-bottom: 1px solid #eee;
 }
 
 .release-date {
-  color: #888;
   font-size: 14px;
+  color: #888;
 }
 
-.review-section, .rating-section {
-  margin-top: 70px;
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid #eee;
-  text-align: center;
-}
 .arrow {
-  display: inline-block;
-  margin-right: 12px;
+  margin-right: 10px;
   transition: transform 0.2s ease;
 }
 
@@ -147,74 +194,71 @@
   transform: rotate(90deg);
 }
 
-
-.review-header {
+/* Inner tabs (docs/feedback) */
+.tab-buttons {
   display: flex;
-  padding: 10px;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-}
-.section-title {
-  font-size: 1.6rem;
-  font-weight: 600;
-  margin-bottom: 4px;
+  gap: 16px;
+  margin: 16px 0;
 }
 
-.subtitle {
-  color: #888;
-  font-size: 0.95rem;
-  margin-bottom: 16px;
+.tab-buttons button {
+  border: none;
+  background: #f3f0ff;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #555;
+  transition: 0.2s ease;
 }
-.text-header{
-  
-}
-.add-btn {
+
+.tab-buttons button.active {
   background: #7c3aed;
   color: #fff;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
   font-weight: 500;
+}
+
+/* Ratings */
+.rating-section {
+  margin-top: 40px;
+}
+
+.rating-section h3 {
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .rating-category {
   display: flex;
-  
   justify-content: space-between;
   align-items: center;
-  margin: 12px 0;
-}
-.rating-category h3{
-  text-align: center;
+  margin: 14px 0;
 }
 
 .rating-category label {
   flex: 1;
-  font-size: 16px;
-  
+  font-size: 15px;
+  color: #444;
 }
 
 .stars {
   flex: 1;
   display: flex;
   justify-content: center;
-  gap: 5px;
+  gap: 4px;
 }
 
 .star {
-  font-size: 22px;
+  font-size: 20px;
 }
 
 .star.full {
-  color: gold;
+  color: #ffc107;
 }
-
 .star.half {
   color: #f0c24b;
 }
-
 .star.empty {
   color: #ccc;
 }
@@ -222,46 +266,44 @@
 .rating-category small {
   flex: 0.5;
   text-align: right;
-  color: #777;
-}
-.asset-meta p{
-  margin-bottom: 8px;
-}
-.asset-meta h4 {
-  margin-bottom: 16px;
-  font-size: 17px;
-  font-weight: 600;
+  color: #666;
 }
 
-.same-category-section {
-  margin-top: 50px;
-}
-
-.same-category-item {
+/* Review */
+.review-header {
   display: flex;
-  gap: 14px;
-  padding: 10px;
-  /* border: solid 0.5px rgb(201, 200, 200); */
-  box-shadow: 5px 4px 12px rgba(0, 0, 0, 0.05);
+  justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
-  border-radius:10px ;
+  margin-top: 40px;
 }
 
-.same-icon {
-  width: 45px;
-  height: 45px;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 1px solid #eee;
-
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
 }
+
+.subtitle {
+  color: #888;
+  font-size: 14px;
+}
+
+.add-btn {
+  background: #7c3aed;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+/* Same category cards */
 .same-category-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  margin-top: 30px;
+  margin: 30px 0 12px;
 }
 
 .same-category-header h4 {
@@ -273,7 +315,6 @@
   font-size: 13px;
   color: #7c3aed;
   cursor: pointer;
-  text-decoration: none;
 }
 
 .view-more:hover {
@@ -284,18 +325,22 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 10px;
 }
 
 .same-category-card {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 14px;
+  padding: 16px;
   background: #fff;
   border: 1px solid #eee;
-  padding: 20px 14px;
   border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: 0.2s ease;
+  cursor: pointer;
+}
+
+.same-category-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .category-icon {
@@ -308,55 +353,11 @@
 
 .category-text strong {
   font-size: 15px;
-  color: #111;
+  color: #222;
 }
 
 .category-text p {
   font-size: 13px;
   color: #666;
   margin-top: 4px;
-  line-height: 1.4;
-}
-.release-review-btn {
-  background-color: #1e90ff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  color: white;
-  font-weight: bold;
-  margin-top: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.release-review-btn:hover {
-  background-color: #0b6fc2;
-}
-
-.highlight-review {
-  background-color: #fffae6;
-  border-left: 4px solid #ffa500;
-  transition: all 0.3s ease;
-}
-
-.tab-buttons {
-  display: flex;
-  gap: 20px;
-  margin: 16px 0;
-}
-
-.tab-buttons button {
-  background: none;
-  border: none;
-  padding: 10px 16px;
-  font-size: 15px;
-  cursor: pointer;
-  border-bottom: 3px solid transparent;
-  transition: all 0.25s ease;
-}
-
-.tab-buttons button.active {
-  border-bottom: 3px solid #7c3aed;
-  color: #7c3aed;
-  font-weight: 600;
 }

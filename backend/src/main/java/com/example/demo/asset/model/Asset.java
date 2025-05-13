@@ -54,6 +54,10 @@ public abstract class Asset {
 
     @Column(length = 3000)
     private String description;
+    
+    @Column(name = "download_count")
+    private Integer  downloadCount=0;
+
 
     private String documentation;
 
@@ -92,7 +96,7 @@ public abstract class Asset {
     }
 
     public Asset(String id, String name, String label, String publisher, String publisherMail, Date publishDate,
-                 License license, Status status, String image, String description, String documentation,
+                 License license, Status status, String image, String description,Integer  downloadCount, String documentation,
                   AssetType assetType, List<Tag> tags, List<Category> categories) {
         this.id = id;
         this.name = name;
@@ -104,10 +108,12 @@ public abstract class Asset {
         this.status = status;
         this.image = image;
         this.description = description;
+        this.downloadCount=downloadCount;
         this.documentation = documentation;
         //this.assetType = assetType;
         this.tags = tags;
         this.categories = categories;
+        
     }
     public String getFilePath() {
 		return filePath;
@@ -254,6 +260,13 @@ public abstract class Asset {
 		this.id = id;
 	}
 
+	public Integer getDownloadCount() {
+		return downloadCount;
+	}
+
+	public void setDownloadCount(Integer downloadCount) {
+		this.downloadCount = downloadCount;
+	}
 	
 	
 

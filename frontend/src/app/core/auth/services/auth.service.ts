@@ -44,5 +44,11 @@ export class AuthService {
     this.router.navigate(['/login']);
 
   }
+  getRole(): string | null {
+    const token = this.decodeToken();
+    if (token) {
+      return token.role;
+    } else return null;}
+    
   
 }

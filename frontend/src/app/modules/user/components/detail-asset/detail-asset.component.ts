@@ -20,6 +20,7 @@ import { AssetRelease } from '../../../../shared/models/asset-release';
 import { DecodedToken } from '../../../../shared/decoded-token';
 
 import { jwtDecode } from 'jwt-decode';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-detail-asset',
@@ -69,57 +70,46 @@ export class DetailAssetComponent {
     private assetService: AssetServiceService,
     private commentService: CommentService,
     private ratingService: RatingService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private router:Router
   ) {}
 
   //  Initialization
-  ngOnInit(): void {
+ ngOnInit(): void {
   const token = localStorage.getItem('token');
   if (token) {
     const decoded: DecodedToken = jwtDecode(token);
     this.userId = decoded.userId?.toString() ?? '';
   }
 
-  const id = this.route.snapshot.paramMap.get('id');
-  if (id) {
-    this.assetService.getAssetById(id).subscribe({
-      next: (data) => {
-        this.assetSelected = data;
-        if (data.documentation) {
-          this.safeDocUrl = this.getSafeDocDirect(data.documentation);
-        }
-
-        this.loadComments();
-        this.loadRatings(data.id);
-        this.loadReleases(data.id);
-        this.loadCategoryAverages(data.id);
-
-        const firstCategory = data.categories?.[0];
-        if (firstCategory?.id != null) {
-          this.loadSameCategoryAssets(firstCategory.id);
-        }
-
-        // ✅ Scroll to review if focusReviewId is in URL
-        this.route.queryParams.subscribe(params => {
-          const focusId = params['focusReviewId'];
-          if (focusId) {
-            setTimeout(() => {
-              const el = document.getElementById(`review-${focusId}`);
-              if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                el.classList.add('highlight-review');
-
-                // Remove highlight after 2 seconds
-                setTimeout(() => el.classList.remove('highlight-review'), 2000);
-              }
-            }, 500);
-          }
-        });
-      },
-      error: (err) => console.error('Error fetching asset', err)
-    });
-  }
+  this.route.paramMap.subscribe(params => {
+    const id = params.get('id');
+    if (id) this.loadAssetById(id);
+  });
 }
+
+
+loadAssetById(id: string): void {
+  this.assetService.getAssetById(id).subscribe({
+    next: (data) => {
+      this.assetSelected = data;
+      if (data.documentation) {
+        this.safeDocUrl = this.getSafeDocDirect(data.documentation);
+      }
+      this.loadComments();
+      this.loadRatings(data.id);
+      this.loadReleases(data.id);
+      this.loadCategoryAverages(data.id);
+
+      const firstCategory = data.categories?.[0];
+      if (firstCategory?.id != null) {
+        this.loadSameCategoryAssets(firstCategory.id);
+      }
+    },
+    error: (err) => console.error('Error fetching asset', err)
+  });
+}
+
 
   activeMainTab: 'docs' | 'releases' = 'docs';
   activeReleaseTabs: { [releaseId: number]: 'docs' | 'feedback' } = {};
@@ -335,13 +325,15 @@ export class DetailAssetComponent {
     return this.sanitizer.bypassSecurityTrustResourceUrl('http://localhost:8081' + docPath);
   }
 
+
+
   getSafeDocDirect(docPath: string): SafeResourceUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl('http://localhost:8081' + docPath);
   }
 
-  getIcon(img?: string): string {
-    console.log(img);
-    return img ? `assets${img}` :  'assets/images/default3.jpg';
+  
+  getIcon(img: string): string {
+    return img ? `assets/images/${img}` : 'assets/images/default4.jpg';
   }
 
   goBack(): void {
@@ -352,6 +344,24 @@ export class DetailAssetComponent {
   openReleaseReview(releasedAssetId: string, versionLabel: string) {
     this.reviewModal.open(releasedAssetId, versionLabel);
   }
-  
+  onDownloadClicked(assetId: string) {
+  if (!assetId) return;
+
+  this.assetService.incrementDownload(assetId).subscribe({
+    next: () => {
+      const asset = this.assetSelected;
+      if (asset) {
+        asset.downloadCount = (asset.downloadCount || 0) + 1;
+        alert('Downloaded successfully!');
+      }
+    },
+    error: (err) => {
+      console.error('Failed to increment download count', err);
+    }
+  });
+}
+goTheDetail(assetId:String){
+  this.router.navigate(['/contributorLayout/detail', assetId]);
+}
 
 }

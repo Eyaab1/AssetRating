@@ -311,6 +311,14 @@ public class AssetService {
         List<String> ids = recommendationUser.getRecommendedAssetIds(userId);
         return assetRepository.findAllById(ids);
     }
+    public void incrementDownloadCount(String assetId) {
+        Asset asset = assetRepository.findById(assetId)
+            .orElseThrow(() -> new RuntimeException("Asset not found"));
+        asset.setDownloadCount(asset.getDownloadCount() + 1);
+        assetRepository.save(asset);
+    }
+
+
 
 
 

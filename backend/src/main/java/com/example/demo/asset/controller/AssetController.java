@@ -10,6 +10,8 @@ import com.example.demo.asset.service.AssetService;
 import com.example.demo.dto.AssetReleaseRequest;
 import com.example.demo.dto.AssetRequest;
 
+import jakarta.annotation.Resource;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -125,5 +127,12 @@ public class AssetController {
         List<Asset> recommended = assetService.getRecommendedAssetsForUser(userId);
         return ResponseEntity.ok(recommended);
     }
+    @PutMapping("/{id}/download")
+    public ResponseEntity<Void> incrementDownload(@PathVariable String id) {
+        assetService.incrementDownloadCount(id);
+        return ResponseEntity.ok().build();
+    }
+
+
 
 }

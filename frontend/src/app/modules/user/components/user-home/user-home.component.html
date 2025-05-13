@@ -1,9 +1,11 @@
 <div class="marketplace-page">
-  
   <!-- Sidebar -->
-  <aside class="sidebar">
-
-    <div class="filter-group">
+  <aside class="marketplace-sidebar stickySidebar"  
+  [ngClass]="{
+    'stickySidebar': role !== 'CONTRIBUTOR',
+    'stickySidebarContributer': role === 'CONTRIBUTOR'
+  }">
+    <div class="filter-section">
       <h4>Categories ({{ allCategories.length }})</h4>
       <label *ngFor="let category of allCategories">
         <input
@@ -15,7 +17,7 @@
       </label>
     </div>
 
-    <div class="filter-group">
+    <div class="filter-section">
       <h4>Tags ({{ allTags.length }})</h4>
       <label *ngFor="let tag of allTags">
         <input
@@ -27,80 +29,151 @@
       </label>
     </div>
 
-    <button class="filter-button" (click)="applyFilters()">Apply filters</button>
+    <!-- <button class="apply-filter-btn" (click)="applyFilters()">Apply filters</button> -->
   </aside>
 
   <!-- Main Content -->
-  <main class="content">
-    <div class="top-bar">
+  <main class="marketplace-content">
+    <div class="search-bar ">
       <input
         type="text"
-        placeholder="Search by keyword"
+        placeholder="Search assets..."
         [(ngModel)]="searchQuery"
         (input)="filterAssets()"
       />
-      
-    </div>
-<!-- Recommended Section -->
- <div *ngIf="loadingRecommendations" class="loading-placeholder">
-  <p>Loading recommendations...</p>
-</div>
-<div *ngIf="recommendedAssets.length > 0" class="group-section">
-  <h3> Recommended for You</h3>
-  <div class="asset-list">
-    <div 
-      class="asset-item" 
-      *ngFor="let asset of recommendedAssets"
-      [routerLink]="getAssetDetailLink(asset.id)">
-      <img [src]="getIcon(asset.image)" (error)="onImageError($event)" />
-      <div>
-        <strong>{{ asset.name }}</strong><br />
-        <span>{{ asset.description }}</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Trending Section -->
-<div *ngIf="trendingAssets.length > 0" class="group-section">
-  <h3>📈 Trending Assets</h3>
-  <div class="asset-list">
-    <div 
-      class="asset-item" 
-      *ngFor="let asset of trendingAssets"
-      [routerLink]="getAssetDetailLink(asset.id)">
-      <img [src]="getIcon(asset.image)" (error)="onImageError($event)" />
-      <div>
-        <strong>{{ asset.name }}</strong><br />
-        <span>{{ asset.description }}</span>
-      </div>
-    </div>
-  </div>
-</div>
-    <div *ngIf="groupedAssets.length === 0">
-      <p>No assets found.</p>
     </div>
 
-    <div class="group-section" *ngFor="let group of groupedAssets">
-      <h3>{{ group.label }}</h3>
-      <div class="asset-list">
-        <div 
-        class="asset-item" 
-        *ngFor="let asset of group.assets"
-        [routerLink]="getAssetDetailLink(asset.id)"
-        style="cursor: pointer;"
-      >
-               <img
-            [src]="getIcon(asset.image)"
-            alt="asset icon"
-            (error)="onImageError($event)"
-          />
-          <div>
-            <strong>{{ asset.name }}</strong><br />
-            <span>{{ asset.description }}</span>
+    <!-- Recommendations -->
+    <section *ngIf="loadingRecommendations" class="loading-box">Loading recommendations...</section>
+
+    <section *ngIf="recommendedAssets.length > 0" class="group-section">
+      <h3><i class="fas fa-thumbs-up"></i>&nbsp; Recommended for You</h3>
+      <div class="asset-grid">
+        <ng-container *ngFor="let asset of recommendedAssets">
+          <div class="asset-card" (click)="openQuickView(asset)">
+          <img [src]="getIcon(asset.image)" (error)="onImageError($event)" />
+            <div class="card-body">
+              <h4>{{ asset.name }}</h4>
+              <small>Published by {{ asset.publisher }}</small>
+              <p>{{ asset.description }}</p>
+              <div class="card-footer">
+                <span *ngIf="asset.downloadCount">{{ asset.downloadCount }} <i class="fas fa-download"></i></span>
+                <button class="view-detail-btn" (click)="goToDetail(asset.id); $event.stopPropagation()">View Details</button>
+                <!-- <button class="downloadBtn"(click)="onDownloadClicked(asset.id)">Download</button> -->
+              </div>
+           <!-- <button class="view-detail-btn" (click)="goToDetail(asset.id)">View Details</button> -->
+              <button class="downloadBtn"(click)="onDownloadClicked(asset.id); $event.stopPropagation()">Download</button>
+          </div>
+</div>
+
+        </ng-container>
+      </div>
+    </section>
+
+    <!-- Trending -->
+    <section *ngIf="trendingAssets.length > 0" class="group-section">
+      <h3><i class="fas fa-fire"></i>&nbsp;Trending Assets</h3>
+      <div class="asset-grid">
+        <ng-container *ngFor="let asset of trendingAssets">
+          <div class="asset-card" (click)="openQuickView(asset)">
+           <img [src]="getIcon(asset.image)" (error)="onImageError($event)" />
+            <div class="card-body">
+              <h4>{{ asset.name }}</h4>
+              <small>Published by {{ asset.publisher }}</small>
+              <p>{{ asset.description }}</p>
+              <div class="card-footer">
+                <span *ngIf="asset.downloadCount">{{ asset.downloadCount }} <i class="fas fa-download"></i></span>
+                <button class="view-detail-btn" (click)="goToDetail(asset.id); $event.stopPropagation()">View Details</button>
+                <!-- <button class="downloadBtn"(click)="onDownloadClicked(asset.id)">Download</button> -->
+              </div>
+           <!-- <button class="view-detail-btn" (click)="goToDetail(asset.id)">View Details</button> -->
+              <button class="downloadBtn"(click)="onDownloadClicked(asset.id); $event.stopPropagation()">Download</button>
           </div>
         </div>
+
+        </ng-container>
       </div>
-    </div>
+    </section>
+
+    <!-- Grouped Results -->
+    <p *ngIf="groupedAssets.length === 0" class="no-assets">No assets found.</p>
+
+    <section class="group-section" *ngFor="let group of groupedAssets">
+      <h3>{{ group.label }}</h3>
+      <div class="asset-grid">
+        <div
+          class="asset-card"
+          *ngFor="let asset of group.assets">
+            <img [src]="getIcon(asset.image)" (error)="onImageError($event)" (click)="openQuickView(asset)"/>
+            <div class="card-body">
+              <h4>{{ asset.name }}</h4>
+              <small>Published by {{ asset.publisher }}</small>
+              <p>{{ asset.description }}</p>
+              <div class="card-footer">
+                <span *ngIf="asset.downloadCount">{{ asset.downloadCount }} <i class="fas fa-download"></i></span>
+                <button class="view-detail-btn" (click)="goToDetail(asset.id); $event.stopPropagation()">View Details</button>
+                <!-- <button class="downloadBtn"(click)="onDownloadClicked(asset.id)">Download</button> -->
+              </div>
+           <!-- <button class="view-detail-btn" (click)="goToDetail(asset.id)">View Details</button> -->
+              <button class="downloadBtn"(click)="onDownloadClicked(asset.id); $event.stopPropagation()">Download</button>
+          </div>
+
+        </div>
+      </div>
+    </section>
   </main>
+</div>
+<div class="quick-view-overlay" *ngIf="quickViewAsset" (click)="quickViewAsset = null">
+  <div class="quick-view-panel" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="quickViewAsset = null">
+    <i class="fas fa-times"></i>
+  </button>
+   <div class="quick-view-header">
+    
+  <div class="info">
+    <h2>{{ quickViewAsset.name }}</h2>
+    <span class="publisher">By {{ quickViewAsset.publisher }}</span><br>
+        <span class="type">{{ quickViewAsset.type }}</span>
+
+
+
+    <div *ngIf="quickViewAsset?.categories?.length" class="category-label">
+      Category: {{ quickViewAsset.categories[0].name }}
+    </div>
+  </div>
+  
+</div>
+    <img [src]="getIcon(quickViewAsset.image)" (error)="onImageError($event)" />
+
+    <div class="quick-meta">
+      <div class="downloads" *ngIf="quickViewAsset.downloadCount">
+        <i class="fas fa-download"></i> {{ quickViewAsset.downloadCount }}
+      </div>
+       <div class="quick-rating" *ngIf="quickViewRating !== null">
+  <ng-container *ngFor="let star of createStarDisplay(quickViewRating)">
+    <span *ngIf="star === 'full'" class="star full">★</span>
+    <span *ngIf="star === 'half'" class="star half">⯪</span>
+    <span *ngIf="star === 'empty'" class="star empty">☆</span>
+  </ng-container>
+  <small>{{ quickViewRating | number:'1.1-1' }}/5</small>
+</div>
+    </div>
+
+    <div class="pill-section">
+  
+
+  <div class="pill-group" *ngIf="quickViewAsset?.tags?.length">
+    <span class="pill tag" *ngFor="let tag of quickViewAsset.tags">{{ tag.name }}</span>
+  </div>
+</div>
+
+
+
+    <p class="description">{{ quickViewAsset.description }}</p>
+
+
+    <button class="go-detail" (click)="goToDetail(quickViewAsset.id)">
+      Go to Details
+    </button>
+  </div>
 </div>
