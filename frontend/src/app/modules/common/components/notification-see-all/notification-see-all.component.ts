@@ -128,11 +128,13 @@ export class NotificationSeeAllComponent implements OnInit {
       });
     }
   }
-  navigateBasedOnNotification(notification: Notification): void {
+navigateBasedOnNotification(notification: Notification): void {
   const assetId = notification.relatedAssetId;
   const reviewId = notification.relatedEntityId;
-
   const baseRoute = this.role === 'CONTRIBUTOR' ? '/contributorLayout/detail' : '/detail';
+
+  // ✅ Mark as read
+  this.markAsRead(notification);
 
   switch (notification.type) {
     case NotificationType.ASSET_PUBLISHED:
@@ -145,7 +147,10 @@ export class NotificationSeeAllComponent implements OnInit {
     case NotificationType.REVIEW_LIKED:
     case NotificationType.COMMENT_REPLIED:
       this.router.navigate([`${baseRoute}/${assetId}`], {
-        queryParams: { focusReviewId: reviewId }
+        queryParams: {
+          focusReviewId: reviewId,
+          fromReport: notification.type === NotificationType.REVIEW_REPORTED
+        }
       });
       break;
 
@@ -154,6 +159,7 @@ export class NotificationSeeAllComponent implements OnInit {
       break;
   }
 }
+
 getIconClass(type: NotificationType): string {
   switch (type) {
     case NotificationType.REVIEW_REPORTED:

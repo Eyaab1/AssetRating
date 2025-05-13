@@ -13,10 +13,6 @@ public class AuthController {
     public AuthController(AuthService authService) {
         this.authService = authService;}
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody User user) {
-        return ResponseEntity.ok(authService.register(user));
-    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {

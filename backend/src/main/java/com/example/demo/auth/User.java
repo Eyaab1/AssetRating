@@ -2,6 +2,7 @@ package com.example.demo.auth;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -31,6 +32,46 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role; // USER or CONTRIBUTOR
+    @Column(nullable = false)
+    private boolean enabled = true;
+    @Column(name = "last_login")
+    private Date lastLogin;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at")
+    private Date createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+    }
+    
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    
+    public Date getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(Date lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
     // Standard Getters and Setters
   
@@ -108,8 +149,8 @@ public class User implements UserDetails {
         return true;
     }
 
-    @Override
+ /*   @Override
     public boolean isEnabled() {
         return true;
-    }
+    }*/
 }

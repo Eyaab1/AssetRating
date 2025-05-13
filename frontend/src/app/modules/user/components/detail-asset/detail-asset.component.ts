@@ -99,22 +99,23 @@ export class DetailAssetComponent {
           this.loadSameCategoryAssets(firstCategory.id);
         }
 
-        // ✅ Scroll to review if focusReviewId is in URL
         this.route.queryParams.subscribe(params => {
-          const focusId = params['focusReviewId'];
-          if (focusId) {
-            setTimeout(() => {
-              const el = document.getElementById(`review-${focusId}`);
-              if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                el.classList.add('highlight-review');
+        const focusId = params['focusReviewId'];
+        const fromReport = params['fromReport'] === 'true';
 
-                // Remove highlight after 2 seconds
-                setTimeout(() => el.classList.remove('highlight-review'), 2000);
-              }
-            }, 500);
-          }
-        });
+        if (focusId) {
+          setTimeout(() => {
+            const el = document.getElementById(`review-${focusId}`);
+            if (el) {
+              el.classList.add(fromReport ? 'highlight-report' : 'highlight-review');
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+              setTimeout(() => el.classList.remove(fromReport ? 'highlight-report' : 'highlight-review'), 2000);
+            }
+          }, 500);
+        }
+      });
+
       },
       error: (err) => console.error('Error fetching asset', err)
     });
@@ -127,7 +128,6 @@ export class DetailAssetComponent {
   setReleaseTab(releaseId: number, tab: 'docs' | 'feedback') {
     this.activeReleaseTabs[releaseId] = tab;
   }
-  //  Loaders 
   loadComments(): void {
     const assetId = this.assetSelected?.id;
     if (!assetId) return;

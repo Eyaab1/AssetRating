@@ -62,5 +62,14 @@ public class CommentReportController {
     public ResponseEntity<?> getAllReports() {
         return ResponseEntity.ok(reviewReportService.getAllReports());
     }
+    
+    @GetMapping("/reports/user")
+    public ResponseEntity<?> getReportsByCurrentUser(Principal principal) {
+        User user = authRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return ResponseEntity.ok(reviewReportService.getReportsByUser(user.getId()));
+    }
+
 
 }

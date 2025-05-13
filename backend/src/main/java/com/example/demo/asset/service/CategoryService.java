@@ -1,6 +1,7 @@
 // CategoryService.java
 package com.example.demo.asset.service;
 
+import com.example.demo.analytics.TopRatedDTO;
 import com.example.demo.asset.model.Category;
 import com.example.demo.asset.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
@@ -29,4 +30,6 @@ public class CategoryService {
     public List<Category> findAllById(List<Long> ids) {
         return categoryRepository.findAllById(ids);
     }
+    
+
 }
