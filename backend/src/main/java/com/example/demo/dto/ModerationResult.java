@@ -2,15 +2,23 @@ package com.example.demo.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ModerationResult {
-    private String sentiment;
+	private String sentiment;
     private double score;
+
+    @JsonProperty("contains_profanity")
     private boolean containsProfanity;
+
+    @JsonProperty("spamLabel")
     private String spamLabel;
+
+    @JsonProperty("spamScore")
     private double spamScore;
+    
+    
     // Getters and Setters
-    
-    
     public String getSentiment() {
         return sentiment;
     }

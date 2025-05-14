@@ -1,0 +1,48 @@
+<div class="form-wrapper">
+  <h2 class="form-title">Add New User</h2>
+  <form [formGroup]="userForm" (ngSubmit)="submitUser()">
+
+    <div class="form-grid-3">
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" formControlName="firstName" />
+      </div>
+
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" formControlName="lastName" />
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" formControlName="email" />
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" formControlName="password" />
+      </div>
+
+      <div class="form-group">
+        <label>Role</label>
+        <select formControlName="role">
+          <option value="USER">USER</option>
+          <option value="CONTRIBUTOR">CONTRIBUTOR</option>
+          <option value="ADMIN">ADMIN</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Status</label>
+        <select formControlName="enabled">
+          <option [value]="true">Activated</option>
+          <option [value]="false">Deactivated</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" [disabled]="userForm.invalid">Add User</button>
+    </div>
+  </form>
+</div>

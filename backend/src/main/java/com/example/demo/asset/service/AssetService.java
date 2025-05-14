@@ -320,7 +320,10 @@ public class AssetService {
     public void incrementDownloadCount(String assetId) {
         Asset asset = assetRepository.findById(assetId)
             .orElseThrow(() -> new RuntimeException("Asset not found"));
-        asset.setDownloadCount(asset.getDownloadCount() + 1);
+
+        Integer currentCount = asset.getDownloadCount() != null ? asset.getDownloadCount() : 0;
+        asset.setDownloadCount(currentCount + 1);
+
         assetRepository.save(asset);
     }
 

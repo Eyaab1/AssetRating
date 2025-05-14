@@ -27,6 +27,20 @@ public class ReviewAnalysisClient {
                 ANALYZE_URL, request, ModerationResult.class
         );
 
-        return response.getBody();
+        ModerationResult result = response.getBody();
+
+        // 🔍 Debug logging
+        if (result != null) {
+            System.out.println("[ANALYSIS] Comment: " + comment);
+            System.out.println("Spam Label = " + result.getSpamLabel());
+            System.out.println("Spam Score = " + result.getSpamScore());
+            System.out.println("Contains Profanity = " + result.isContainsProfanity());
+            System.out.println("Sentiment = " + result.getSentiment());
+        } else {
+            System.out.println("[ERROR] No result returned for comment: " + comment);
+        }
+
+        return result;
     }
+
 }

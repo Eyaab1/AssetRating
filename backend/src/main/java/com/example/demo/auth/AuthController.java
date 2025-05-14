@@ -1,8 +1,11 @@
 package com.example.demo.auth;
 
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
 import java.util.Optional;
 
 @RestController
@@ -15,14 +18,21 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        String Token = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
-        if (Token!=null) {
-            return ResponseEntity.ok(new AuthResponse(Token));
-        } else {
-            return ResponseEntity.status(401).body("Invalid credentials!");
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        try {
+            String token = authService.login(request.getEmail(), request.getPassword());
+            return ResponseEntity.ok(Collections.singletonMap("token", token));
+        } catch (RuntimeException ex) {
+            if ("Account is deactivated.".equals(ex.getMessage())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Collections.singletonMap("message", ex.getMessage()));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Collections.singletonMap("message", "Invalid credentials."));
+            }
         }
     }
+
    
     @GetMapping("/user/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {

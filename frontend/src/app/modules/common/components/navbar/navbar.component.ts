@@ -32,15 +32,23 @@ export class NavbarComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const token = localStorage?.getItem('token');
-    if (!token) return;
+  const token = localStorage?.getItem('token');
+  if (!token) return;
 
-    const decoded: any = JSON.parse(atob(token.split('.')[1]));
-    this.role= decoded?.role;
-    const userId = decoded?.id; 
+  const decoded: any = JSON.parse(atob(token.split('.')[1]));
 
-    this.fetchNotifications(); 
+  // 🔥 Auto-logout if user is deactivated
+  if (decoded?.enabled === false) {
+    this.logout(); // 👈 call your existing logout function
+    return;
   }
+
+  this.role = decoded?.role;
+  const userId = decoded?.id;
+
+  this.fetchNotifications();
+}
+
 
   fetchNotifications() {
     const token = localStorage?.getItem('token');

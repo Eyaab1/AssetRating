@@ -1,22 +1,26 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { DecodedToken } from '../../../shared/decoded-token';
 import { AuthService } from '../services/auth.service';
 
-export const authGuardGuard: CanActivateFn = (route, state) => {
+export const authGuardGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
   const token = authService.getToken();
 
   if (!token) {
-    return true; 
+    return true; // allow login access
   }
 
   const decoded = authService.decodeToken();
-  if (decoded?.role === 'CONTRIBUTOR') {
-    router.navigate(['/contributorLayout']);
-  } else {
-    router.navigate(['/marketplace']);
+  if (decoded?.role === 'ADMIN') {
+    return router.parseUrl('/admin');
   }
-  return false;
+  if (decoded?.role === 'CONTRIBUTOR') {
+    return router.parseUrl('/contributorLayout');
+  }
+  if (decoded?.enabled === false) {
+  authService.logout(); // 👈 triggers token removal and redirect
+  return router.parseUrl('/login');
+  }
+  return router.parseUrl('/marketplace'); // fallback for USER or unknown
 };

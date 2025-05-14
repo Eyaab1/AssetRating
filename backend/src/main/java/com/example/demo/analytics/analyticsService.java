@@ -140,7 +140,7 @@ public class analyticsService {
         List<ReviewComment> reviews = reviewService.getAllReviews();
         Map<String, Integer> spamMap = new HashMap<>();
         spamMap.put("spam", 0);
-        spamMap.put("not_spam", 0);
+        spamMap.put("ham", 0);
 
         for (ReviewComment review : reviews) {
             try {

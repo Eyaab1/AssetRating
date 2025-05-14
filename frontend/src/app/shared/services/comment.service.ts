@@ -92,5 +92,4 @@ export class CommentService {
     return this.http.get<Comment[]>(`${this.baseUrl}/reviews/release/${releasedAssetId}`);
   }
   
-  
 }
