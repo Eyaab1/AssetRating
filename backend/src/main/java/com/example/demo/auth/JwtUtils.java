@@ -27,7 +27,8 @@ public class JwtUtils {
 	                .claim("firstName", user.getFirstName())  // Optional extras
 	                .claim("lastName", user.getLastName())
 	                .claim("name", user.getFirstName() + " " + user.getLastName()) 
-	                .claim("role", user.getRole().name()) 
+	                .claim("role", user.getRole().name())
+	                .claim("enabled", user.isEnabled())
 	                .setIssuedAt(new Date())
 	                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
 	                .signWith(getSigningKey(), SignatureAlgorithm.HS512)

@@ -4,17 +4,22 @@ import { DetailAssetComponent } from './modules/user/components/detail-asset/det
 import { AddAssetFormComponent } from './modules/contributor/components/add-asset-form/add-asset-form.component';
 import { LoginComponent } from './core/auth/login/login.component';
 import { DashboardComponent } from './modules/contributor/components/dashboard/dashboard.component';
+import { DashboardAComponent } from './modules/admin/components/dashboard-a/dashboard-a.component';
 import { authGuardGuard } from './core/auth/guard/auth-guard.guard';
 import { userGuardGuard } from './core/auth/guard/user-guard.guard';
+import { adminGuardGuard } from './core/auth/guard/admin-guard.guard';
 import { contributorGuardGuard } from './core/auth/guard/contributor-guard.guard';
 import { AccessDeniedComponent } from './modules/common/components/access-denied/access-denied.component';
 import { ContributerLayoutComponent } from './modules/contributor/components/contributer-layout/contributer-layout.component';
+import { AdminLayoutComponent } from './modules/admin/components/admin-layout/admin-layout.component';
 import { EditAssetComponent } from './modules/contributor/components/edit-asset/edit-asset.component';
 import { onlyGuardGuard } from './core/auth/guard/only-guard.guard';
 import { FullAssetListComponent } from './modules/contributor/components/full-asset-list/full-asset-list.component';
 import { NotificationSeeAllComponent } from './modules/common/components/notification-see-all/notification-see-all.component';
 import { ReportComponent } from './modules/contributor/components/reports/report.component';
-
+import { ReportAComponent } from './modules/admin/components/report-a/report-a.component';
+import { UserListComponent } from './modules/admin/components/user-list/user-list.component';
+import { AddUserComponent } from './modules/admin/components/add-user/add-user.component';
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
   
@@ -42,7 +47,18 @@ export const routes: Routes = [
 
       ]
     },
-    
+    {
+      path: 'admin',
+      component: AdminLayoutComponent,
+      canActivate : [adminGuardGuard],
+      children: [
+        {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
+        {path: 'dashboard', component: DashboardAComponent },
+        {path : 'reports', component: ReportAComponent},
+        { path: 'users', component: UserListComponent },
+        { path: 'users/add', component: AddUserComponent },
+      ] 
+    },
   
     // Access denied fallback
     { path: 'accessDenied', component: AccessDeniedComponent }

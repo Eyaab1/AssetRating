@@ -4,5 +4,6 @@ export interface DecodedToken {
     firstName: string;
     lastName: string;
     role: string;
+    enabled: boolean;
 
 }

@@ -35,17 +35,24 @@ public class AuthService {
 
     public String login(String email, String rawPassword) {
         Optional<User> userOptional = authRepository.findByEmail(email);
-        
+
         if (userOptional.isPresent()) {
             User user = userOptional.get();
+
+            if (!user.isEnabled()) {
+                throw new RuntimeException("Account is deactivated.");
+            }
+
             if (passwordEncoder.matches(rawPassword, user.getPassword())) {
-            	user.setLastLogin(new Date());
-            	authRepository.save(user);
+                user.setLastLogin(new Date());
+                authRepository.save(user);
                 return jwtUtils.generateToken(user);
             }
         }
-        return null;
+
+        throw new RuntimeException("Invalid email or password.");
     }
+
     public Optional<UserDTO> getUserById(Long id) {
         return authRepository.findById(id).map(UserDTO::new);
     }
@@ -86,7 +93,7 @@ public class AuthService {
 
     public String toggleUserActivation(Long userId, boolean enable) {
         return authRepository.findById(userId).map(user -> {
-            user.setEnabled(enable); // You’ll need to add this field (see below).
+            user.setEnabled(enable);
             authRepository.save(user);
             return enable ? "User activated." : "User suspended.";
         }).orElse("User not found.");

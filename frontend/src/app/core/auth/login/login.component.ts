@@ -32,6 +32,9 @@ export class LoginComponent {
       if (role === 'CONTRIBUTOR') {
         console.log('Navigating to /contributorLayout');
         this.router.navigate(['/contributorLayout']);
+      }else if (role === 'ADMIN') {
+        console.log('Navigating to /admin');
+        this.router.navigate(['/admin']);
       } else {
         console.log('Navigating to /marketplace');
         this.router.navigate(['/marketplace']);
@@ -41,9 +44,23 @@ export class LoginComponent {
 
       },
       error: (error) => {
-        console.error('Login error', error);
-        this.errorMessage = 'Invalid credentials. Please try again.';
+        console.error('Full error:', error);
+
+        const rawError = error?.error;
+        console.log('error.error:', error.error);
+
+        if (typeof rawError === 'string' && rawError.includes('deactivated')) {
+          this.errorMessage = 'Your account is deactivated. Please contact admin.';
+        } else if (
+          typeof rawError === 'object' &&
+          rawError?.message?.includes('deactivated')
+        ) {
+          this.errorMessage = 'Your account is deactivated. Please contact admin.';
+        } else {
+          this.errorMessage = 'Invalid credentials. Please try again.';
+        }
       }
+
     });
   }
 

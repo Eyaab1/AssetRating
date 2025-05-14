@@ -10,6 +10,7 @@ public class UserDTO {
 	    private String email;
 	    private Role role;
 	    private Date createdAt;
+	    private Boolean enabled;
 
 	    public Date getCreatedAt() {
 	        return createdAt;
@@ -26,6 +27,7 @@ public class UserDTO {
 	        this.email = user.getEmail();
 	        this.role = user.getRole();
 	        this.createdAt=user.getCreatedAt();
+	        this.setEnabled(user.isEnabled());
 	        }
 
 	 
@@ -44,4 +46,12 @@ public class UserDTO {
 	    public Role getRole() {
 	    	return role; 
 	    	}
+
+		public Boolean getEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(Boolean enabled) {
+			this.enabled = enabled;
+		}
 }
