@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -36,7 +37,7 @@ public class AnalyticsController {
     }
     @GetMapping("/allToRatedTags")
     public ResponseEntity<List<TopRatedDTO>> getAllRatedTags() {
-        return ResponseEntity.ok(analyticsService.getAllTopRatedCategories());
+        return ResponseEntity.ok(analyticsService.getAllTopRatedTags());
     }
     @GetMapping("/top-rated-assets")
     public ResponseEntity<List<TopRatedDTO>> getTopRatedAssets() {
@@ -71,6 +72,17 @@ public class AnalyticsController {
     public ResponseEntity<Map<String, Integer>> getSpamBreakdown() {
         return ResponseEntity.ok(analyticsService.getSpamBreakdown());
     }
+    
+    @GetMapping("/contributorSummary")
+    public ResponseEntity<Map<String, Object>> getContributorSummary(@RequestParam String email) {
+        return ResponseEntity.ok(analyticsService.getContributorSummary(email));
+    }
+
+    @GetMapping("/topdownloadedAssets")
+    public ResponseEntity<List<TopRatedDTO>> getTopDownloadedAssets(@RequestParam String email) {
+        return ResponseEntity.ok(analyticsService.getTopDownloadedAssetsByContributor(email));
+    }
+
 
 
 }

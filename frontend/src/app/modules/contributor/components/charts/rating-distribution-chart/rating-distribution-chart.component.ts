@@ -29,7 +29,7 @@ export class RatingDistributionChartComponent {
   chartOptions: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: false,
-    indexAxis: 'y', // ✅ turns it into a horizontal bar chart
+    indexAxis: 'y', 
     scales: {
       x: {
         beginAtZero: true,

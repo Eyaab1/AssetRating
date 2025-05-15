@@ -1,4 +1,4 @@
 export interface TopRatedDTO {
-    name: string;
+    label: string;
     averageRating: number;
 }

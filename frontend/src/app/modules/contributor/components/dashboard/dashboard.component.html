@@ -1,46 +1,92 @@
 <div class="dashboard-main-section">
   <div class="dashboard-left">
-    <!-- Cards -->
-    <div class="stats-cards">
-      <div class="stat-card blue">
-        <i class="fas fa-layer-group icon"></i>
-        <div>
-          <p>Total Assets</p>
-          <h3>{{ allAssets.length }}</h3>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="icon highlight"><i class="fas fa-star"></i></div>
-        <div>
+
+    <!-- ✅ ROW 1: HIGHLIGHTS -->
+    <div class="dashboard-cards-container pretty">
+      <div class="pretty-card">
+        <div class="icon-circle purple"><i class="fas fa-star"></i></div>
+        <div class="card-details">
           <p>Top Rated</p>
-          <h4>{{ topRatedAsset?.name || 'N/A' }}</h4>
+          <h3>{{ topRatedAsset?.name || 'N/A' }}</h3>
           <small>{{ (topRatedAsset?.averageRating || 0) | number:'1.1-1' }}/5</small>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="icon highlight"><i class="fas fa-comments"></i></div>
-        <div>
+
+      <div class="pretty-card">
+        <div class="icon-circle blue"><i class="fas fa-comments"></i></div>
+        <div class="card-details">
           <p>Most Feedback</p>
-          <h4>{{ mostReviewedAsset?.name || 'N/A' }}</h4>
+          <h3>{{ mostReviewedAsset?.name || 'N/A' }}</h3>
           <small>{{ mostReviewedAsset?.reviewsCount || 0 }} reviews</small>
+        </div>
+      </div>
+
+      <div class="pretty-card">
+        <div class="icon-circle fire"><i class="fas fa-fire"></i></div>
+        <div class="card-details">
+          <p>Top Downloaded</p>
+          <h3>{{ mostDownloadedAsset?.name || 'N/A' }}</h3>
+          <small>{{ mostDownloadedAsset?.downloads || 0 }} downloads</small>
         </div>
       </div>
     </div>
 
-    <!-- Charts -->
+    <!-- ✅ ROW 2: TOTAL STATS -->
+    <div class="dashboard-cards-container pretty">
+      <div class="pretty-card">
+        <div class="icon-circle blue"><i class="fas fa-layer-group"></i></div>
+        <div class="card-details">
+          <p>Total Assets</p>
+          <h3>{{ allAssets.length }}</h3>
+        </div>
+      </div>
+
+      <div class="pretty-card">
+        <div class="icon-circle green"><i class="fas fa-download"></i></div>
+        <div class="card-details">
+          <p>Total Downloads</p>
+          <h3>{{ totalDownloads }}</h3>
+        </div>
+      </div>
+
+      <div class="pretty-card">
+        <div class="icon-circle orange"><i class="fas fa-comments"></i></div>
+        <div class="card-details">
+          <p>Total Reviews</p>
+          <h3>{{ totalReviews }}</h3>
+        </div>
+      </div>
+
+      <div class="pretty-card">
+        <div class="icon-circle purple"><i class="fas fa-star"></i></div>
+        <div class="card-details">
+          <p>Total Ratings</p>
+          <h3>{{ totalRatings | number:'1.1-1' }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ Charts Section -->
     <div class="chart-row-horizontal">
       <div class="chart-card-small">
         <div class="chart-title">Top Rated Assets</div>
         <app-rating-chart [mode]="'top-rated-assets'"></app-rating-chart>
       </div>
+
       <div class="chart-card-small">
         <div class="chart-title">Assets by Status</div>
         <app-rating-chart [mode]="'assets-by-status'"></app-rating-chart>
       </div>
+
+      <div class="chart-card-small">
+        <div class="chart-title">Top Downloaded Assets</div>
+        <app-most-downloads></app-most-downloads>
+      </div>
     </div>
+
   </div>
 
-  <!-- Mini Asset List -->
+  <!-- ✅ Mini Asset List -->
   <div class="dashboard-right">
     <div class="mini-asset-list">
       <div class="mini-list-title">My Assets</div>

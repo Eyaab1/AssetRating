@@ -51,6 +51,18 @@ export class AnalyticsService {
       headers: this.getAuthHeaders()
     });
   }
+  getContributorSummary(email: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/contributorSummary?email=${email}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  getTopDownloadedAssets(email: string): Observable<TopRatedDTO[]> {
+    return this.http.get<TopRatedDTO[]>(`${this.baseUrl}/topdownloadedAssets?email=${email}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
   
     
 }
