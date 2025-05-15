@@ -1,6 +1,9 @@
 export enum StatusType {
-    Published = 'published',
-    Unpublished = 'unpublished',
-    Deleted = 'deleted'
+    Published = 'PUBLISHED',
+    Unpublished = 'UNPUBLISHED',
+    Deleted = 'DELETED',
+    pending = 'PENDING',
+
+
   }
   

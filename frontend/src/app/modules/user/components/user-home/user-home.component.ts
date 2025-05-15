@@ -164,7 +164,10 @@ export class UserHomeComponent implements OnInit {
 }
 
 goToDetail(assetId: string) {
-  this.router.navigate(['/contributorLayout/detail', assetId]); 
+  if(this.role === 'CONTRIBUTOR') {
+  this.router.navigate(['contributorLayout/detail', assetId])} 
+  else{
+  this.router.navigate(['detail', assetId]);}
 }
 
   groupByType(): void {

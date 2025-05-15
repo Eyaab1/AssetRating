@@ -73,7 +73,7 @@ export class AssetServiceService {
   
   
   updateAsset(id: string, asset: Asset): Observable<Asset> {
-    return this.http.put<Asset>(`${this.baseUrl}/edit/${id}`, asset, {
+    return this.http.put<Asset>(`${this.baseUrl}/${id}`, asset, {
       headers: this.getAuthHeaders()
     });
   }
