@@ -12,7 +12,7 @@ import { AssetServiceService } from '../../../../shared/services/asset-service.s
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { switchMap } from 'rxjs';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-edit-asset',
   standalone: true,
@@ -28,6 +28,8 @@ export class EditAssetComponent implements OnInit {
   licenseOptions = Object.values(LicenseType);
   statusOptions = Object.values(StatusType);
   projectTypes = Object.values(ProjectType);
+  assetTypes = Object.values(AssetType);
+  subtypeFieldsPresent = false;
 
   activeTab: 'general' | 'releases' = 'general';
 
@@ -47,6 +49,7 @@ export class EditAssetComponent implements OnInit {
     this.assetId = this.route.snapshot.paramMap.get('id')!;
     this.loadAsset();
     this.loadReleases();
+
   }
 
   loadAsset(): void {
@@ -54,21 +57,21 @@ export class EditAssetComponent implements OnInit {
       this.assetSelected = asset;
   
       this.assetForm = this.fb.group({
-        name: [asset.name, Validators.required],
-        label: [asset.label, Validators.required],
+        name: [asset.name],
+        label: [asset.label],
         publisher: [{ value: asset.publisher, disabled: true }],
         publisherMail: [{ value: asset.publisherMail, disabled: true }],
         publishDate: [{ value: asset.publishDate, disabled: true }],
-        license: [asset.license, Validators.required],
-        status: [asset.status, Validators.required],
-        projectType: [asset.projectType, Validators.required],
+        license: [asset.license],
+        status: [asset.status],
+        projectType: [asset.projectType], 
         description: [asset.description],
-        assetType: [asset.type, Validators.required]
+        type: [{ value: asset.type, disabled: true }]
       });
   
       this.addSubtypeFields(asset.type, asset);
   
-      this.assetForm.get('assetType')?.valueChanges.subscribe(type => {
+      this.assetForm.get('type')?.valueChanges.subscribe(type => {
         this.addSubtypeFields(type);
       });
     });
@@ -158,8 +161,8 @@ hasSubtypeFields(): boolean {
         this.isSubmittingRelease = false;
       }
     });
-    this.addSubtypeFields(this.assetForm.get('assetType')?.value);
-    this.assetForm.get('assetType')?.valueChanges.subscribe(type => {
+    this.addSubtypeFields(this.assetForm.get('type')?.value);
+    this.assetForm.get('type')?.valueChanges.subscribe(type => {
       this.addSubtypeFields(type);
     });
 
@@ -170,49 +173,124 @@ hasSubtypeFields(): boolean {
     return this.sanitizer.bypassSecurityTrustResourceUrl('http://localhost:8081' + path);
   }
 
-  submitAssetUpdate(): void {
-    if (this.assetForm.valid) {
-      const updatedAsset = this.assetForm.getRawValue();
-      this.assetService.updateAsset(this.assetId, updatedAsset).subscribe(() => {
-        alert('Asset updated successfully.');
-      });
-    }
-  } 
+ submitAssetUpdate(): void {
+  // Ensure dynamic fields are in place before validation
+  const type = this.assetForm.get('type')?.value;
+  this.addSubtypeFields(type, this.assetSelected);
+
+  if (this.assetForm.valid) {
+    Swal.fire({
+      title: 'Save Changes?',
+      text: 'Are you sure you want to update this asset?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#007bff',
+      cancelButtonColor: '#aaa',
+      confirmButtonText: 'Yes, save it!',
+      cancelButtonText: 'Cancel'
+    }).then(result => {
+      if (result.isConfirmed) {
+        const updatedAsset = {
+          ...this.assetForm.getRawValue(),
+          type: this.assetSelected?.type || this.assetForm.get('type')?.value
+        };
+
+        this.assetService.updateAsset(this.assetId, updatedAsset).subscribe(() => {
+          Swal.fire({
+            title: 'Updated!',
+            text: 'Asset updated successfully.',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: true
+          });
+        });
+      }
+    });
+  } else {
+    console.warn('Form is invalid', this.assetForm.value);
+    Swal.fire({
+      icon: 'error',
+      title: 'Form Incomplete',
+      text: 'Please fill all required fields before updating.',
+    });
+  }
+}
+
+
+
+// submitAssetUpdate(): void {
+//   console.log('Submit clicked');
+
+//   Swal.fire({
+//     title: 'Save Changes?',
+//     text: 'Are you sure you want to update this asset?',
+//     icon: 'question',
+//     showCancelButton: true,
+//     confirmButtonText: 'Yes, save it!',
+//     cancelButtonText: 'Cancel'
+//   }).then(result => {
+//     if (result.isConfirmed) {
+//       console.log('Confirmed by user');
+//       const updatedAsset = {
+//         ...this.assetForm.getRawValue(),
+//         type: this.assetForm.get('type')?.value
+//       };
+
+//       this.assetService.updateAsset(this.assetId, updatedAsset).subscribe(() => {
+//         Swal.fire('Updated!', 'Asset has been updated.', 'success');
+//       });
+//     }
+//   }).catch(err => {
+//     console.error('SweetAlert failed:', err);
+//   });
+// }
+
+  
   getSafeDocDirect(docPath: string): SafeResourceUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl('http://localhost:8081' + docPath);
   }
   addSubtypeFields(type: string, asset?: any) {
-    const controls = this.assetForm.controls;
-  
-    ['icon', 'framework', 'format', 'themeType', 'primaryColor', 'templateCategory', 'preconfigured', 'dependencies']
-      .forEach(field => controls[field] && this.assetForm.removeControl(field));
-  
-    switch (type) {
-      case 'Widget':
-      case 'Sheet':
-        this.assetForm.addControl('icon', this.fb.control(asset?.icon || '', Validators.required));
-        this.assetForm.addControl('framework', this.fb.control(asset?.framework || '', Validators.required));
-        if (type === 'Sheet') {
-          this.assetForm.addControl('format', this.fb.control(asset?.format || '', Validators.required));
-        }
-        break;
-      case 'Theme':
-        this.assetForm.addControl('themeType', this.fb.control(asset?.themeType || '', Validators.required));
-        this.assetForm.addControl('primaryColor', this.fb.control(asset?.primaryColor || '', Validators.required));
-        this.assetForm.addControl('framework', this.fb.control(asset?.framework || '', Validators.required));
-        break;
-      case 'Template':
-        this.assetForm.addControl('templateCategory', this.fb.control(asset?.templateCategory || '', Validators.required));
-        this.assetForm.addControl('framework', this.fb.control(asset?.framework || '', Validators.required));
-        break;
-      case 'Connector':
-        this.assetForm.addControl('preconfigured', this.fb.control(asset?.preconfigured ?? false));
-        break;
-      case 'Utility':
-        this.assetForm.addControl('dependencies', this.fb.control(asset?.dependencies || '', Validators.required));
-        break;
-    }
+  const controls = this.assetForm.controls;
+
+  // Clear previous subtype fields
+  ['icon', 'framework', 'format', 'themeType', 'primaryColor', 'templateCategory', 'preconfigured', 'dependencies']
+    .forEach(field => controls[field] && this.assetForm.removeControl(field));
+
+  // Track whether any new fields are added
+  this.subtypeFieldsPresent = false;
+
+  switch (type) {
+    case 'Widget':
+    case 'Sheet':
+      this.assetForm.addControl('icon', this.fb.control(asset?.icon || ''));
+      this.assetForm.addControl('framework', this.fb.control(asset?.framework || ''));
+      this.subtypeFieldsPresent = true;
+      if (type === 'Sheet') {
+        this.assetForm.addControl('format', this.fb.control(asset?.format ));
+      }
+      break;
+    case 'Theme':
+      this.assetForm.addControl('themeType', this.fb.control(asset?.themeType || ''));
+      this.assetForm.addControl('primaryColor', this.fb.control(asset?.primaryColor || ''));
+      this.assetForm.addControl('framework', this.fb.control(asset?.framework || ''));
+      this.subtypeFieldsPresent = true;
+      break;
+    case 'Template':
+      this.assetForm.addControl('templateCategory', this.fb.control(asset?.templateCategory || ''));
+      this.assetForm.addControl('framework', this.fb.control(asset?.framework || ''));
+      this.subtypeFieldsPresent = true;
+      break;
+    case 'Connector':
+      this.assetForm.addControl('preconfigured', this.fb.control(asset?.preconfigured ?? false));
+      this.subtypeFieldsPresent = true;
+      break;
+    case 'Utility':
+      this.assetForm.addControl('dependencies', this.fb.control(asset?.dependencies || ''));
+      this.subtypeFieldsPresent = true;
+      break;
   }
+}
+
   
   
 }

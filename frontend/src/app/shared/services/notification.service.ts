@@ -33,7 +33,6 @@ export class NotificationService implements OnInit{
       Authorization: `Bearer ${token || ''}`
     });
   }
-  
 
   getNotifications(): Observable<Notification[]> {
   return this.http.get<any[]>(this.baseUrl, {
