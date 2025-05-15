@@ -40,7 +40,6 @@ public class NotificationService {
         };
     }
 
-    // ✅ Overload with forced string ID
     public void notifyUser(User recipient, User actor, String content, NotificationType type,
                            String relatedEntityId, String relatedAssetId, Asset asset, String forcedId) {
 
@@ -48,9 +47,9 @@ public class NotificationService {
 
         Notification n = new Notification();
         if (forcedId != null) {
-            n.setId(forcedId); // e.g. "001"
+            n.setId(forcedId); 
         }else {
-            n.setId(UUID.randomUUID().toString()); // 👈 for likes, replies, etc.
+            n.setId(UUID.randomUUID().toString()); 
         }
 
         n.setRecipient(recipient);
@@ -66,7 +65,6 @@ public class NotificationService {
         messagingTemplate.convertAndSend("/topic/notifications/" + recipient.getId(), n);
     }
 
-    // ✅ Legacy version with auto-generated ID
     public void notifyUser(User recipient, User actor, String content, NotificationType type,
                            String relatedEntityId, String relatedAssetId, Asset asset) {
         notifyUser(recipient, actor, content, type, relatedEntityId, relatedAssetId, asset, null);

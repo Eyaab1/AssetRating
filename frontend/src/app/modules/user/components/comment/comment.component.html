@@ -2,7 +2,7 @@
   <div class="comment-container">
     <!-- Avatar -->
     <div class="comment-avatar">
-      <span class="initial">{{ userC?.firstName ? userC.firstName.charAt(0).toUpperCase() : '?' }}</span>
+      <span class="initial">{{ userC.firstName ? userC.firstName.charAt(0).toUpperCase() : '?' }}</span>
     </div>
 
     <!-- Comment Body -->
@@ -10,7 +10,7 @@
       <!-- Meta -->
       <div class="comment-meta">
         <div class="left-meta">
-          <span class="author">{{ userC?.firstName }} {{ userC?.lastName }}</span>
+          <span class="author">{{ userC.firstName }} {{ userC.lastName }}</span>
           <span class="date">{{ comment.created_at | date:'short' }}</span>
         </div>
         <div class="right-meta" *ngIf="comment.userRating">

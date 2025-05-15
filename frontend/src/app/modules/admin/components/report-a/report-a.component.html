@@ -1,1 +1,50 @@
-<p>report-a works!</p>
+<table class="report-table" *ngIf="reports.length > 0">
+  <thead>
+    <tr>
+      <th>Asset ID</th>
+      <th>Report</th>
+      <th>Reason</th>
+      <th>Date</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngFor="let report of reports">
+      <tr>
+        <td [title]="report.assetId">{{ report.assetId }}</td>
+        <td>
+          A review on <strong>{{ report.assetLabel }}</strong>
+          was reported by <strong>{{ report.reporterName }}</strong>.
+        </td>
+        <td>
+          {{ report.reason }}
+        </td>
+        <td>{{ report.reportedAt | date: 'short' }}</td>
+        <td>
+          <button
+            class="btn-toggle-review"
+            (click)="toggleExpanded(report.reviewId)">
+            {{ expandedReviews.has(report.reviewId) ? 'Hide' : 'View' }} Review
+          </button>
+          <button class="btn-delete" (click)="deleteReview(report.reviewId)">
+            <i class="fas fa-trash-alt"></i> Delete
+          </button>
+        </td>
+      </tr>
+      <tr>
+      <td colspan="5" style="padding: 0;">
+        <div
+          class="review-slide-wrapper"
+          [@slideExpand]="expandedReviews.has(report.reviewId) ? 'expanded' : 'collapsed'">
+          <div class="review-slide-content" *ngIf="expandedReviews.has(report.reviewId)">
+            <strong>Reported Review:</strong>
+            <p>{{ report.reviewComment }}</p>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+
+    </ng-container>
+  </tbody>
+</table>

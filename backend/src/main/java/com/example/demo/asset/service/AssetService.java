@@ -69,6 +69,10 @@ public class AssetService {
         return assetReleaseRepository.save(release);
     }
   
+    public Optional<String> getLabelById(String id) {
+        return assetRepository.findById(id).map(Asset::getLabel);
+    }
+
     public Asset createAssetFromRequest(AssetRequest request) {
         Asset asset = switch (request.type.toUpperCase()) {
             case "TEMPLATE" -> new Template();

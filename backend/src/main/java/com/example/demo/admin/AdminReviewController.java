@@ -6,8 +6,10 @@ import com.example.review.service.ReviewCommentReportService;
 import com.example.review.service.ReviewCommentService;
 import com.example.demo.notification.NotificationService;
 import com.example.demo.notification.NotificationType;
+import com.example.demo.asset.service.AssetService;
 import com.example.demo.auth.AuthService;
 import com.example.demo.auth.User;
+import com.example.demo.dto.AdminReviewReportDTO;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,22 +27,52 @@ public class AdminReviewController {
     private final ReviewCommentService commentService;
     private final NotificationService notificationService;
     private final AuthService authService;
+    private final AssetService assetService;
 
     public AdminReviewController(
         ReviewCommentReportService reportService,
         ReviewCommentService commentService,
         NotificationService notificationService,
-        AuthService authService
+        AuthService authService,
+        AssetService assetService
     ) {
         this.reportService = reportService;
         this.commentService = commentService;
         this.notificationService = notificationService;
         this.authService = authService;
+        this.assetService=assetService;
     }
 
     @GetMapping
-    public List<ReviewCommentReport> getAllReports() {
-        return reportService.getAllReports();
+    public List<AdminReviewReportDTO> getAllEnrichedReports() {
+        List<ReviewCommentReport> rawReports = reportService.getAllReports();
+
+        return rawReports.stream().map(report -> {
+            ReviewComment review = report.getReview();
+
+            String assetLabel = assetService
+                .getLabelById(review.getAssetId())
+                .orElse("Unknown");
+
+            User reporter = authService.findById(report.getUserId()).orElse(null);
+            User reviewAuthor = authService.findById(review.getUserId()).orElse(null);
+
+            return new AdminReviewReportDTO(
+                report.getId(),
+                report.getReason(),
+                report.getReportedAt(),
+                reporter != null ? reporter.getId() : null,
+                reporter != null ? reporter.getFullName() : "Unknown",
+                reporter != null ? reporter.getEmail() : "Unknown",
+
+                review.getId(),
+                review.getComment(),
+                review.getAssetId(),
+                assetLabel,
+
+                reviewAuthor != null ? reviewAuthor.getId() : null
+            );
+        }).toList();
     }
 
     @DeleteMapping("/review/{id}")

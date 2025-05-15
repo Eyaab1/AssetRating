@@ -77,7 +77,7 @@
           <div *ngIf="activeReleaseTabs[release.id] === 'docs'">
             <iframe 
               *ngIf="release.releasedAsset?.documentation || release.asset?.documentation" 
-              [src]="getSafeDocDirect(release.releasedAsset?.documentation || release.asset?.documentation || '')" 
+              [src]="getSafeDocDirect(release.releasedAsset.documentation || release.asset.documentation || '')" 
               class="doc-viewer">
             </iframe>
             <p *ngIf="!(release.releasedAsset?.documentation || release.asset?.documentation)">
