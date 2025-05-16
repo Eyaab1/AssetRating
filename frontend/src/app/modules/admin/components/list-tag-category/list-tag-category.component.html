@@ -1,0 +1,31 @@
+<div class="entity-container">
+
+  <!-- Header -->
+  <div class="table-header">
+    <h2 class="entity-title">List of {{ type === 'tag' ? 'Tags' : 'Categories' }}</h2>
+    <button class="create-btn" (click)="toggleCreate()">
+      <i class="fas fa-plus"></i> Create {{ type }}
+    </button>
+  </div>
+
+  <!-- Input Field for New Tag/Category -->
+  <div *ngIf="creating" class="create-row">
+    <input type="text" [(ngModel)]="newName" placeholder="Enter {{ type }} name" class="create-input" />
+    <button class="create-btn-confirm" (click)="create()">
+        <i class="fas fa-check"></i> Confirm
+    </button>
+  </div>
+
+
+  <!-- List Section -->
+  <div class="entity-result">
+    <div class="entity-table-head">
+      <div class="col name">Name</div>
+    </div>
+
+    <div class="entity-row" *ngFor="let item of items">
+      <div class="col name">{{ item.name }}</div>
+    </div>
+  </div>
+
+</div>

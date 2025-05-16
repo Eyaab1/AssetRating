@@ -106,6 +106,11 @@ SELECT new com.example.demo.analytics.TopRatedDTO(
 
     	@Query(value = "SELECT * FROM asset WHERE UPPER(asset_type) = :type", nativeQuery = true)
     	List<Asset> findByType(@Param("type") String type);
+    	
+    	@Query("SELECT DISTINCT a.name FROM Asset a WHERE UPPER(TYPE(a)) = UPPER(:type)")
+    	List<String> findDistinctNamesByType(@Param("type") String type);
 
+    	@Query("SELECT DISTINCT a.publisher FROM Asset a WHERE UPPER(TYPE(a)) = UPPER(:type)")
+    	List<String> findDistinctPublishersByType(@Param("type") String type);
 
 }

@@ -119,5 +119,14 @@ public class AdminAssetController {
         List<Asset> result = assetService.filterAssets(type, name, publisher, status, framework, format, projectType);
         return ResponseEntity.ok(result);
     }
+    @GetMapping("/distinct/names")
+    public ResponseEntity<List<String>> getDistinctAssetNames(@RequestParam String type) {
+        return ResponseEntity.ok(assetService.getDistinctNamesByType(type));
+    }
+
+    @GetMapping("/distinct/publishers")
+    public ResponseEntity<List<String>> getDistinctPublishers(@RequestParam String type) {
+        return ResponseEntity.ok(assetService.getDistinctPublishersByType(type));
+    }
 
 }

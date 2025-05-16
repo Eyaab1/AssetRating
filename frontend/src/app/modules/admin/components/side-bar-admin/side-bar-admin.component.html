@@ -41,14 +41,13 @@
               <i class="fas fa-list-ul"></i> Search {{ type.name }}
             </button>
           </li>
-
           <li>
             <a (click)="selectAsset('Tag')">
               <i class="fas fa-cog"></i>
               Tag
               <i class="fas" [ngClass]="selectedAsset === 'Tag' ? 'fa-chevron-down' : 'fa-chevron-right'" style="margin-left: auto;"></i>
             </a>
-            <button *ngIf="selectedAsset === 'Tag'" class="search-button">
+            <button *ngIf="selectedAsset === 'Tag'" class="search-button" [routerLink]="['/admin/tags']">
               <i class="fas fa-list-ul"></i> Search Tag
             </button>
           </li>
@@ -59,10 +58,11 @@
               Category
               <i class="fas" [ngClass]="selectedAsset === 'Category' ? 'fa-chevron-down' : 'fa-chevron-right'" style="margin-left: auto;"></i>
             </a>
-            <button *ngIf="selectedAsset === 'Category'" class="search-button">
+            <button *ngIf="selectedAsset === 'Category'" class="search-button" [routerLink]="['/admin/categories']">
               <i class="fas fa-list-ul"></i> Search Category
             </button>
           </li>
+
         </ul>
 
       </div>

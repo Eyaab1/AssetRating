@@ -109,4 +109,16 @@ export class AdminAssetService {
 
     return this.http.get<Asset[]>(`${this.baseUrl}/filter`, { params,headers: this.getAuthHeaders() });
   }
+  getDistinctAssetNames(type: string): Observable<string[]> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.http.get<string[]>(`${this.baseUrl}/distinct/names?type=${type}`, { headers });
+  }
+
+  getDistinctPublishers(type: string): Observable<string[]> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.http.get<string[]>(`${this.baseUrl}/distinct/publishers?type=${type}`, { headers });
+  }
+
 }

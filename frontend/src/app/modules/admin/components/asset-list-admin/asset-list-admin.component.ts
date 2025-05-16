@@ -3,11 +3,11 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AdminAssetService } from '../../../../shared/services/adminServices/admin-asset.service';
 import { Asset } from '../../../../shared/models/asset';
-import { StatusType } from '../../../../shared/enums/StatusType';
+import { FormsModule } from '@angular/forms';
 import { Format } from '../../../../shared/enums/Format';
 import { Framework } from '../../../../shared/enums/framework';
 import { ProjectType } from '../../../../shared/enums/ProjectType';
-import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-asset-list-admin',
@@ -31,19 +31,36 @@ export class AssetListAdminComponent implements OnInit {
   format: string = '';
   projectType: string = '';
   showMoreFilters: boolean = false;
+  frameworkList: string[] = [];
+  formatList: string[] = [];
+  projectTypeList: string[] = [];
+
+  distinctNames: string[] = [];
+  distinctPublishers: string[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private assetService: AdminAssetService
   ) {}
 
   ngOnInit(): void {
-  this.route.paramMap.subscribe(params => {
-    const rawType = (params.get('type') || '');
-    this.assetType = rawType.charAt(0).toUpperCase() + rawType.slice(1).toLowerCase();
-    this.calculateItemsPerPage();
-    this.loadAssets(this.assetType);
-  });
-}
+    this.route.paramMap.subscribe(params => {
+      const rawType = params.get('type') || '';
+      this.assetType = rawType.charAt(0).toUpperCase() + rawType.slice(1).toLowerCase();
+      this.frameworkList = Object.keys(Framework);
+      this.formatList = Object.keys(Format);
+      this.projectTypeList = Object.keys(ProjectType);
+      this.calculateItemsPerPage();
+      this.loadAssets(this.assetType);
+      this.fetchDistinctValues(); 
+    });
+  }
+
+  fetchDistinctValues(): void {
+    this.assetService.getDistinctAssetNames(this.assetType).subscribe(data => this.distinctNames = data || []);
+    this.assetService.getDistinctPublishers(this.assetType).subscribe(data => this.distinctPublishers = data || []);
+  }
+
 
 applyFilters(): void {
   const filters: any = {
@@ -92,11 +109,31 @@ loadAssets(type: string): void {
     });
   }
 
-  deleteAsset(id: string): void {
-    this.assets = this.assets.filter(asset => asset.id !== id);
-    this.totalPages = Math.ceil(this.assets.length / this.itemsPerPage);
-    this.updatePaginatedAssets();
-  }
+deleteAsset(id: string): void {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'This will delete the asset (soft delete).',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel'
+  }).then(result => {
+    if (result.isConfirmed) {
+      this.assetService.deleteAsset(id).subscribe({
+        next: () => {
+          this.assets = this.assets.filter(asset => asset.id !== id);
+          this.totalPages = Math.ceil(this.assets.length / this.itemsPerPage);
+          this.updatePaginatedAssets();
+
+          Swal.fire('Deleted!', 'The asset has been marked as deleted.', 'success');
+        },
+        error: () => {
+          Swal.fire('Error', 'Failed to delete the asset.', 'error');
+        }
+      });
+    }
+  });
+}
 
   updatePaginatedAssets(): void {
     const start = (this.currentPage - 1) * this.itemsPerPage;
@@ -114,7 +151,7 @@ loadAssets(type: string): void {
   @HostListener('window:resize')
   calculateItemsPerPage(): void {
     const screenHeight = window.innerHeight;
-    const headerHeight = 300;
+    const headerHeight = 450;
     const rowHeight = 60;
     this.itemsPerPage = Math.max(1, Math.floor((screenHeight - headerHeight) / rowHeight));
     this.totalPages = Math.ceil(this.assets.length / this.itemsPerPage);

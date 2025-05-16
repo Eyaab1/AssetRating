@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
   standalone: true,
   templateUrl: './add-user.component.html',
   styleUrls: ['./add-user.component.css'],
-  imports: [ReactiveFormsModule] // ✅ needed for formGroup/formControlName to work
+  imports: [ReactiveFormsModule] 
 })
 export class AddUserComponent implements OnInit {
   userForm!: FormGroup;

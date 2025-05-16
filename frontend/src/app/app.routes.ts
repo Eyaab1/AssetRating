@@ -21,6 +21,7 @@ import { ReportAComponent } from './modules/admin/components/report-a/report-a.c
 import { UserListComponent } from './modules/admin/components/user-list/user-list.component';
 import { AddUserComponent } from './modules/admin/components/add-user/add-user.component';
 import { AssetListAdminComponent } from './modules/admin/components/asset-list-admin/asset-list-admin.component';
+import { ListTagCategoryComponent } from './modules/admin/components/list-tag-category/list-tag-category.component';
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
   
@@ -58,7 +59,10 @@ export const routes: Routes = [
         {path : 'reports', component: ReportAComponent},
         { path: 'users', component: UserListComponent },
         { path: 'users/add', component: AddUserComponent },
-        { path: 'assets/search/:type',component: AssetListAdminComponent}
+        { path: 'assets/search/:type',component: AssetListAdminComponent},
+        { path: 'tags', component: ListTagCategoryComponent, data: { type: 'tag' } },
+        { path: 'categories', component: ListTagCategoryComponent, data: { type: 'category' } },
+
       ] 
     },
   
