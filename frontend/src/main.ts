@@ -1,7 +1,8 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
-import { provideAnimations } from '@angular/platform-browser/animations'; // ✅ Add this
+import { provideAnimations } from '@angular/platform-browser/animations';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 bootstrapApplication(AppComponent, {

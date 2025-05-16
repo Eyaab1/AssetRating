@@ -1,7 +1,12 @@
 <nav class="sidebar">
   <div class="sidebar-header">
-    <!-- <img src="assets/images/logo-light.png" alt="Logo" class="logo" /> -->
-    <!-- <h3>Veggo Admin</h3> -->
+    <div class="logo-container">
+      <img src="assets/images/logo.png" alt="Veggo Logo">
+      <div class="logo-text">
+        <span class="veggo">Veggo</span>
+        <span class="by-vermeg">by VERMEG</span>
+      </div>
+    </div>
   </div>
   <ul class="nav-links">
     <li><a routerLink="/contributorLayout/marketplace" routerLinkActive="active"><i class="fas fa-store"></i> Marketplace</a></li>
@@ -9,4 +14,26 @@
     <li><a routerLink="/contributorLayout/reports" routerLinkActive="active"><i class="fas fa-chart-line"></i> Reports</a></li>
     <li><a routerLink="/admin/settings" routerLinkActive="active"><i class="fas fa-cog"></i> Settings</a></li>
   </ul>
+ <div class="sidebar-profile dropup">
+  <button
+    type="button"
+    class="profile-toggle-btn"
+    (click)="toggleProfileDropdown()">
+
+    <div class="profile-badge">{{ firstNameInitial }}</div>
+    <div class="profile-name">{{ fullName }}</div>
+    <i class="fas fa-chevron-up ms-auto"></i>
+  </button>
+
+  <div
+    class="dropdown-menu show profile-dropdown"
+    *ngIf="showProfileMenu"
+    aria-labelledby="profileToggle">
+      <button class="dropdown-item logout-button" (click)="logout()">
+        <i class="fas fa-sign-out-alt me-2"></i> Logout
+      </button>
+    </div>
+  </div>
+
+
 </nav>

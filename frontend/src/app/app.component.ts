@@ -16,8 +16,11 @@ export class AppComponent {
   title = 'Veggo MarketPlace';
   constructor(private router: Router) {}
   shouldShowNavbar(): boolean {
-    // Add all routes where you want to HIDE the navbar
-    const hiddenRoutes = ['/login', '/accessDenied'];
-    return !hiddenRoutes.includes(this.router.url);
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+
+    const decoded: any = JSON.parse(atob(token.split('.')[1]));
+    return decoded?.role === 'USER';
   }
+
 }
