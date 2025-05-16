@@ -1,4 +1,5 @@
 <nav class="sidebar">
+  <!-- Fixed Logo Section -->
   <div class="sidebar-header">
     <div class="logo-container">
       <img src="assets/images/logo.png" alt="Veggo Logo">
@@ -8,40 +9,51 @@
       </div>
     </div>
   </div>
-  <ul class="nav-links">
-    <li><a routerLink="/admin/dashboard" routerLinkActive="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-    <li><a routerLink="/admin/assets" routerLinkActive="active"><i class="fas fa-box"></i> Assets</a></li>
-    <li><a routerLink="/admin/users" routerLinkActive="active"><i class="fas fa-user"></i> Users</a></li>
-    <li><a routerLink="/admin/reports" routerLinkActive="active"><i class="fas fa-chart-line"></i> Reports</a></li>
-  </ul>
-  
-    <div class="sidebar-profile dropup">
-      <button
-        type="button"
-        class="profile-toggle-btn"
-        (click)="toggleProfileDropdown()">
 
-        <div class="profile-badge">{{ firstNameInitial }}</div>
-        <div class="profile-name">{{ fullName }}</div>
-        <i class="fas fa-chevron-up ms-auto"></i>
-      </button>
-    <div
-    class="dropdown-menu show profile-dropdown"
-    *ngIf="showProfileMenu">
-      <a class="dropdown-item" routerLink="/admin/profile">
-        <i class="fas fa-user me-2"></i> Profile
-      </a>
-      <a class="dropdown-item" routerLink="/admin/settings">
-        <i class="fas fa-cog me-2"></i> Settings
-      </a>
+  <!-- Scrollable Content Section -->
+  <div class="sidebar-scroll-content">
+    <div [@slideSidebar]="isAssetView ? 'asset' : 'default'" class="sidebar-transition-wrapper">
+      <!-- Default Sidebar Links -->
+      <ul class="nav-links" *ngIf="!isAssetView">
+        <li><a routerLink="/admin/dashboard" routerLinkActive="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a routerLink="/admin/users" routerLinkActive="active"><i class="fas fa-user"></i> Users</a></li>
+        <li><a routerLink="/admin/reports" routerLinkActive="active"><i class="fas fa-chart-line"></i> Reports</a></li>
+        <li><a (click)="toggleAssetView()" style="cursor:pointer;"><i class="fas fa-box-open"></i> Assets</a></li>
+      </ul>
 
+      <!-- Asset View Sidebar -->
+      <div *ngIf="isAssetView" class="asset-sidebar">
+        <button class="btn-back" (click)="toggleAssetView()">
+          <i class="fas fa-arrow-left me-2"></i> Back
+        </button>
+        <ul class="grouped-asset-list">
+          <li><a routerLink="/admin/assets/widget"><i class="fas fa-puzzle-piece"></i> Widget</a></li>
+          <li><a routerLink="/admin/assets/ui-library"><i class="fas fa-layer-group"></i> UI Library</a></li>
+          <li><a routerLink="/admin/assets/template"><i class="fas fa-clone"></i> Template</a></li>
+          <li><a routerLink="/admin/assets/connector"><i class="fas fa-plug"></i> Connector</a></li>
+          <li><a routerLink="/admin/assets/utility"><i class="fas fa-toolbox"></i> Utility</a></li>
+          <li><a routerLink="/admin/assets/theme"><i class="fas fa-paint-brush"></i> Theme</a></li>
+          <li><a routerLink="/admin/assets/tag"><i class="fas fa-tags"></i> Tag</a></li>
+          <li><a routerLink="/admin/assets/category"><i class="fas fa-folder-open"></i> Category</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fixed Profile Section -->
+  <div class="sidebar-profile dropup">
+    <button type="button" class="profile-toggle-btn" (click)="toggleProfileDropdown()">
+      <div class="profile-badge">{{ firstNameInitial }}</div>
+      <div class="profile-name">{{ fullName }}</div>
+      <i class="fas fa-chevron-up ms-auto"></i>
+    </button>
+    <div class="dropdown-menu show profile-dropdown" *ngIf="showProfileMenu">
+      <a class="dropdown-item" routerLink="/admin/profile"><i class="fas fa-user me-2"></i> Profile</a>
+      <a class="dropdown-item" routerLink="/admin/settings"><i class="fas fa-cog me-2"></i> Settings</a>
       <div class="dropdown-divider"></div>
-
       <button class="dropdown-item logout-button" (click)="logout()">
         <i class="fas fa-sign-out-alt me-2"></i> Logout
       </button>
     </div>
-
   </div>
-
 </nav>
