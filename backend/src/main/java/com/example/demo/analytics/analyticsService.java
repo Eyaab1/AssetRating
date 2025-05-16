@@ -1,5 +1,6 @@
 package com.example.demo.analytics;
 
+import com.example.demo.asset.model.Asset;
 import com.example.demo.asset.model.Status;
 import com.example.demo.asset.service.AssetService;
 import com.example.demo.auth.AuthService;
@@ -88,6 +89,70 @@ public class analyticsService {
                     .toString(),
                 Collectors.counting()
             ));
+    }
+    public Map<String, Object> getContributorSummary(String email) {
+        Map<String, Object> summary = new HashMap<>();
+
+        // Filter all contributor assets
+        List<Asset> contributorAssets = assetService.getAllAssets().stream()
+            .filter(asset -> asset.getPublisherMail() != null && asset.getPublisherMail().equalsIgnoreCase(email))
+            .toList();
+
+        // Most Downloaded Asset (assuming you store a download count)
+        Asset mostDownloaded = contributorAssets.stream()
+            .max((a1, a2) -> Long.compare(
+                a1.getDownloadCount() != null ? a1.getDownloadCount() : 0,
+                a2.getDownloadCount() != null ? a2.getDownloadCount() : 0))
+            .orElse(null);
+
+        int totalReviews = contributorAssets.stream()
+            .mapToInt(asset -> reviewService.getReviewsByAssetId(asset.getId()).size())
+            .sum();
+
+        double totalRatings = contributorAssets.stream()
+                .mapToDouble(asset -> {
+                    try {
+                        int rating = ratingService.getOverallRating(asset.getId());
+                        return rating != 0? rating : 0;
+                    } catch (Exception e) {
+                        System.err.println("Error fetching rating for asset " + asset.getId() + ": " + e.getMessage());
+                        return 0;
+                    }
+                })
+                .sum();
+
+        long totalDownloads = contributorAssets.stream()
+            .mapToLong(asset -> asset.getDownloadCount() != null ? asset.getDownloadCount() : 0)
+            .sum();
+
+        summary.put("totalReviews", totalReviews);
+        summary.put("totalRatings", totalRatings);
+        summary.put("totalDownloads", totalDownloads);
+
+        if (mostDownloaded != null) {
+            Map<String, Object> mostDownloadedAsset = new HashMap<>();
+            mostDownloadedAsset.put("name", mostDownloaded.getName());
+            mostDownloadedAsset.put("downloads", mostDownloaded.getDownloadCount());
+            summary.put("mostDownloadedAsset", mostDownloadedAsset);
+        } else {
+            summary.put("mostDownloadedAsset", null);
+        }
+
+        return summary;
+    }
+    
+    public List<TopRatedDTO> getTopDownloadedAssetsByContributor(String email) {
+        return assetService.getAllAssets().stream()
+            .filter(asset -> email.equalsIgnoreCase(asset.getPublisherMail()))
+            .sorted((a1, a2) -> Long.compare(
+                a2.getDownloadCount() != null ? a2.getDownloadCount() : 0,
+                a1.getDownloadCount() != null ? a1.getDownloadCount() : 0))
+            .limit(5)
+            .map(asset -> new TopRatedDTO(
+                asset.getName(),
+                (double) (asset.getDownloadCount() != null ? asset.getDownloadCount() : 0)
+            ))
+            .toList();
     }
 
     // ========== USER METRICS ==========

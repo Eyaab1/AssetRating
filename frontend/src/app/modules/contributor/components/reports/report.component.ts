@@ -94,7 +94,7 @@ export class ReportComponent implements OnInit {
 
   goToReview(report: Notification) {
     this.markAsRead(report);
-    this.router.navigate([`/detail/${report.relatedAssetId}`], {
+    this.router.navigate([`/contributorLayout/detail/${report.relatedAssetId}`], {
       queryParams: {
         focusReviewId: report.relatedEntityId,
         fromReport: true

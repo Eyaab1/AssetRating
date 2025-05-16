@@ -2,20 +2,20 @@ package com.example.demo.analytics;
 
 public class TopRatedDTO {
 	private String label;
-    private Double averageRating;
+    private Double value;
     // Constructors
     public TopRatedDTO(String label, Double averageRating) {
         this.label = label;
-        this.averageRating = averageRating;
+        this.value = averageRating;
     }
 
 
     public Double getAverageRating() {
-        return averageRating;
+        return value;
     }
 
     public void setAverageRating(Double averageRating) {
-        this.averageRating = averageRating;
+        this.value = averageRating;
     }
 
 	public String getLabel() {

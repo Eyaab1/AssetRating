@@ -9,10 +9,14 @@ import { CommentService } from '../../../../shared/services/comment.service';
 import { FormsModule } from '@angular/forms';
 import { RatingChartComponent } from '../charts/rating-chart/rating-chart.component';
 import { RatingDistributionChartComponent } from '../charts/rating-distribution-chart/rating-distribution-chart.component';
+import { TopRatedDTO } from '../../../../shared/models/top-rated-dto';
+import { MostDownloadsComponent } from '../charts/most-downloads/most-downloads.component'; 
+import { AnalyticsService } from '../../../../shared/services/analytics.service';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule,FormsModule,RatingChartComponent,RatingDistributionChartComponent],
+  imports: [CommonModule, RouterModule,FormsModule,RatingChartComponent,MostDownloadsComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -24,14 +28,30 @@ export class DashboardComponent {
   recentAssets: Asset[] = [];
   topRatedAsset: Asset | null = null;
   mostReviewedAsset: Asset | null = null;
-  constructor(private router: Router,private assetService: AssetServiceService,public ratingService: RatingService,public commentService:CommentService) {}
+  totalReviews = 0;
+  totalRatings = 0;
+  totalDownloads = 0;
+  mostDownloadedAsset: { name: string; downloads: number } | null = null;
+  topDownloadedAssets: TopRatedDTO[] = [];
+
+  constructor(private router: Router,
+    private assetService: AssetServiceService,
+    public ratingService: RatingService,
+    public commentService:CommentService,
+    public analyticsService: AnalyticsService,
+  ) {}
   
   ngOnInit(): void {
     const token = localStorage.getItem('token');
     if (token) {
       const decoded: any = jwtDecode(token);
       this.userEmail = decoded.sub;
-
+        this.analyticsService.getContributorSummary(this.userEmail).subscribe(summary => {
+          this.totalReviews = summary.totalReviews;
+          this.totalRatings = summary.totalRatings;
+          this.totalDownloads = summary.totalDownloads;
+          this.mostDownloadedAsset = summary.mostDownloadedAsset;
+        });
       this.assetService.getAllAssets().subscribe({
         next: (data) => {
           this.allAssets = data.filter(asset => asset.publisherMail === this.userEmail);
@@ -93,6 +113,7 @@ filteredAssets(): Asset[] {
 viewAnalytics(assetId: string) {
 
 }
+
 getRatingDistribution(): number[] {
   const distribution = [0, 0, 0, 0, 0]; // index 0 = 1 star, index 4 = 5 stars
 
