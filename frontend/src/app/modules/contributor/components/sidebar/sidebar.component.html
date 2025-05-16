@@ -12,7 +12,6 @@
     <li><a routerLink="/contributorLayout/marketplace" routerLinkActive="active"><i class="fas fa-store"></i> Marketplace</a></li>
     <li><a routerLink="/contributorLayout/dashboard" routerLinkActive="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
     <li><a routerLink="/contributorLayout/reports" routerLinkActive="active"><i class="fas fa-chart-line"></i> Reports</a></li>
-    <li><a routerLink="/admin/settings" routerLinkActive="active"><i class="fas fa-cog"></i> Settings</a></li>
   </ul>
  <div class="sidebar-profile dropup">
   <button
@@ -29,9 +28,22 @@
     class="dropdown-menu show profile-dropdown"
     *ngIf="showProfileMenu"
     aria-labelledby="profileToggle">
-      <button class="dropdown-item logout-button" (click)="logout()">
-        <i class="fas fa-sign-out-alt me-2"></i> Logout
-      </button>
+      <div
+      class="dropdown-menu show profile-dropdown"
+      *ngIf="showProfileMenu">
+        <a class="dropdown-item" routerLink="/admin/profile">
+          <i class="fas fa-user me-2"></i> Profile
+        </a>
+        <a class="dropdown-item" routerLink="/admin/settings">
+          <i class="fas fa-cog me-2"></i> Settings
+        </a>
+
+        <div class="dropdown-divider"></div>
+
+        <button class="dropdown-item logout-button" (click)="logout()">
+          <i class="fas fa-sign-out-alt me-2"></i> Logout
+        </button>
+      </div>
     </div>
   </div>
 
