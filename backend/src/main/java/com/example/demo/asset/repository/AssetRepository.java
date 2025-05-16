@@ -104,5 +104,8 @@ SELECT new com.example.demo.analytics.TopRatedDTO(
     	@Query("SELECT a.status, COUNT(a) FROM Asset a GROUP BY a.status")
     	List<Object[]> countAssetsByStatus();
 
+    	@Query(value = "SELECT * FROM asset WHERE UPPER(asset_type) = :type", nativeQuery = true)
+    	List<Asset> findByType(@Param("type") String type);
+
 
 }

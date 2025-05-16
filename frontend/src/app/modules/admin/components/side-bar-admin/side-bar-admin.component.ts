@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {
   trigger,
@@ -36,7 +36,18 @@ export class SideBarAdminComponent {
   fullName: string = '';
   showProfileMenu: boolean = false;
   isAssetView: boolean = false;
+  selectedAsset: string | null = null;
+  assetTypes = [
+    { name: 'Widget', value: 'widget', icon: 'fas fa-puzzle-piece' },
+    { name: 'UI Library', value: 'ui-library', icon: 'fas fa-layer-group' },
+    { name: 'Template', value: 'template', icon: 'fas fa-clone' },
+    { name: 'Connector', value: 'connector', icon: 'fas fa-plug' },
+    { name: 'Utility', value: 'utility', icon: 'fas fa-toolbox' },
+    { name: 'Theme', value: 'theme', icon: 'fas fa-paint-brush' },
+    { name: 'Industry', value: 'industry', icon: 'fas fa-industry' },
+  ];
 
+constructor(private router: Router) {}
 
   ngOnInit(): void {
     const token = localStorage.getItem('token');
@@ -61,5 +72,10 @@ export class SideBarAdminComponent {
     this.isAssetView = !this.isAssetView;
   }
 
-
+  selectAsset(asset: string): void {
+    this.selectedAsset = this.selectedAsset === asset ? null : asset;
+  }
+  goToSearch(type: string): void {
+  this.router.navigate([`/admin/assets/search/${type}`]);
+}
 }

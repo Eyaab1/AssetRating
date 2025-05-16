@@ -1,0 +1,96 @@
+<div class="asset-admin-container">
+
+  <!-- Title -->
+  <h2 class="asset-title">Search {{ assetType }}</h2>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <input type="text" [(ngModel)]="name" placeholder="Name" class="filter-input" />
+    <input type="text" [(ngModel)]="publisher" placeholder="Publisher" class="filter-input" />
+    <select [(ngModel)]="status" class="filter-input">
+      <option value="">All Status</option>
+      <option value="PUBLISHED">Published</option>
+      <option value="UNPUBLISHED">Unpublished</option>
+      <option value="DELETED">Deleted</option>
+      <option value="PENDING">Pending</option>
+    </select>
+
+    <button class="filter-more-btn" (click)="showMoreFilters = !showMoreFilters">
+      <i class="fas fa-sliders-h"></i> More filters
+    </button>
+    <button class="filter-search-btn" (click)="resetFilters()">
+      <i class="fas fa-times"></i> Reset
+    </button>
+
+    <button class="filter-search-btn" (click)="applyFilters()">
+      <i class="fas fa-search"></i> Search
+    </button>
+  </div>
+<div *ngIf="showMoreFilters" class="filter-bar">
+  <ng-container [ngSwitch]="assetType">
+    <ng-container *ngSwitchCase="'Widget'">
+      <select [(ngModel)]="framework" class="filter-input">
+        <option value="">All Frameworks</option>
+        <option *ngFor="let fw of ['ANGULAR', 'REACT', 'VUE']" [value]="fw">{{ fw }}</option>
+      </select>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'Sheet'">
+      <select [(ngModel)]="format" class="filter-input">
+        <option value="">All Formats</option>
+        <option *ngFor="let fmt of ['EXCEL', 'CSV']" [value]="fmt">{{ fmt }}</option>
+      </select>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'Template'">
+      <select [(ngModel)]="projectType" class="filter-input">
+        <option value="">All Project Types</option>
+        <option *ngFor="let pt of ['ADMIN_PANEL', 'E_COMMERCE']" [value]="pt">{{ pt }}</option>
+      </select>
+    </ng-container>
+  </ng-container>
+</div>
+
+  <!-- Table Head -->
+  <div class="asset-table-head">
+    <div class="col name">Name <i class="fas fa-sort"></i></div>
+    <div class="col publisher">Publisher <i class="fas fa-sort"></i></div>
+    <div class="col date">Publish Date <i class="fas fa-sort"></i></div>
+    <div class="col status">Status <i class="fas fa-sort"></i></div>
+    <div class="col actions">Actions <i class="fas fa-sort"></i></div>
+  </div>
+
+  <!-- Table Rows (placeholder cards) -->
+  <div class="asset-row" *ngFor="let asset of paginatedAssets">
+    <div class="col name">{{ asset.name }}</div>
+    <div class="col publisher">{{ asset.publisher }}</div>
+    <div class="col date">{{ asset.publishDate | date: 'shortDate' }}</div>
+    <div class="col status">{{ asset.status }}</div>
+    <div class="col actions">
+        <a class="action-link" [routerLink]="['/admin/assets/edit', asset.id]">
+        <i class="fas fa-pen"></i> Edit
+        </a>
+        <a class="action-link" [routerLink]="['/admin/assets/view', asset.id]">
+        <i class="fas fa-eye"></i> View
+        </a>
+        <a class="action-link" (click)="deleteAsset(asset.id)">
+        <i class="fas fa-trash"></i> Delete
+        </a>
+    </div>
+    </div>
+
+
+  <!-- Pagination -->
+  <div class="pagination-bar">
+    <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1">&laquo;</button>
+
+    <button *ngFor="let page of [].constructor(totalPages); let i = index"
+            [class.active]="currentPage === (i + 1)"
+            (click)="onPageChange(i + 1)">
+      {{ i + 1 }}
+    </button>
+
+    <span>Page {{ currentPage }} / {{ totalPages }} ({{ assets.length }} items)</span>
+  </div>
+
+</div>
