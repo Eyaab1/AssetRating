@@ -13,12 +13,11 @@
     <li><a routerLink="/contributorLayout/dashboard" routerLinkActive="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
     <li><a routerLink="/contributorLayout/reports" routerLinkActive="active"><i class="fas fa-chart-line"></i> Reports</a></li>
   </ul>
- <div class="sidebar-profile dropup">
+<div class="sidebar-profile dropup">
   <button
     type="button"
     class="profile-toggle-btn"
     (click)="toggleProfileDropdown()">
-
     <div class="profile-badge">{{ firstNameInitial }}</div>
     <div class="profile-name">{{ fullName }}</div>
     <i class="fas fa-chevron-up ms-auto"></i>
@@ -26,24 +25,19 @@
 
   <div
     class="dropdown-menu show profile-dropdown"
-    *ngIf="showProfileMenu"
-    aria-labelledby="profileToggle">
-      <div
-      class="dropdown-menu show profile-dropdown"
-      *ngIf="showProfileMenu">
-        <a class="dropdown-item" routerLink="/admin/profile">
-          <i class="fas fa-user me-2"></i> Profile
-        </a>
-        <a class="dropdown-item" routerLink="/admin/settings">
-          <i class="fas fa-cog me-2"></i> Settings
-        </a>
+    *ngIf="showProfileMenu">
+    <a class="dropdown-item" routerLink="/contributorLayout/profile">
+      <i class="fas fa-user me-2"></i> Profile
+    </a>
+    <a class="dropdown-item" routerLink="/contributorLayout/settings">
+      <i class="fas fa-cog me-2"></i> Settings
+    </a>
 
-        <div class="dropdown-divider"></div>
+    <div class="dropdown-divider"></div>
 
-        <button class="dropdown-item logout-button" (click)="logout()">
-          <i class="fas fa-sign-out-alt me-2"></i> Logout
-        </button>
-      </div>
+      <button class="dropdown-item logout-button" (click)="logout()">
+        <i class="fas fa-sign-out-alt me-2"></i> Logout
+      </button>
     </div>
   </div>
 

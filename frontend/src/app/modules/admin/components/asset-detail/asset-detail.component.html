@@ -3,13 +3,14 @@
         <i class="fas fa-arrow-left me-2"></i> Back
     </button>
   <div class="detail-header">
-    <h2 class="detail-title">Search {{ asset?.label }}</h2>
+    <h2 class="detail-title">Search {{ asset?.type }}</h2>
     <button class="modify-btn"><i class="fas fa-pen"></i> Modify</button>
   </div>
 
   <div class="asset-info-grid">
     <div><strong>Identifier:</strong> {{ asset?.id }}</div>
     <div><strong>Name:</strong> {{ asset?.name }}</div>
+    <div><strong>Label:</strong> {{ asset?.label }}</div>
     <div><strong>Publish Date:</strong> {{ asset?.publishDate | date:'shortDate' }}</div>
     <div><strong>Publisher:</strong> {{ asset?.publisher }}</div>
     <div><strong>Description:</strong> {{ asset?.description }}</div>

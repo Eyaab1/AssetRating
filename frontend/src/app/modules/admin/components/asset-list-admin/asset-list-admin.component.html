@@ -5,15 +5,17 @@
   <div class="filters">
     <!-- Filter Bar -->
     <div class="filter-bar">
-      <select [(ngModel)]="name" class="filter-input">
+      <select [(ngModel)]="name" class="form-select">
         <option value="">Name</option>
         <option *ngFor="let name of distinctNames" [value]="name">{{ name }}</option>
       </select>
-      <select [(ngModel)]="publisher" class="filter-input">
+
+      <select [(ngModel)]="publisher" class="form-select">
         <option value="">Publisher</option>
         <option *ngFor="let pub of distinctPublishers" [value]="pub">{{ pub }}</option>
       </select>
-      <select [(ngModel)]="status" class="filter-input">
+
+      <select [(ngModel)]="status" class="form-select">
         <option value="">Status</option>
         <option value="PUBLISHED">Published</option>
         <option value="UNPUBLISHED">Unpublished</option>
@@ -61,7 +63,7 @@
   <!-- Table Head -->
    <div class="table-header">
       <h2 class="asset-title">List of {{ assetType }}s</h2>
-      <button class="create-btn" >
+      <button class="create-btn" [routerLink]="['/admin/assets/add']">
         <i class="fas fa-plus"></i> Create
       </button>
     </div>
