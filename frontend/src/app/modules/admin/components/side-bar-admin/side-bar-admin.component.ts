@@ -44,7 +44,6 @@ export class SideBarAdminComponent {
     { name: 'Connector', value: 'connector', icon: 'fas fa-plug' },
     { name: 'Utility', value: 'utility', icon: 'fas fa-toolbox' },
     { name: 'Theme', value: 'theme', icon: 'fas fa-paint-brush' },
-    { name: 'Industry', value: 'industry', icon: 'fas fa-industry' },
   ];
 
 constructor(private router: Router) {}

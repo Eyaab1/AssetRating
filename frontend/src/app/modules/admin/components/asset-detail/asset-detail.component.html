@@ -1,0 +1,88 @@
+<div class="asset-detail-container">
+    <button class="btn-back" (click)="goBack()">
+        <i class="fas fa-arrow-left me-2"></i> Back
+    </button>
+  <div class="detail-header">
+    <h2 class="detail-title">Search {{ asset?.label }}</h2>
+    <button class="modify-btn"><i class="fas fa-pen"></i> Modify</button>
+  </div>
+
+  <div class="asset-info-grid">
+    <div><strong>Identifier:</strong> {{ asset?.id }}</div>
+    <div><strong>Name:</strong> {{ asset?.name }}</div>
+    <div><strong>Publish Date:</strong> {{ asset?.publishDate | date:'shortDate' }}</div>
+    <div><strong>Publisher:</strong> {{ asset?.publisher }}</div>
+    <div><strong>Description:</strong> {{ asset?.description }}</div>
+    <div><strong>Image:</strong> {{ asset?.image }}</div>
+    <div><strong>Documentation:</strong> {{ asset?.documentation }}</div>
+  </div>
+
+  <!-- Tabs -->
+    <div class="tab-bar">
+        <button [class.active]="activeTab === 'tags'" (click)="activeTab = 'tags'">Tag(s)</button>
+        <button [class.active]="activeTab === 'releases'" (click)="activeTab = 'releases'">{{ asset?.type }} Release(s)</button>
+        <button [class.active]="activeTab === 'categories'" (click)="activeTab = 'categories'">Categories</button>
+        <button *ngIf="additionalTab" [class.active]="activeTab === 'extra'" (click)="activeTab = 'extra'">{{ additionalTab }}</button>
+    </div>
+
+  <!-- Tab Content -->
+  <div *ngIf="activeTab === 'releases'" class="release-table">
+    <table>
+      <thead>
+        <tr>
+          <th>{{ asset?.type }} Release</th>
+          <th>Publish Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of asset?.releases">
+          <td>{{ r.releaseVersion }}</td>
+          <td>{{ r.publishedDate | date: 'shortDate' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+    <div *ngIf="activeTab === 'tags'" class="meta-table">
+        <table>
+            <thead>
+            <tr>
+                <th>Tag Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let tag of tags">
+                <td>{{ tag }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div *ngIf="activeTab === 'categories'" class="meta-table">
+        <table>
+            <thead>
+            <tr>
+                <th>Category Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let cat of categories">
+                <td>{{ cat }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div *ngIf="activeTab === 'extra'" class="meta-table">
+        <table>
+            <thead>
+            <tr>
+                <th>{{ additionalTab }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{ additionalValue }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
