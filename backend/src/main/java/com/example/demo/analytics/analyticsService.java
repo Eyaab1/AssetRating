@@ -221,6 +221,26 @@ public class analyticsService {
 
         return spamMap;
     }
+    public Map<String, Integer> getSpamBreakdownByAsset(String assetId) {
+        List<ReviewComment> reviews = reviewService.getReviewsByAssetId(assetId);
+        Map<String, Integer> spamMap = new HashMap<>();
+        spamMap.put("spam", 0);
+        spamMap.put("ham", 0);
+
+        for (ReviewComment review : reviews) {
+            try {
+                ModerationResult result = reviewModerationService.analyzeReview(review.getComment());
+                String spamLabel = result.getSpamLabel();
+                if (spamLabel != null && spamMap.containsKey(spamLabel.toLowerCase())) {
+                    spamMap.put(spamLabel.toLowerCase(), spamMap.get(spamLabel.toLowerCase()) + 1);
+                }
+            } catch (Exception e) {
+                System.err.println("Spam check failed for review ID " + review.getId() + ": " + e.getMessage());
+            }
+        }
+
+        return spamMap;
+    }
 
     public Map<String, Integer> getReviewSentimentBreakdownByAsset(String assetId) {
         List<ReviewComment> reviews = reviewService.getReviewsByAssetId(assetId);
@@ -271,5 +291,38 @@ public class analyticsService {
                 Collectors.counting()
             ));
     }
+    public Map<String, Object> getAssetAnalytics(String assetId) {
+        Map<String, Object> analytics = new HashMap<>();
+
+        try {
+            Asset asset = assetService.getAssetById(assetId)
+                .orElseThrow(() -> new RuntimeException("Asset not found with id: " + assetId));
+            analytics.put("downloadCount", asset.getDownloadCount() != null ? asset.getDownloadCount() : 0);
+        } catch (Exception e) {
+            analytics.put("downloadCount", 0);
+        }
+
+        try {
+            int rating = ratingService.getOverallRating(assetId);
+            analytics.put("averageRating", rating != 0 ? rating : 0);
+        } catch (Exception e) {
+            analytics.put("averageRating", 0);
+        }
+
+        try {
+            analytics.put("reviewCount", reviewService.getReviewsByAssetId(assetId).size());
+        } catch (Exception e) {
+            analytics.put("reviewCount", 0);
+        }
+
+        analytics.put("sentimentBreakdown", getReviewSentimentBreakdownByAsset(assetId));
+        analytics.put("spamBreakdown", getSpamBreakdownByAsset(assetId));
+        analytics.put("ratingDistribution", ratingService.getRatingDistribution(assetId));
+
+        return analytics;
+    }
+
+    
+    
 
 }

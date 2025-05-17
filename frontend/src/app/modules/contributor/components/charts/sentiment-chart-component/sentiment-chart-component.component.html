@@ -1,0 +1,4 @@
+ <div *ngIf="chartData">
+      <h4>Sentiment Breakdown</h4>
+      <canvas baseChart [data]="chartData" [options]="chartOptions" [type]="'doughnut'"></canvas>
+    </div>

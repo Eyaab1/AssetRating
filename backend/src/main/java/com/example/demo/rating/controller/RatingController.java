@@ -134,11 +134,9 @@ public class RatingController {
     public ResponseEntity<?> getReleaseRating(@PathVariable String releasedAssetId) {
         int overallRating = ratingService.getOverallRating(releasedAssetId);
         Map<String, Double> categoryRatings = ratingService.getAverageScoresByCategory(releasedAssetId);
-
         Map<String, Object> response = new HashMap<>();
         response.put("overall", overallRating);
         response.put("categories", categoryRatings);
-
         return ResponseEntity.ok(response);
     }
 }

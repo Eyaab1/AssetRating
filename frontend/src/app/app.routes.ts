@@ -20,6 +20,7 @@ import { ReportComponent } from './modules/contributor/components/reports/report
 import { ReportAComponent } from './modules/admin/components/report-a/report-a.component';
 import { UserListComponent } from './modules/admin/components/user-list/user-list.component';
 import { AddUserComponent } from './modules/admin/components/add-user/add-user.component';
+import { AssetAnalyticsComponent } from './modules/contributor/components/asset-analytics/asset-analytics.component';
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
   
@@ -43,6 +44,7 @@ export const routes: Routes = [
         {path: 'full-assets',component:FullAssetListComponent},
         {path: 'notificationAll',component:NotificationSeeAllComponent},
         { path: 'reports', component: ReportComponent },
+        {path:'assetAnalytics/:id',component:AssetAnalyticsComponent}
         
 
       ]

@@ -7,6 +7,7 @@ import com.example.demo.asset.model.Framework;
 import com.example.demo.asset.model.Status;
 import com.example.demo.asset.model.Tag;
 import com.example.demo.asset.service.AssetService;
+import com.example.demo.dto.AssetReleaseDto;
 import com.example.demo.dto.AssetReleaseRequest;
 import com.example.demo.dto.AssetRequest;
 
@@ -80,10 +81,15 @@ public class AssetController {
         Asset release = assetService.uploadAssetRelease(request);
         return ResponseEntity.ok(release);
     }
+    //@GetMapping("/{assetId}/releases")
+    //public ResponseEntity<List<AssetReleases>> getReleasesByAsset(@PathVariable String assetId) {
+      //  List<AssetReleases> releases = assetService.getReleasesByAsset(assetId);
+        //return ResponseEntity.ok(releases);
+    //}
+    
     @GetMapping("/{assetId}/releases")
-    public ResponseEntity<List<AssetReleases>> getReleasesByAsset(@PathVariable String assetId) {
-        List<AssetReleases> releases = assetService.getReleasesByAsset(assetId);
-        return ResponseEntity.ok(releases);
+    public ResponseEntity<List<AssetReleaseDto>> getReleases(@PathVariable String assetId) {
+        return ResponseEntity.ok(assetService.getReleasesByAsset(assetId));
     }
 
 

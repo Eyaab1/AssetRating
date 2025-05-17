@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Asset } from '../../../../shared/models/asset';
 import { AssetServiceService } from '../../../../shared/services/asset-service.service';
 import { RatingService } from '../../../../shared/services/rating.service';
@@ -26,7 +26,8 @@ export class FullAssetListComponent {
   constructor(
     private assetService: AssetServiceService,
     private ratingService: RatingService,
-    private commentService: CommentService
+    private commentService: CommentService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -54,5 +55,8 @@ export class FullAssetListComponent {
     return this.showMyAssetsOnly
       ? this.allAssets.filter(a => a.publisherMail === this.userEmail)
       : this.allAssets;
+  }
+  goToAddAseet() {
+    this.router.navigate(['/contributorLayout/addAsset']);
   }
 }

@@ -1,0 +1,4 @@
+ <div *ngIf="chartData">
+      <h4>Rating Distribution</h4>
+      <canvas baseChart [data]="chartData" [options]="chartOptions" [type]="'bar'"></canvas>
+    </div>

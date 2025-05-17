@@ -1,0 +1,32 @@
+<div class="asset-analytics">
+  <div class="analytics-card">
+    <p>Downloads</p>
+    <h3>{{ assetAnalytics?.downloadCount }}</h3>
+  </div>
+  <div class="analytics-card">
+    <p>Average Rating</p>
+    <h3>{{ assetAnalytics?.averageRating }}</h3>
+  </div>
+  <div class="analytics-card">
+    <p>Total Reviews</p>
+    <h3>{{ assetAnalytics?.reviewCount }}</h3>
+  </div>
+</div>
+
+<div class="analytics-chart" *ngIf="assetAnalytics?.ratingDistribution">
+  <app-rating-distribution-for-asset
+    [distribution]="assetAnalytics.ratingDistribution">
+  </app-rating-distribution-for-asset>
+</div>
+
+<div class="analytics-chart" *ngIf="assetAnalytics?.sentimentBreakdown">
+  <app-sentiment-chart-component
+    [sentiments]="assetAnalytics.sentimentBreakdown">
+  </app-sentiment-chart-component>
+</div>
+
+<div class="analytics-chart" *ngIf="assetAnalytics?.spamBreakdown">
+  <app-spam-chart-component
+    [spam]="assetAnalytics.spamBreakdown">
+  </app-spam-chart-component>
+</div>

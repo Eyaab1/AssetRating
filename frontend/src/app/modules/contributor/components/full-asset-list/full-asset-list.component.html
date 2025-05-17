@@ -1,7 +1,6 @@
 <div class="filter-bar">
     <label>
-      <input type="checkbox" [(ngModel)]="showMyAssetsOnly" />
-      Show My Assets Only
+      <button (click)="goToAddAseet()">add Asset</button>
     </label>
     <span class="badge green">Published: {{ publishedCount }}</span>
     <span class="badge orange">Unpublished: {{ unpublishedCount }}</span>
@@ -32,7 +31,9 @@
             <a [routerLink]="['/contributorLayout/edit', asset.id]">
               <button class="btn-icon blue"><i class="fas fa-edit"></i></button>
             </a>
+            <a [routerLink]="['/contributorLayout/assetAnalytics', asset.id]">
             <button class="btn-icon purple"><i class="fas fa-chart-line"></i></button>
+            </a>
           </td>
         </tr>
       </tbody>

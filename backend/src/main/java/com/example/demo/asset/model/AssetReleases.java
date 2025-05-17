@@ -57,6 +57,14 @@ public class AssetReleases {
 		this.publishedDate = publishedDate;
 	}
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public Asset getAsset() {
 		return asset;
 	}

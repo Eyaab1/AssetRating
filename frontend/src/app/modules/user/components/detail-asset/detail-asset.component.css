@@ -7,7 +7,8 @@
   margin: auto;
   font-family: 'Inter', sans-serif;
   background-color: #ffffff;
-}
+ position: relative;
+  z-index: 0;}
 
 .left-column {
   flex: 1 1 65%;
@@ -162,27 +163,63 @@
   border-radius: 12px;
   margin-bottom: 20px;
   transition: 0.3s;
+
 }
 
 .release-card.selected {
   background: #f6f1ff;
   border-color: #7c3aed;
   box-shadow: 0 4px 16px rgba(124, 58, 237, 0.1);
+  
 }
 
 .release-header {
-  padding: 18px 24px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  font-weight: 600;
+  gap: 12px;
+  padding: 16px 24px;
+  font-weight: 500;
+  font-size: 15px;
   background: #fff;
+  border-radius: 12px;
   cursor: pointer;
-  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+.release-header:hover {
+  background-color: #f9f6ff;
+}
+
+.release-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.release-version {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+.release-rating {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #333;
+  gap: 4px;
+}
+
+.release-rating .star {
+  color: #ffc107;
+  font-size: 16px;
 }
 
 .release-date {
-  font-size: 14px;
-  color: #888;
+  font-size: 13px;
+  color: #999;
 }
 
 .arrow {
@@ -197,25 +234,27 @@
 /* Inner tabs (docs/feedback) */
 .tab-buttons {
   display: flex;
-  gap: 16px;
-  margin: 16px 0;
+  gap: 20px;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 24px;
 }
 
 .tab-buttons button {
+  background: none;
   border: none;
-  background: #f3f0ff;
-  padding: 10px 16px;
-  border-radius: 6px;
+  padding: 12px 24px;
+  font-size: 15px;
   cursor: pointer;
-  font-size: 14px;
+  border-bottom: 3px solid transparent;
+  transition: 0.25s ease;
   color: #555;
-  transition: 0.2s ease;
 }
 
+
 .tab-buttons button.active {
-  background: #7c3aed;
-  color: #fff;
-  font-weight: 500;
+    border-bottom: 3px solid #7c3aed;
+  color: #7c3aed;
+  font-weight: 600;
 }
 
 /* Ratings */

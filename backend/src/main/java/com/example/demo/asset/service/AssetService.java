@@ -16,6 +16,7 @@ import com.example.demo.asset.repository.AssetReleaseRepository;
 import com.example.demo.asset.repository.AssetRepository;
 import com.example.demo.auth.AuthService;
 import com.example.demo.auth.User;
+import com.example.demo.dto.AssetReleaseDto;
 import com.example.demo.dto.AssetReleaseRequest;
 import com.example.rating.service.RatingService;
 
@@ -243,7 +244,7 @@ public class AssetService {
         List<Asset> assets = assetRepository.findAll();
 
         return assets.stream()
-            .filter(asset -> asset.getParentAsset() == null) // ✅ only original assets, not released versions
+            .filter(asset -> asset.getParentAsset() == null) 
             .collect(Collectors.toList());
     }
 
@@ -289,11 +290,25 @@ public class AssetService {
             .limit(10)
             .collect(Collectors.toList());
     }
-    public List<AssetReleases> getReleasesByAsset(String assetId) {
+    //public List<AssetReleases> getReleasesByAsset(String assetId) {
+      //  Asset asset = assetRepository.findById(assetId)
+        //    .orElseThrow(() -> new RuntimeException("Asset not found"));
+        //return asset.getReleases(); // assuming `releases` are fetched eagerly
+    //}
+    public List<AssetReleaseDto> getReleasesByAsset(String assetId) {
         Asset asset = assetRepository.findById(assetId)
             .orElseThrow(() -> new RuntimeException("Asset not found"));
-        return asset.getReleases(); // assuming `releases` are fetched eagerly
+
+        return asset.getReleases().stream()
+            .map(release -> new AssetReleaseDto(
+                release.getId(),
+                release.getReleaseVersion(),
+                release.getPublishedDate(),
+                assetRepository.findById(release.getReleasedAsset().getId()).orElse(null)
+            ))
+            .collect(Collectors.toList());
     }
+
 
     //get assets eli andhom the same categ
     public List<Asset> getAssetsByCategory(Long categoryId) {

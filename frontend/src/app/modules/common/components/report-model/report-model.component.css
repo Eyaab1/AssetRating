@@ -82,7 +82,7 @@
   .cancel-btn:hover {
     background-color: #d4d4d4;
   }
-  
+/*   
   @keyframes slideIn {
     from {
       opacity: 0;
@@ -93,4 +93,4 @@
       transform: translateY(0);
     }
   }
-  
+   */

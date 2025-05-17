@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -31,6 +31,7 @@ import { Router } from '@angular/router';
 })
 export class DetailAssetComponent {
   @ViewChild(ReviewComponentComponent) reviewComponent!: ReviewComponentComponent;
+@ViewChild('reviewModal', { static: false }) reviewModal!: ReviewPopupComponent;
 
   // User & Asset State 
   private userId: string = '';
@@ -71,7 +72,9 @@ export class DetailAssetComponent {
     private commentService: CommentService,
     private ratingService: RatingService,
     private sanitizer: DomSanitizer,
-    private router:Router
+    private router:Router,
+    private cdr: ChangeDetectorRef,
+
   ) {}
 
   //  Initialization
@@ -112,9 +115,9 @@ loadAssetById(id: string): void {
 
 
   activeMainTab: 'docs' | 'releases' = 'docs';
-  activeReleaseTabs: { [releaseId: number]: 'docs' | 'feedback' } = {};
+  activeReleaseTabs: { [releaseId: string]: 'docs' | 'feedback' } = {};
   
-  setReleaseTab(releaseId: number, tab: 'docs' | 'feedback') {
+  setReleaseTab(releaseId: string, tab: 'docs' | 'feedback') {
     this.activeReleaseTabs[releaseId] = tab;
   }
   loadComments(): void {
@@ -140,29 +143,39 @@ loadAssetById(id: string): void {
       error: err => console.error('Error fetching ratings', err)
     });
   }
+loadReleases(assetId: string): void {
+  this.assetService.getReleasesByAsset(assetId).subscribe({
+    next: (data: AssetRelease[]) => {
+      console.log('Loaded releases:', data);
+      this.assetReleases = data;
 
-  loadReleases(assetId: string): void {
-    this.assetService.getReleasesByAsset(assetId).subscribe({
-      next: (data) => {
-        this.assetReleases = data;
-        data.forEach((release) => {
-          const releasedAssetId = typeof release.releasedAsset === 'string'
-            ? release.releasedAsset
-            : release.releasedAsset?.id;
-  
-          if (releasedAssetId) {
-            this.ratingService.getAverageRatingForRelease(releasedAssetId).subscribe({
-              next: (ratingResponse) => {
-                this.releaseRatings[release.id] = ratingResponse.overall;
-              },
-              error: (err) => console.error('Error fetching rating for release', err)
-            });
-          }
-        });
-      },
-      error: (err) => console.error('Error loading releases', err)
-    });
-  }
+      data.forEach((release: AssetRelease) => {
+        const releasedAsset = release.releasedAsset;
+        const releasedAssetId = typeof releasedAsset === 'string' ? releasedAsset : releasedAsset?.id;
+        const releaseId = release?.id;
+
+        console.log('Released Asset ID:', releasedAssetId);
+        console.log('Release ID:', releaseId);
+
+        if (releasedAssetId && releaseId != null) {
+          this.ratingService.getAverageRatingForRelease(releasedAssetId).subscribe({
+            next: (ratingResponse) => {
+              console.log(`✅ Rating for release ${releaseId}:`, ratingResponse);
+              this.releaseRatings[releaseId] = ratingResponse.overall;
+              this.cdr.detectChanges(); // ✅ ensure UI updates
+            },
+            error: (err) => console.error(`❌ Error fetching rating for release ${releaseId}`, err)
+          });
+        } else {
+          console.warn('⚠️ Missing releaseId or releasedAssetId', release);
+        }
+      });
+    },
+    error: (err) => console.error('❌ Error loading releases', err)
+  });
+}
+
+
   
   loadSameCategoryAssets(categoryId: number): void {
     this.assetService.getAssetsByCategory(categoryId).subscribe({
@@ -267,29 +280,23 @@ loadAssetById(id: string): void {
     });
   }
 
-  toggleRelease(releaseId: number): void {
-    if (this.selectedRelease?.id === releaseId) {
-      this.selectedRelease = null;
-    } else {
-      const match = this.assetSelected?.releases?.find(r => r.id === releaseId);
-      if (match) {
-        this.selectedRelease = match;
-  
-        // If it's a string, fetch full releasedAsset
-        if (typeof match.releasedAsset === 'string') {
-          this.assetService.getAssetById(match.releasedAsset).subscribe({
-            next: data => this.selectedRelease!.releasedAsset = data,
-            error: err => console.error('Failed to fetch released asset:', err)
-          });
-        }
-  
-        // ✅ Initialize the tab for this release if not already
-        if (!this.activeReleaseTabs[releaseId]) {
-          this.activeReleaseTabs[releaseId] = 'docs';
-        }
-      }
+toggleRelease(releasedAssetId: string): void {
+  if (this.selectedRelease?.releasedAsset?.id === releasedAssetId) {
+    this.selectedRelease = null;
+  } else {
+    const match = this.assetReleases.find(
+      r => r.releasedAsset?.id === releasedAssetId
+    );
+    if (match) {
+      this.selectedRelease = match;
+      this.activeReleaseTabs[releasedAssetId] = 'docs';
     }
   }
+}
+
+
+
+
   
 
   selectRelease(release: AssetRelease): void {
@@ -330,6 +337,17 @@ loadAssetById(id: string): void {
     return this.sanitizer.bypassSecurityTrustResourceUrl('http://localhost:8081' + docPath);
   }
 
+  getReleaseRating(releaseId?: number): number | null {
+    if (releaseId == null) return null;
+    return this.releaseRatings[releaseId] ?? null;
+  }
+
+  getReleasedAssetId(releasedAsset: Asset | undefined): string {
+    return releasedAsset?.id ?? '';
+  }
+
+
+
   
   getIcon(img: string): string {
     return img ? `assets/images/${img}` : 'assets/images/default4.jpg';
@@ -338,7 +356,6 @@ loadAssetById(id: string): void {
   goBack(): void {
     window.history.back();
   }
-  @ViewChild('reviewModal') reviewModal!: ReviewPopupComponent;
 
   openReleaseReview(releasedAssetId: string, versionLabel: string) {
     this.reviewModal.open(releasedAssetId, versionLabel);

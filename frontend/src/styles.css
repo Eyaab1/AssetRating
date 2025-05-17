@@ -8,3 +8,8 @@ ng serve
     margin: 0;
   }
 
+body, html, app-root {
+  overflow: visible !important;
+  position: relative;
+  z-index: auto;
+}

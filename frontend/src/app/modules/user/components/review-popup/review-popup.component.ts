@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgIf, NgFor, CommonModule } from '@angular/common';
 import { CommentService } from '../../../../shared/services/comment.service';
@@ -37,15 +37,20 @@ export class ReviewPopupComponent {
 
   constructor(
     private commentService: CommentService,
-    private ratingService: RatingService
+    private ratingService: RatingService,
+    private cd: ChangeDetectorRef
+
   ) {}
 
   open(assetId: string | null, versionLabel: string = '') {
-    if (!assetId) return;
+  console.log('opened ');
+  if (!assetId) return;
   this.assetId = assetId;
   this.versionLabel = versionLabel;
   this.isVisible = true;
   this.resetForm();
+  this.cd.detectChanges();
+  document.body.style.overflow = 'hidden';
 
     const token = localStorage.getItem('token');
     if (token) {
@@ -81,6 +86,8 @@ export class ReviewPopupComponent {
   close() {
     this.isVisible = false;
     this.errorMessage = '';
+    document.body.style.overflow = ''; // ✅ restore scroll
+
   }
 
   onOverlayClick(event: MouseEvent) {
