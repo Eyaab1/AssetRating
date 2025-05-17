@@ -71,7 +71,6 @@ export class AssetServiceService {
     });
   }
   
-  
   updateAsset(id: string, asset: Asset): Observable<Asset> {
     return this.http.put<Asset>(`${this.baseUrl}/${id}`, asset, {
       headers: this.getAuthHeaders()
@@ -80,19 +79,13 @@ export class AssetServiceService {
 
   getRecommendedAssets(userId: number): Observable<Asset[]> {
   return this.http.get<Asset[]>(`${this.baseUrl}/recommended?userId=${userId}`, { headers: this.getAuthHeaders() });
-
-}
-incrementDownload(assetId: string): Observable<void> {
-  return this.http.put<void>(
-    `${this.baseUrl}/${assetId}/download`,
-    {}, 
-    { headers: this.getAuthHeaders() }
-  );
-}
-
-  
-  
+  }
+  incrementDownload(assetId: string): Observable<void> {
+    return this.http.put<void>(
+      `${this.baseUrl}/${assetId}/download`,
+      {}, 
+      { headers: this.getAuthHeaders() }
+    );
   }
   
-  
-
+  }

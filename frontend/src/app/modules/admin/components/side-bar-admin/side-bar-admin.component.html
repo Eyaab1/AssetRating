@@ -27,15 +27,44 @@
           <i class="fas fa-arrow-left me-2"></i> Back
         </button>
         <ul class="grouped-asset-list">
-          <li><a routerLink="/admin/assets/widget"><i class="fas fa-puzzle-piece"></i> Widget</a></li>
-          <li><a routerLink="/admin/assets/ui-library"><i class="fas fa-layer-group"></i> UI Library</a></li>
-          <li><a routerLink="/admin/assets/template"><i class="fas fa-clone"></i> Template</a></li>
-          <li><a routerLink="/admin/assets/connector"><i class="fas fa-plug"></i> Connector</a></li>
-          <li><a routerLink="/admin/assets/utility"><i class="fas fa-toolbox"></i> Utility</a></li>
-          <li><a routerLink="/admin/assets/theme"><i class="fas fa-paint-brush"></i> Theme</a></li>
-          <li><a routerLink="/admin/assets/tag"><i class="fas fa-tags"></i> Tag</a></li>
-          <li><a routerLink="/admin/assets/category"><i class="fas fa-folder-open"></i> Category</a></li>
+          <li *ngFor="let type of assetTypes">
+            <a (click)="selectAsset(type.name)">
+              <i [class]="type.icon"></i>
+              {{ type.name }}
+              <i class="fas" [ngClass]="selectedAsset === type.name ? 'fa-chevron-down' : 'fa-chevron-right'" style="margin-left: auto;"></i>
+            </a>
+            <button
+              *ngIf="selectedAsset === type.name"
+              class="search-button"
+              (click)="goToSearch(type.value)"
+            >
+              <i class="fas fa-list-ul"></i> Search {{ type.name }}
+            </button>
+          </li>
+          <li>
+            <a (click)="selectAsset('Tag')">
+              <i class="fas fa-cog"></i>
+              Tag
+              <i class="fas" [ngClass]="selectedAsset === 'Tag' ? 'fa-chevron-down' : 'fa-chevron-right'" style="margin-left: auto;"></i>
+            </a>
+            <button *ngIf="selectedAsset === 'Tag'" class="search-button" [routerLink]="['/admin/tags']">
+              <i class="fas fa-list-ul"></i> Search Tag
+            </button>
+          </li>
+
+          <li>
+            <a (click)="selectAsset('Category')">
+              <i class="fas fa-cog"></i>
+              Category
+              <i class="fas" [ngClass]="selectedAsset === 'Category' ? 'fa-chevron-down' : 'fa-chevron-right'" style="margin-left: auto;"></i>
+            </a>
+            <button *ngIf="selectedAsset === 'Category'" class="search-button" [routerLink]="['/admin/categories']">
+              <i class="fas fa-list-ul"></i> Search Category
+            </button>
+          </li>
+
         </ul>
+
       </div>
     </div>
   </div>

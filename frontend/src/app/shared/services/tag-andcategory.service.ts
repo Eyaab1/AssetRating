@@ -25,10 +25,11 @@ export class TagAndcategoryService {
     return this.http.get<Tag[]>(this.apiUrl2, { headers: this.getAuthHeaders() });
   }
   createTag(tag: { name: string }): Observable<Tag> {
-    
-    return this.http.post<Tag>(this.apiUrl1, tag, {  headers: this.getAuthHeaders()  });
+    return this.http.post<Tag>(this.apiUrl1, tag, { headers: this.getAuthHeaders() });
   }
-  addCategory(category: Tag): Observable<Tag> {
+
+  addCategory(category: { name: string }): Observable<Tag> {
     return this.http.post<Tag>(this.apiUrl2, category, { headers: this.getAuthHeaders() });
   }
+
 }

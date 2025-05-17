@@ -4,7 +4,9 @@ import com.example.demo.analytics.TopRatedDTO;
 import com.example.demo.asset.model.Asset;
 import com.example.demo.asset.model.AssetReleases;
 import com.example.demo.asset.model.Connector;
+import com.example.demo.asset.model.Format;
 import com.example.demo.asset.model.Framework;
+import com.example.demo.asset.model.ProjectType;
 import com.example.demo.asset.model.Sheet;
 import com.example.demo.asset.model.Status;
 import com.example.demo.asset.model.Tag;
@@ -35,6 +37,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -253,9 +256,11 @@ public class AssetService {
     }
 
     public void deleteAsset(String id) {
-        assetRepository.deleteById(id);
+        assetRepository.findById(id).ifPresent(asset -> {
+            asset.setStatus(Status.DELETED);
+            assetRepository.save(asset);
+        });
     }
-
     public Asset updateAsset(String id, Asset updatedAsset) {
         return assetRepository.findById(id)
                 .map(asset -> {
@@ -406,6 +411,58 @@ public class AssetService {
             .sorted((a, b) -> Double.compare(b.getAverageRating(), a.getAverageRating()))
             .collect(Collectors.toList());
     }
+    public List<Asset> getAssetsByType(String type) {
+    	List<Asset> rawResults = assetRepository.findByType(type.toUpperCase());
+
+        return rawResults.stream()
+            .filter(asset -> asset != null && asset.getId() != null)
+            .collect(Collectors.toList());
+    }
+    
+    public List<Asset> filterAssets(String type, String name, String publisher, Status status,
+            Framework framework, Format format, ProjectType projectType) {
+			List<Asset> allAssets = assetRepository.findAll();
+			
+			return allAssets.stream()
+			.filter(asset -> asset.getParentAsset() == null)
+			.filter(asset -> type == null || asset.getClass().getSimpleName().equalsIgnoreCase(type))
+			.filter(asset -> name == null || asset.getName().equalsIgnoreCase(name))
+			.filter(asset -> publisher == null || asset.getPublisher().equalsIgnoreCase(publisher))
+			.filter(asset -> status == null || asset.getStatus() == status)
+			
+			// Widget filters
+			.filter(asset -> {
+			if (framework == null || !(asset instanceof Widget)) return true;
+			return ((Widget) asset).getFramework() == framework;
+			})
+			
+			// Sheet filters
+			.filter(asset -> {
+			if (format == null || !(asset instanceof Sheet)) return true;
+			return ((Sheet) asset).getFormat() == format;
+			})
+			
+			// Template filters
+			.filter(asset -> {
+			if (projectType == null || !(asset instanceof Template)) return true;
+			return ((Template) asset).getProjectType() == projectType;
+			})
+			
+			.collect(Collectors.toList());
+	}
+	    public List<String> getDistinctNamesByType(String type) {
+	        return assetRepository.findDistinctNamesByType(type).stream()
+	            .filter(Objects::nonNull)
+	            .distinct()
+	            .toList();
+	    }
+	    public List<String> getDistinctPublishersByType(String type) {
+	        return assetRepository.findDistinctPublishersByType(type).stream()
+	            .filter(Objects::nonNull)
+	            .distinct()
+	            .toList();
+	    }
+
 
 
 }
