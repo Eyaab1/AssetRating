@@ -16,26 +16,37 @@ import Swal from 'sweetalert2';
 })
 export class UserListComponent implements OnInit {
   users: UserDTO[] = [];
+  usersPerPage = 10;
+  currentPage = 1;
+  totalPages = 1;
+  paginatedUsers: UserDTO[] = [];
 
   constructor(private adminUserService: AdminUserService) {}
 
   ngOnInit(): void {
-    console.log('UserListComponent ngOnInit');
     this.loadUsers();
   }
 
 loadUsers(): void {
   this.adminUserService.getAllUsers().subscribe(data => {
-    console.log('Raw user data:', data); // ✅ See what’s actually coming in
-
-    this.users = data.map(user => ({
-      ...user,
-      enabled: !!user.enabled // ✅ This force-converts to real boolean
-    }));
+    this.users = data;
+    this.totalPages = Math.ceil(this.users.length / this.usersPerPage);
+    this.updatePaginatedUsers();
   });
 }
 
+updatePaginatedUsers(): void {
+  const start = (this.currentPage - 1) * this.usersPerPage;
+  const end = start + this.usersPerPage;
+  this.paginatedUsers = this.users.slice(start, end);
+}
 
+onPageChange(page: number): void {
+  if (page >= 1 && page <= this.totalPages) {
+    this.currentPage = page;
+    this.updatePaginatedUsers();
+  }
+}
 
   changeUserRole(id: number, role: string): void {
   Swal.fire({

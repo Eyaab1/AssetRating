@@ -4,5 +4,7 @@ export interface UserDTO {
   firstName: string;
   lastName: string;
   role: string;
+  createdAt:Date;
+  lastLogin:Date;
   enabled: boolean;
 }

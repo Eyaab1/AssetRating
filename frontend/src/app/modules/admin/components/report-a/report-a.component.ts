@@ -34,6 +34,10 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 export class ReportAComponent implements OnInit {
   reports: AdminReviewReport[] = [];
   expandedReviews: Set<number> = new Set();
+  reportsPerPage = 10;
+  currentPage = 1;
+  totalPages = 1;
+  paginatedReports: AdminReviewReport[] = [];
 
   constructor(private reviewService: AdminReviewService) {}
 
@@ -41,11 +45,25 @@ export class ReportAComponent implements OnInit {
     this.loadReports();
   }
 
-  loadReports(): void {
-    this.reviewService.getAllReports().subscribe({
-      next: (res) => this.reports = res,
-      error: () => Swal.fire('Error', 'Could not fetch reports.', 'error')
-    });
+loadReports(): void {
+  this.reviewService.getAllReports().subscribe((data) => {
+    this.reports = data;
+    this.totalPages = Math.ceil(this.reports.length / this.reportsPerPage);
+    this.updatePaginatedReports();
+  });
+}
+  
+  updatePaginatedReports(): void {
+    const start = (this.currentPage - 1) * this.reportsPerPage;
+    const end = start + this.reportsPerPage;
+    this.paginatedReports = this.reports.slice(start, end);
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedReports();
+    }
   }
 
   deleteReview(reviewId: number): void {

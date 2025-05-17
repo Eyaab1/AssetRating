@@ -1,50 +1,48 @@
-<table class="report-table" *ngIf="reports.length > 0">
-  <thead>
-    <tr>
-      <th>Asset ID</th>
-      <th>Report</th>
-      <th>Reason</th>
-      <th>Date</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <ng-container *ngFor="let report of reports">
-      <tr>
-        <td [title]="report.assetId">{{ report.assetId }}</td>
-        <td>
+<div class="report-container">
+  <div class="report-table" *ngIf="reports.length > 0">
+    <div class="report-table-head">
+      <div class="col asset-id">Asset ID <i class="fas fa-sort"></i></div>
+      <div class="col report">Report <i class="fas fa-sort"></i></div>
+      <div class="col reason">Reason <i class="fas fa-sort"></i></div>
+      <div class="col date">Date <i class="fas fa-sort"></i></div>
+      <div class="col actions">Actions <i class="fas fa-sort"></i></div>
+    </div>
+    <ng-container *ngFor="let report of paginatedReports">
+      <div class="report-row">
+        <div class="col asset-id" [title]="report.assetId">{{ report.assetId }}</div>
+        <div class="col report">
           A review on <strong>{{ report.assetLabel }}</strong>
           was reported by <strong>{{ report.reporterName }}</strong>.
-        </td>
-        <td>
-          {{ report.reason }}
-        </td>
-        <td>{{ report.reportedAt | date: 'short' }}</td>
-        <td>
-          <button
-            class="btn-toggle-review"
-            (click)="toggleExpanded(report.reviewId)">
-            {{ expandedReviews.has(report.reviewId) ? 'Hide' : 'View' }} Review
-          </button>
-          <button class="btn-delete" (click)="deleteReview(report.reviewId)">
-            <i class="fas fa-trash-alt"></i> Delete
-          </button>
-        </td>
-      </tr>
-      <tr>
-      <td colspan="5" style="padding: 0;">
-        <div
-          class="review-slide-wrapper"
-          [@slideExpand]="expandedReviews.has(report.reviewId) ? 'expanded' : 'collapsed'">
-          <div class="review-slide-content" *ngIf="expandedReviews.has(report.reviewId)">
-            <strong>Reported Review:</strong>
-            <p>{{ report.reviewComment }}</p>
-          </div>
         </div>
-      </td>
-    </tr>
-
-
+        <div class="col reason">{{ report.reason }}</div>
+        <div class="col date">{{ report.reportedAt | date: 'short' }}</div>
+        <div class="col actions">
+          <a class="action-link" (click)="toggleExpanded(report.reviewId)">
+            <i class="fas fa-eye"></i> {{ expandedReviews.has(report.reviewId) ? 'Hide' : 'View' }} Review
+          </a>
+          <a class="action-link" (click)="deleteReview(report.reviewId)">
+            <i class="fas fa-trash"></i> Delete
+          </a>
+        </div>
+      </div>
+      <div class="review-slide-wrapper" [@slideExpand]="expandedReviews.has(report.reviewId) ? 'expanded' : 'collapsed'">
+        <div class="review-slide-content" *ngIf="expandedReviews.has(report.reviewId)">
+          <strong>Reported Review:</strong>
+          <p>{{ report.reviewComment }}</p>
+        </div>
+      </div>
     </ng-container>
-  </tbody>
-</table>
+  </div>
+  <div class="pagination-bar">
+    <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1">&laquo;</button>
+
+    <button *ngFor="let page of [].constructor(totalPages); let i = index"
+            [class.active]="currentPage === (i + 1)"
+            (click)="onPageChange(i + 1)">
+      {{ i + 1 }}
+    </button>
+
+    <span>Page {{ currentPage }} / {{ totalPages }} ({{ reports.length }} items)</span>
+  </div>
+
+</div>
