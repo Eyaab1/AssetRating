@@ -62,8 +62,8 @@
   </div>
   <!-- Table Head -->
    <div class="table-header">
-      <h2 class="asset-title">List of {{ assetType }}s</h2>
-      <button class="create-btn" [routerLink]="['/admin/assets/add']">
+      <h2 class="asset-title">List of {{ assetType }}</h2>
+      <button class="create-btn" [routerLink]="['/admin/assets/add']" [queryParams]="{ type: assetType }">
         <i class="fas fa-plus"></i> Create
       </button>
     </div>

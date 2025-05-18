@@ -28,16 +28,14 @@
         </button>
         <ul class="grouped-asset-list">
           <li *ngFor="let type of assetTypes">
-            <a (click)="selectAsset(type.name)">
+            <a (click)="selectAsset(type.value)">
               <i [class]="type.icon"></i>
               {{ type.name }}
-              <i class="fas" [ngClass]="selectedAsset === type.name ? 'fa-chevron-down' : 'fa-chevron-right'" style="margin-left: auto;"></i>
+              <i class="fas" [ngClass]="selectedAsset === type.value ? 'fa-chevron-down' : 'fa-chevron-right'" style="margin-left: auto;"></i>
             </a>
-            <button
-              *ngIf="selectedAsset === type.name"
+            <button *ngIf="selectedAsset === type.value"
               class="search-button"
-              (click)="goToSearch(type.value)"
-            >
+              (click)="goToSearch(type.value)">
               <i class="fas fa-list-ul"></i> Search {{ type.name }}
             </button>
           </li>

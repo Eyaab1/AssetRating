@@ -3,5 +3,7 @@ export enum AssetType {
     Widget = 'Widget',
     Sheet = 'Sheet',
     Theme = 'Theme',
-    Template = 'Template'
+    Template = 'Template',
+    UILibrary = 'UILibrary',
+    Connector = 'Connector'
   }

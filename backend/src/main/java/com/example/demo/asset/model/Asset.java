@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
   @JsonSubTypes.Type(value = Widget.class, name = "Widget"),
   @JsonSubTypes.Type(value = Sheet.class, name = "Sheet"),
   @JsonSubTypes.Type(value = Template.class, name = "Template"),
-  @JsonSubTypes.Type(value = Themes.class, name = "Themes"),
+  @JsonSubTypes.Type(value = Themes.class, name = "Theme"),
   @JsonSubTypes.Type(value = UILibrary.class, name = "UILibrary"),
   @JsonSubTypes.Type(value = Connector.class, name = "Connector"),
   @JsonSubTypes.Type(value = Utility.class, name = "Utility"),

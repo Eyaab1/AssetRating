@@ -1,0 +1,159 @@
+<div class="edit-asset-container">
+  <!-- Header with title and Save button -->
+  <div class="edit-asset-header">
+    <h2>Edit Asset</h2>
+    <button type="button" class="save-btn-top" (click)="submitAssetUpdate()">Save</button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <button [class.active]="activeTab === 'general'" (click)="activeTab = 'general'">General</button>
+    <button [class.active]="activeTab === 'releases'" (click)="activeTab = 'releases'">Releases</button>
+  </div>
+  <div class="tab-content">
+    <!-- GENERAL TAB -->
+    <div *ngIf="activeTab === 'general'" class="general-tab">
+      <form *ngIf="assetForm" [formGroup]="assetForm">
+        <div class="form-header">
+          <div class="icon-wrapper" *ngIf="assetForm.get('icon')?.value">
+            <img [src]="getIcon(assetForm.get('icon')?.value)" alt="Asset Icon" />
+          </div>
+          <div class="info-wrapper">
+            <div class="form-row">
+              <div class="form-group"><label>Name</label><input type="text" formControlName="name" /></div>
+              <div class="form-group"><label>Label</label><input type="text" formControlName="label" /></div>
+            </div>
+            <div class="form-group">
+              <label>Asset Type</label>
+              <input type="text" [value]="assetForm.get('type')?.value" disabled />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group"><label>Publisher</label><input type="text" formControlName="publisher" /></div>
+              <div class="form-group"><label>Email</label><input type="email" formControlName="publisherMail" /></div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Publish Date</label>
+                <input type="text" [value]="assetForm.get('publishDate')?.value | date: 'MMM d, y'" disabled />
+              </div>
+              <div class="form-group">
+                <label>License</label>
+                <select formControlName="license">
+                  <option *ngFor="let license of licenseOptions" [value]="license">{{ license }}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Status</label>
+                <select formControlName="status">
+                  <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Project Type</label>
+                <select formControlName="projectType">
+                  <option *ngFor="let type of projectTypes" [value]="type">{{ type }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Description</label>
+          <textarea formControlName="description" rows="4"></textarea>
+        </div>
+
+        <!-- Subtype-specific fields -->
+        <div class="subtype-section" *ngIf="subtypeFieldsPresent">
+          <div class="form-row" *ngIf="assetForm.get('framework')">
+            <div class="form-group">
+              <label>Framework</label>
+              <select formControlName="framework">
+                <option *ngFor="let fw of frameworks" [value]="fw">{{ fw }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row" *ngIf="assetForm.get('format')">
+            <div class="form-group"><label>Format</label><input type="text" formControlName="format" /></div>
+          </div>
+
+          <div class="form-row" *ngIf="assetForm.get('themeType')">
+            <div class="form-group"><label>Theme Type</label><input type="text" formControlName="themeType" /></div>
+          </div>
+
+          <div class="form-row" *ngIf="assetForm.get('primaryColor')">
+            <div class="form-group"><label>Primary Color</label><input type="text" formControlName="primaryColor" /></div>
+          </div>
+
+          <div class="form-row" *ngIf="assetForm.get('templateCategory')">
+            <div class="form-group"><label>Template Category</label><input type="text" formControlName="templateCategory" /></div>
+          </div>
+
+          <div class="form-row" *ngIf="assetForm.get('preconfigured')">
+            <div class="form-group checkbox-group">
+              <label>Preconfigured</label>
+              <input type="checkbox" formControlName="preconfigured" />
+            </div>
+          </div>
+
+          <div class="form-row" *ngIf="assetForm.get('dependencies')">
+            <div class="form-group full-width">
+              <label>Dependencies</label>
+              <textarea rows="3" formControlName="dependencies"></textarea>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- RELEASES TAB -->
+    <div *ngIf="activeTab === 'releases'" class="release-tab">
+      <div class="release-header-row">
+        <h3>Asset Releases</h3>
+        <button class="add-release-btn" (click)="showAddRelease = true">+ Add Release</button>
+      </div>
+
+      <div *ngIf="assetReleases.length > 0; else noReleases">
+        <div *ngFor="let release of assetReleases" class="release-card">
+          <div class="release-header" (click)="toggleRelease(release.id)">
+            <span class="arrow" [class.expanded]="selectedRelease?.id === release.id">▶</span>
+            Version {{ release.releaseVersion }}
+            <span class="release-date">{{ release.publishedDate | date: 'MMM d, y' }}</span>
+          </div>
+
+          <div class="release-doc" *ngIf="selectedRelease?.id === release.id">
+            <iframe
+              *ngIf="(selectedRelease?.releasedAsset?.documentation || selectedRelease?.asset?.documentation)"
+              [src]="getSafeDocDirect(selectedRelease?.releasedAsset?.documentation || selectedRelease?.asset?.documentation || '')"
+              class="doc-viewer"></iframe>
+            <p *ngIf="!selectedRelease?.releasedAsset?.documentation">No documentation available.</p>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noReleases>
+        <p>No releases available.</p>
+      </ng-template>
+
+      <div *ngIf="showAddRelease" class="modal-overlay">
+        <div class="modal">
+          <h3>Add New Release</h3>
+          <form (ngSubmit)="submitRelease()" #releaseForm="ngForm" novalidate>
+            <input class="modal-input" type="text" name="version" required [(ngModel)]="newReleaseVersion" />
+            <input class="modal-input" type="file" (change)="onReleaseDocSelect($event)" required />
+            <div class="modal-actions">
+              <button type="submit" class="modal-submit" [disabled]="isSubmittingRelease">Submit</button>
+              <button type="button" class="modal-cancel" (click)="showAddRelease = false">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

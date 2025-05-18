@@ -8,6 +8,7 @@ import { Format } from '../../../../shared/enums/Format';
 import { Framework } from '../../../../shared/enums/framework';
 import { ProjectType } from '../../../../shared/enums/ProjectType';
 import Swal from 'sweetalert2';
+import { AssetType } from '../../../../shared/enums/AssetType';
 
 @Component({
   selector: 'app-asset-list-admin',
@@ -46,7 +47,7 @@ export class AssetListAdminComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const rawType = params.get('type') || '';
-      this.assetType = rawType.charAt(0).toUpperCase() + rawType.slice(1).toLowerCase();
+      this.assetType = rawType as AssetType;
       this.frameworkList = Object.keys(Framework);
       this.formatList = Object.keys(Format);
       this.projectTypeList = Object.keys(ProjectType);

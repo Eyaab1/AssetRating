@@ -11,6 +11,8 @@ import { Format } from '../../enums/Format';
   providedIn: 'root'
 })
 export class AdminAssetService {
+  
+
   private baseUrl = 'http://localhost:8081/admin/assets';
 
   constructor(private http: HttpClient) {}
@@ -22,6 +24,11 @@ export class AdminAssetService {
       : new HttpHeaders();
   }
 
+  submitRelease(formData: FormData): Observable<any> {
+  return this.http.post(`${this.baseUrl}/release/full`, formData, {
+    headers: this.getAuthHeaders()
+  });
+}
   // ✅ Get all assets
   getAllAssets(): Observable<Asset[]> {
     return this.http.get<Asset[]>(this.baseUrl, { headers: this.getAuthHeaders() });
@@ -74,6 +81,8 @@ export class AdminAssetService {
     });
   }
 
+
+
   // ✅ Upload release documentation
   uploadReleaseDocumentation(file: File): Observable<string> {
     const formData = new FormData();
@@ -114,6 +123,7 @@ export class AdminAssetService {
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     return this.http.get<string[]>(`${this.baseUrl}/distinct/names?type=${type}`, { headers });
   }
+
 
   getDistinctPublishers(type: string): Observable<string[]> {
     const token = localStorage.getItem('token');

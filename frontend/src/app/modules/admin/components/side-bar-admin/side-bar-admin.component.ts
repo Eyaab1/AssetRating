@@ -39,12 +39,12 @@ export class SideBarAdminComponent {
   selectedAsset: string | null = null;
   assetTypes = [
     { name: 'Widget', value: 'widget', icon: 'fas fa-puzzle-piece' },
-    { name: 'UI Library', value: 'ui-library', icon: 'fas fa-layer-group' },
+    { name: 'UILibrary', value: 'UILibrary', icon: 'fas fa-layer-group' },
     { name: 'Template', value: 'template', icon: 'fas fa-clone' },
     { name: 'Connector', value: 'connector', icon: 'fas fa-plug' },
     { name: 'Utility', value: 'utility', icon: 'fas fa-toolbox' },
     { name: 'Theme', value: 'theme', icon: 'fas fa-paint-brush' },
-    { name: 'Sheet', value: 'sheet',icon :'fas fa-sheet'}
+    { name: 'Sheet', value: 'sheet',icon :'fas fa-file-text'}
   ];
 
 constructor(private router: Router) {}

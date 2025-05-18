@@ -6,7 +6,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
 @Entity
-@DiscriminatorValue("Themes")
+@DiscriminatorValue("Theme")
 public class Themes extends Asset {
     private String primaryColor;
     private String themeType;

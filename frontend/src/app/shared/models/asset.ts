@@ -7,6 +7,13 @@ import { Tag } from './tag';
 import { Category } from './category';
 import { AssetRelease } from "./asset-release";
 export class Asset {
+        framework: any;
+        format: any;
+        themeType: any;
+        primaryColor: any;
+        templateCategory: any;
+        preconfigured: any;
+        dependencies: any;
         constructor(
           public id: string,
           public name: string,

@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { RouterModule,ActivatedRoute } from '@angular/router';
 import { AssetServiceService } from '../../../../shared/services/asset-service.service';
 import { Location } from '@angular/common';
 import { CommonModule } from '@angular/common';
+
 import { Asset } from '../../../../shared/models/asset';
 @Component({
   selector: 'app-asset-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [RouterModule,CommonModule],
   templateUrl: './asset-detail.component.html',
   styleUrl: './asset-detail.component.css'
 })

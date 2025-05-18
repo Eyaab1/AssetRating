@@ -4,7 +4,7 @@
     </button>
   <div class="detail-header">
     <h2 class="detail-title">Search {{ asset?.type }}</h2>
-    <button class="modify-btn"><i class="fas fa-pen"></i> Modify</button>
+    <button class="modify-btn" [routerLink]="['/admin/assets/edit', asset?.id]"><i class="fas fa-pen"></i> Modify</button>
   </div>
 
   <div class="asset-info-grid">
