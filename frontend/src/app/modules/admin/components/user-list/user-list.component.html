@@ -3,48 +3,57 @@
     <i class="fas fa-user-plus"></i> Add User
   </button>
 </div>
+<div class="user-list-container">
+  <div class="user-table">
+    <div class="user-table-head">
+      <div class="col email">Email <i class="fas fa-sort"></i></div>
+      <div class="col name">Name <i class="fas fa-sort"></i></div>
+      <div class="col role">Role <i class="fas fa-sort"></i></div>
+      <div class="col lastLogin">Last Login <i class="fas fa-sort"></i></div>
+      <div class="col createdAt">Created At <i class="fas fa-sort"></i></div>
+      <div class="col enabled">Enabled <i class="fas fa-sort"></i></div>
+      <div class="col actions">Actions <i class="fas fa-sort"></i></div>
+    </div>
+    <div class="user-row" *ngFor="let user of users">
+      <div class="col email">{{ user.email }}</div>
+      <div class="col name">{{ user.firstName }} {{ user.lastName }}</div>
+      <div class="col role">
+        <select
+          [ngModel]="user.role"
+          (ngModelChange)="changeUserRole(user.id, $event)"
+          class="role-select">
+          <option value="USER">USER</option>
+          <option value="CONTRIBUTOR">CONTRIBUTOR</option>
+          <option value="ADMIN">ADMIN</option>
+        </select>
+      </div>
+      <div class="col lastLogin">{{ user.lastLogin | date: 'short'}}</div>
+      <div class="col createdAt">{{ user.createdAt | date: 'short'}}</div>
 
-<div class="user-table-container">
-  <table class="user-table">
-    <thead>
-      <tr>
-        <th>Email</th>
-        <th>Name</th>
-        <th>Role</th>
-        <th>Enabled</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let user of users">
-        <td>{{ user.email }}</td>
-        <td>{{ user.firstName }} {{ user.lastName }}</td>
-        <td>
-            <select
-                [ngModel]="user.role"
-                (ngModelChange)="changeUserRole(user.id, $event)"
-                class="role-select">
-                <option value="USER">USER</option>
-                <option value="CONTRIBUTOR">CONTRIBUTOR</option>
-                <option value="ADMIN">ADMIN</option>
-            </select>
-        </td>
-
-        <td>
-            <button
-              [ngClass]="user.enabled ? 'btn-status green' : 'btn-status red'"
-              (click)="toggleUserActivation(user.id, !user.enabled)">
-              {{ user.enabled ? 'Activated' : 'Deactivated' }}
-            </button>
-
-        </td>
-
-        <td>
-          <button class="btn-icon blue" (click)="deleteUser(user.id)">
-            <i class="fas fa-trash-alt"></i>
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+      <div class="col enabled">
+        <button
+          [ngClass]="user.enabled ? 'btn-status green' : 'btn-status red'"
+          (click)="toggleUserActivation(user.id, !user.enabled)">
+          {{ user.enabled ? 'Activated' : 'Deactivated' }}
+        </button>
+      </div>
+      <div class="col actions">
+        <a class="btn-icon" (click)="deleteUser(user.id)">
+          <i class="fas fa-trash"></i> Delete
+        </a>
+      </div>
+    </div>
+  </div>
 </div>
+<!-- Pagination -->
+  <div class="pagination-bar">
+    <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1">&laquo;</button>
+
+    <button *ngFor="let page of [].constructor(totalPages); let i = index"
+            [class.active]="currentPage === (i + 1)"
+            (click)="onPageChange(i + 1)">
+      {{ i + 1 }}
+    </button>
+
+    <span>Page {{ currentPage }} / {{ totalPages }} ({{ users.length }} items)</span>
+  </div>

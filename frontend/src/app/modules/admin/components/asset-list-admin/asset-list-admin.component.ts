@@ -112,7 +112,7 @@ loadAssets(type: string): void {
 deleteAsset(id: string): void {
   Swal.fire({
     title: 'Are you sure?',
-    text: 'This will delete the asset (soft delete).',
+    text: 'This will delete the asset.',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Yes, delete it!',
