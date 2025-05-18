@@ -10,6 +10,7 @@ import { getSafeLocalStorage } from '../../utils/localstorage'; // make sure thi
 })
 export class AdminUserService {
   private baseUrl = 'http://localhost:8081/admin/users';
+  private analyticsBaseUrl = 'http://localhost:8081/admin/analytics/users';
 
   constructor(private http: HttpClient) {}
 
@@ -57,4 +58,61 @@ export class AdminUserService {
       responseType: 'text'
     });
   }
+  getUserById(id: number): Observable<any> {
+      return this.http.get(`${this.baseUrl}/${id}`,{
+              headers: this.getAuthHeaders(),
+      });
+    }
+  // ========================
+  // 📊 USER ANALYTICS
+  // ========================
+  getTotalUsers(): Observable<number> {
+    return this.http.get<number>(`${this.analyticsBaseUrl}/total`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  getUserCountByRole(role: string): Observable<number> {
+  return this.http.get<number>(`${this.analyticsBaseUrl}/count-by-role`, {
+    params: { role },
+    headers: this.getAuthHeaders()
+  });
+}
+
+
+  getUsersRegisteredThisMonth(): Observable<number> {
+    return this.http.get<number>(`${this.analyticsBaseUrl}/new-this-month`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+  getNewUsersThisMonthList(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.analyticsBaseUrl}/new-this-month/list`, {
+    headers: this.getAuthHeaders()
+  });
+}
+
+
+  getActiveUsers(): Observable<number> {
+    return this.http.get<number>(`${this.analyticsBaseUrl}/active`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  getUserSummary(): Observable<any> {
+    return this.http.get(`${this.analyticsBaseUrl}/summary`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+  getMostActiveUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.analyticsBaseUrl}/active-users`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  getTopContributors(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.analyticsBaseUrl}/top-contributors`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
 }

@@ -5,8 +5,12 @@
   margin-left: 1rem;
   justify-content: space-between;
 }
+.btns{
+  display: flex;
+  gap: 6px;
+}
 
-.btn-add-user {
+.btn-add-user , .btn-analytics{
   background-color: #6366f1;
   color: white;
   border: none;
@@ -21,11 +25,11 @@
   transition: background 0.2s ease;
 }
 
-.btn-add-user:hover {
+.btn-add-user:hover ,.btn-analytics:hover{
   background-color: #1d4ed8;
 }
 
-.btn-add-user i {
+.btn-add-user i ,.btn-analytics i{
   font-size: 1rem;
 }
 

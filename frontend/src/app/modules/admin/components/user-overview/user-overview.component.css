@@ -1,0 +1,149 @@
+.btn-back {
+  background-color: transparent;
+  border: none;
+  color: #3436cd;
+  font-weight: 500;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  margin-bottom: 5px;
+}
+.btn-back i {
+  font-size: 1rem;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+.container {
+  display: flex;
+  flex: 1;
+  gap: 20px;
+}
+
+.user-overview-dashboard {
+  flex: 1;
+  padding: 20px;
+}
+
+.analytics-cards {
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.analytics-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  flex: 1 1 150px;
+  max-width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.card-icon {
+  font-size: 24px;
+  color: #6366f1;
+}
+
+.analytics-card h3 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.analytics-card p {
+  font-size: 0.8rem;
+  margin: 0;
+  color: #6b7280;
+}
+
+.charts {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.mini-user-chart {
+  flex: 1;
+  background: white;
+  padding: 1rem;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+}
+
+.dashboard-right {
+  width: 350px;
+  flex-shrink: 0;
+}
+
+.mini-user-list {
+    margin-top: 20%;
+  background: white;
+  padding: 1rem;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+}
+
+.mini-list-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
+.mini-user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #111827;
+}
+
+.user-role {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.user-date .badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  text-transform: capitalize;
+}
+
+.badge {
+  font-weight: 500;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.new-user-count {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #374151;
+  font-weight: 500;
+}

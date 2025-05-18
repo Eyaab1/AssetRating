@@ -1,0 +1,78 @@
+<button class="btn-back" (click)="goBack()">
+    <i class="fas fa-arrow-left me-2"></i> Back
+</button>
+<div class="container">
+    <div class="user-overview-dashboard">
+      <h2>User Analytics Overview</h2>
+      <div class="analytics-cards">
+        <div class="analytics-card">
+          <i class="fas fa-users card-icon"></i>
+          <div>
+            <h3>{{ totalUsers }}</h3>
+            <p>Total Users</p>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <i class="fas fa-user card-icon"></i>
+          <div>
+            <h3>{{ users }}</h3>
+            <p>Normal Users</p>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <i class="fas fa-user-cog card-icon"></i>
+          <div>
+            <h3>{{ contributors }}</h3>
+            <p>Contributors</p>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <i class="fas fa-user-shield card-icon"></i>
+          <div>
+            <h3>{{ admins }}</h3>
+            <p>Admins</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="charts">
+        <div class="mini-user-chart">
+          <h3>🔥 Most Active Users</h3>
+          <app-chart
+              [type]="'bar'"
+              [data]="mostActiveUsersChartData">
+          </app-chart>
+        </div>
+        <div class="mini-user-chart">
+          <h3>🚀 Top Contributors</h3>
+          <app-chart
+              [type]="'bar'"
+              [data]="topContributorsChartData">
+          </app-chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-right">
+      <div class="mini-user-list">
+        <div class="mini-list-title">🆕 New Users This Month</div>
+
+        <div *ngFor="let user of newUsersThisMonth" class="mini-user-item">
+          <div class="user-info">
+            <span class="user-name">{{user.firstName}} {{ user.lastName }}</span>
+            <span class="user-role">{{ user.role }}</span>
+          </div>
+          <div class="user-date">
+            <span class="badge">{{ user.createdAt | date: 'shortDate' }}</span>
+          </div>
+        </div>
+
+        <div class="new-user-count">
+          Total: <strong>{{ newUsersThisMonth.length }}</strong> new users this month
+        </div>
+      </div>
+    </div>
+  </div>

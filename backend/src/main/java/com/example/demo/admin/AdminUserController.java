@@ -55,5 +55,11 @@ public class AdminUserController {
     public ResponseEntity<String> toggleUserActivation(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
         return ResponseEntity.ok(authService.toggleUserActivation(id, request.getEnabled()));
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+        return authService.getUserById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
 
 }

@@ -4,7 +4,9 @@ import com.example.demo.asset.model.Asset;
 import com.example.demo.asset.model.Status;
 import com.example.demo.asset.service.AssetService;
 import com.example.demo.auth.AuthService;
+import com.example.demo.auth.UserDTO;
 import com.example.demo.dto.ModerationResult;
+import com.example.demo.dto.UserActivityDTO;
 import com.example.demo.review.ReviewAnalysisClient;
 import com.example.rating.service.RatingService;
 import com.example.review.model.ReviewComment;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.DayOfWeek;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,7 @@ public class analyticsService {
     private final RatingService ratingService;
     private final ReviewCommentService reviewService;
     private final ReviewAnalysisClient reviewModerationService;
+
 
     @Autowired
     public analyticsService(
@@ -164,15 +168,46 @@ public class analyticsService {
     public int getUsersRegisteredThisMonth() {
         return authService.getUsersRegisteredThisMonth().size();
     }
-    public int getContributorsCount() {
+    public List<UserDTO> getNewUsersThisMonth() {
+        return authService.getUsersRegisteredThisMonth();
+    }
+
+    public int getUserCountByRole(String role) {
         return (int) authService.getAllUsers().stream()
-            .filter(user -> user.getRole().name().equals("CONTRIBUTOR"))
+            .filter(user -> user.getRole().name().equalsIgnoreCase(role))
             .count();
     }
 
     public long getActiveUsersLast30Days() {
         return authService.countActiveUsersLast30Days();
     }
+    public List<UserActivityDTO> getMostActiveUsers() {
+        return authService.getAllUsers().stream()
+            .filter(user -> user.getRole().name().equals("USER"))
+            .map(user -> {
+                int reviews = reviewService.countByUser(user.getId());
+                int ratings = ratingService.countByUser(user.getId());
+                int replies = reviewService.countRepliesByUser(user.getId());
+                int score = reviews + ratings + replies ;
+
+                return new UserActivityDTO(user, score);
+            })
+            .sorted(Comparator.comparingInt(UserActivityDTO::getActivityScore).reversed())
+            .limit(5)
+            .collect(Collectors.toList());
+    }
+    public List<UserActivityDTO> getTopContributors() {
+        return authService.getAllUsers().stream()
+            .filter(user -> user.getRole().name().equals("CONTRIBUTOR"))
+            .map(user -> {
+                int uploads = assetService.countByPublisherId(user.getId());
+                return new UserActivityDTO(user, uploads);
+            })
+            .sorted(Comparator.comparingInt(UserActivityDTO::getActivityScore).reversed())
+            .limit(5)
+            .collect(Collectors.toList());
+    }
+
 
     // ========== REVIEW METRICS ==========
 

@@ -464,5 +464,16 @@ public class AssetService {
 	    }
 
 
+	    public int countByPublisherId(Long userId) {
+	        return (int) assetRepository.findAll().stream()
+	            .filter(asset -> asset.getPublisherMail() != null)
+	            .filter(asset -> {
+	                return authservice.findByEmail(asset.getPublisherMail())
+	                    .map(u -> u.getId().equals(userId))
+	                    .orElse(false);
+	            })
+	            .count();
+	    }
+
 
 }

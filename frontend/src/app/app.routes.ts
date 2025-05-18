@@ -26,6 +26,7 @@ import { ListTagCategoryComponent } from './modules/admin/components/list-tag-ca
 import { AssetDetailComponent } from './modules/admin/components/asset-detail/asset-detail.component';
 import { AddAssetAdminComponent } from './modules/admin/components/add-asset-admin/add-asset-admin.component';
 import { EditAssetAdminComponent } from './modules/admin/components/edit-asset-admin/edit-asset-admin.component';
+import { UserOverviewComponent } from './modules/admin/components/user-overview/user-overview.component';
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
   
@@ -69,7 +70,9 @@ export const routes: Routes = [
         { path: 'categories', component: ListTagCategoryComponent, data: { type: 'category' } },
         {path :'assets/view/:id', component:AssetDetailComponent},
         {path:'assets/add', component: AddAssetAdminComponent},
-        {path :'assets/edit/:id', component:EditAssetAdminComponent}
+        {path :'assets/edit/:id', component:EditAssetAdminComponent},
+        {path: 'users/overview', component: UserOverviewComponent}
+
       ] 
     },
   
