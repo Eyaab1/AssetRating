@@ -27,6 +27,7 @@ import { AssetDetailComponent } from './modules/admin/components/asset-detail/as
 import { AddAssetAdminComponent } from './modules/admin/components/add-asset-admin/add-asset-admin.component';
 import { EditAssetAdminComponent } from './modules/admin/components/edit-asset-admin/edit-asset-admin.component';
 import { UserOverviewComponent } from './modules/admin/components/user-overview/user-overview.component';
+import { AdminChatbotComponent } from './modules/admin/components/admin-chatbot/admin-chatbot.component';
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
   
@@ -71,7 +72,8 @@ export const routes: Routes = [
         {path :'assets/view/:id', component:AssetDetailComponent},
         {path:'assets/add', component: AddAssetAdminComponent},
         {path :'assets/edit/:id', component:EditAssetAdminComponent},
-        {path: 'users/overview', component: UserOverviewComponent}
+        {path: 'users/overview', component: UserOverviewComponent},
+        {path :'chat-bot', component: AdminChatbotComponent}
 
       ] 
     },

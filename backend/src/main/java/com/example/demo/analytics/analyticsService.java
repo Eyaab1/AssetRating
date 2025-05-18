@@ -81,6 +81,13 @@ public class analyticsService {
         }
         return statusCountMap;
     }
+    
+    public Asset getMostDownloadedAsset() {
+        return assetService.getAllAssets().stream()
+            .filter(a -> a.getDownloadCount() != null)
+            .max(Comparator.comparingLong(Asset::getDownloadCount))
+            .orElse(null);
+    }
 
     public Map<String, Long> getAssetUploadTrend() {
         return assetService.getAllAssets().stream()
@@ -326,6 +333,15 @@ public class analyticsService {
                 Collectors.counting()
             ));
     }
+    
+    public Map<Object, Long> getAssetRatingDistribution() {
+        return ratingService.getAllRatings().stream()
+            .collect(Collectors.groupingBy(
+                rating -> rating.getRatingValue(),
+                Collectors.counting()
+            ));
+    }
+
     public Map<String, Object> getAssetAnalytics(String assetId) {
         Map<String, Object> analytics = new HashMap<>();
 

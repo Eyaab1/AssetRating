@@ -1,7 +1,7 @@
 package com.example.demo.admin;
 
 import java.util.List;
-
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.analytics.TopRatedDTO;
 import com.example.demo.asset.model.Asset;
 import com.example.demo.asset.model.AssetReleases;
 import com.example.demo.asset.model.Format;
@@ -30,16 +31,18 @@ import com.example.demo.asset.service.AssetService;
 import com.example.demo.dto.AssetReleaseDto;
 import com.example.demo.dto.AssetReleaseRequest;
 import com.example.demo.dto.AssetRequest;
-
+import com.example.demo.analytics.analyticsService;
 @RestController
 @RequestMapping("/admin/assets")
 @PreAuthorize("hasRole('ADMIN')")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AdminAssetController {
     private final AssetService assetService;
+    private final analyticsService analyticsService;
 
-    public AdminAssetController(AssetService assetService) {
+    public AdminAssetController(AssetService assetService, analyticsService analyticsService) {
         this.assetService = assetService;
+        this.analyticsService=analyticsService;
     }
 
     @GetMapping("/type/{type}")
@@ -128,6 +131,30 @@ public class AdminAssetController {
     @GetMapping("/distinct/publishers")
     public ResponseEntity<List<String>> getDistinctPublishers(@RequestParam String type) {
         return ResponseEntity.ok(assetService.getDistinctPublishersByType(type));
+    }
+
+    @GetMapping("/top-rated")
+    public List<TopRatedDTO> getTopRatedAssets() {
+        return analyticsService.getTopRatedAssets();
+    }
+
+    @GetMapping("/rating-distribution")
+    public Map<Object, Long> getRatingDistribution() {
+        return analyticsService.getAssetRatingDistribution();
+    }
+
+    @GetMapping("/upload-trend")
+    public Map<String, Long> getUploadTrend() {
+        return analyticsService.getAssetUploadTrend();
+    }
+
+    @GetMapping("/status-breakdown")
+    public Map<String, Long> getAssetStatusDistribution() {
+        return analyticsService.getAssetStatusDistribution();
+    }
+    @GetMapping("/most-downloaded")
+    public ResponseEntity<Asset> getMostDownloadedAsset() {
+        return ResponseEntity.ok(analyticsService.getMostDownloadedAsset());
     }
 
 }
