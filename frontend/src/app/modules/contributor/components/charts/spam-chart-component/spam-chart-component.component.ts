@@ -26,8 +26,9 @@ export class SpamChartComponentComponent implements OnChanges {
       labels: Object.keys(this.spam),
       datasets: [{
         data: Object.values(this.spam),
-        backgroundColor: ['#FDE68A', '#93C5FD']
-      }]
+        backgroundColor: ['#34D399', '#F87171']
+   
+ }]
     };
   }
 }

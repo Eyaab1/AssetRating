@@ -27,7 +27,7 @@ export class SentimentChartComponentComponent implements OnChanges {
       datasets: [{
         data: Object.values(this.sentiments),
         backgroundColor: ['#6EE7B7', '#FCA5A5']
-      }]
+     }]
     };
   }
 }

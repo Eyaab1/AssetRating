@@ -334,11 +334,11 @@ public class analyticsService {
             ));
     }
     
-    public Map<Object, Long> getAssetRatingDistribution() {
-        return ratingService.getAllRatings().stream()
-            .collect(Collectors.groupingBy(
-                rating -> rating.getRatingValue(),
-                Collectors.counting()
+  public Map<Object, Long> getAssetRatingDistribution() {
+     return ratingService.getAllRatings().stream()
+         .collect(Collectors.groupingBy(
+             rating -> rating.getRatingValue(),
+              Collectors.counting()
             ));
     }
 
