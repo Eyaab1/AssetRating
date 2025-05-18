@@ -27,6 +27,7 @@ import com.example.demo.asset.model.Framework;
 import com.example.demo.asset.model.ProjectType;
 import com.example.demo.asset.model.Status;
 import com.example.demo.asset.service.AssetService;
+import com.example.demo.dto.AssetReleaseDto;
 import com.example.demo.dto.AssetReleaseRequest;
 import com.example.demo.dto.AssetRequest;
 
@@ -96,8 +97,8 @@ public class AdminAssetController {
     }
 
     @GetMapping("/{assetId}/releases")
-    public ResponseEntity<List<AssetReleases>> getReleasesByAsset(@PathVariable String assetId) {
-        List<AssetReleases> releases = assetService.getReleasesByAsset(assetId);
+    public ResponseEntity<List<AssetReleaseDto>> getReleasesByAsset(@PathVariable String assetId) {
+        List<AssetReleaseDto> releases = assetService.getReleasesByAsset(assetId);
         return ResponseEntity.ok(releases);
     }
     @GetMapping("/filter")

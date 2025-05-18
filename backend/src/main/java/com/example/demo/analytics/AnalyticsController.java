@@ -82,7 +82,7 @@ public class AnalyticsController {
     public ResponseEntity<List<TopRatedDTO>> getTopDownloadedAssets(@RequestParam String email) {
         return ResponseEntity.ok(analyticsService.getTopDownloadedAssetsByContributor(email));
     }
-    @GetMapping("/asset-analytics")
+    @GetMapping("/assetAnalytics")
     public ResponseEntity<Map<String, Object>> getAssetAnalytics(@RequestParam String assetId) {
         return ResponseEntity.ok(analyticsService.getAssetAnalytics(assetId));
     }

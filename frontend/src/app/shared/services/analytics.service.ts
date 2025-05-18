@@ -66,7 +66,7 @@ export class AnalyticsService {
 
   
   getAssetAnalytics(assetId: string): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/asset-analytics`, {
+    return this.http.get<any>(`${this.baseUrl}/assetAnalytics`, {
       params: { assetId },
       headers: this.getAuthHeaders()
     });

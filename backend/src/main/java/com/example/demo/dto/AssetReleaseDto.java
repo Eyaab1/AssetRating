@@ -6,11 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+
 public class AssetReleaseDto {
     private Long id;
-
 	private String releaseVersion;
     private Date publishedDate;
     private Asset releasedAsset;
@@ -21,14 +19,6 @@ public class AssetReleaseDto {
 		this.releaseVersion = releaseVersion;
 		this.publishedDate = publishedDate;
 		this.releasedAsset = releasedAsset;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public String getReleaseVersion() {

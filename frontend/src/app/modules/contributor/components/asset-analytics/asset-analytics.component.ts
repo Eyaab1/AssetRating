@@ -18,6 +18,7 @@ import { NgChartsModule } from 'ng2-charts';
 export class AssetAnalyticsComponent implements OnInit {
 assetAnalytics: any;
 
+quickStats: { label: string; value: any }[] = [];
 
 
 constructor(private route: ActivatedRoute, private analyticsService: AnalyticsService) { }

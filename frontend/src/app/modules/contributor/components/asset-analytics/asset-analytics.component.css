@@ -1,30 +1,149 @@
-.asset-analytics {
+.dashboard-container {
+  padding: 20px;
+  background: #f9f9f9;
+  font-family: 'Segoe UI', sans-serif;
+  max-width: 100%;
+}
+
+/* Grid with no overflow */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+/* LEFT COLUMN */
+.left-column {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Donut row - keep compact */
+.donut-row {
+  display: flex;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
-.analytics-card {
-  flex: 1 1 200px;
+.chart-card {
   background: white;
-  border-radius: 10px;
-  padding: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  flex: 1;
+  min-width: 220px;
+}
+
+.chart-card h4 {
+  font-size: 14px;
+  margin-bottom: 8px;
+  font-weight: 600;
   text-align: center;
 }
 
-.analytics-card p {
-  color: #6B7280;
-  margin-bottom: 0.25rem;
+.main-chart {
+  background: white;
+  padding: 16px;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.main-chart h4 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Charts */
+canvas {
+  max-height: 200px !important;
+  width: 100% !important;
+}
+
+/* RIGHT COLUMN */
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Stat cards - compact */
+.stat-box {
+  background: white;
+  padding: 12px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+.stat-box p {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}
+.stat-box h3 {
+  margin-top: 6px;
+  font-size: 20px;
+  color: #222;
+}
+
+.stat-box.orange {
+  background: #fff6ec;
+}
+.stat-box.purple {
+  background: #f1ecff;
+}
+.stat-box.blue {
+  background: #e6f9ff;
+}
+
+/* Reviews Section */
+.reviews-section {
+  background: white;
+  padding: 16px;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.reviews-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.review-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  background: #f8f9fc;
+  border-radius: 12px;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  background-color: #6366f1;
+  color: white;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
   font-weight: 500;
+  color: #666;
 }
 
-.analytics-card h3 {
-  font-size: 1.5rem;
-  color: #111827;
-}
-
-.analytics-chart {
-  margin-bottom: 2rem;
+.comment {
+  font-size: 13px;
+  margin-top: 4px;
+  color: #333;
 }

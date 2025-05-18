@@ -1,32 +1,65 @@
-<div class="asset-analytics">
-  <div class="analytics-card">
-    <p>Downloads</p>
-    <h3>{{ assetAnalytics?.downloadCount }}</h3>
-  </div>
-  <div class="analytics-card">
-    <p>Average Rating</p>
-    <h3>{{ assetAnalytics?.averageRating }}</h3>
-  </div>
-  <div class="analytics-card">
-    <p>Total Reviews</p>
-    <h3>{{ assetAnalytics?.reviewCount }}</h3>
-  </div>
-</div>
+<div class="dashboard-container">
+  <!-- DASHBOARD GRID -->
+  <div class="dashboard-grid">
+    <!-- LEFT COLUMN -->
+    <div class="left-column">
+      <!-- Donut Row -->
+      <div class="donut-row">
+        <div class="chart-card">
+          <app-sentiment-chart-component
+            *ngIf="assetAnalytics?.sentimentBreakdown"
+            [sentiments]="assetAnalytics.sentimentBreakdown">
+          </app-sentiment-chart-component>
+        </div>
 
-<div class="analytics-chart" *ngIf="assetAnalytics?.ratingDistribution">
-  <app-rating-distribution-for-asset
-    [distribution]="assetAnalytics.ratingDistribution">
-  </app-rating-distribution-for-asset>
-</div>
+        <div class="chart-card">
+          <app-spam-chart-component
+            *ngIf="assetAnalytics?.spamBreakdown"
+            [spam]="assetAnalytics.spamBreakdown">
+          </app-spam-chart-component>
+        </div>
+      </div>
 
-<div class="analytics-chart" *ngIf="assetAnalytics?.sentimentBreakdown">
-  <app-sentiment-chart-component
-    [sentiments]="assetAnalytics.sentimentBreakdown">
-  </app-sentiment-chart-component>
-</div>
+      <!-- Line Chart -->
+      <div class="main-chart">
+        <app-rating-distribution-for-asset
+          [ratingCommentTrend]="assetAnalytics?.ratingCommentTrend">
+        </app-rating-distribution-for-asset>
+      </div>
+    </div>
 
-<div class="analytics-chart" *ngIf="assetAnalytics?.spamBreakdown">
-  <app-spam-chart-component
-    [spam]="assetAnalytics.spamBreakdown">
-  </app-spam-chart-component>
+    <!-- RIGHT COLUMN -->
+    <div class="right-column">
+      <!-- Stats -->
+      <div class="stats-block">
+        <div class="stat-box orange">
+          <p>Total Reviews</p>
+          <h3>{{ assetAnalytics?.reviewCount }}</h3>
+        </div>
+        <div class="stat-box purple">
+          <p>Average Rating</p>
+          <h3>{{ assetAnalytics?.averageRating }}/5</h3>
+        </div>
+        <div class="stat-box blue">
+          <p>Downloads</p>
+          <h3>{{ assetAnalytics?.downloadCount }}</h3>
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <div class="reviews-section">
+        <h4>Last Reviews</h4>
+        <div class="review-card" *ngFor="let review of assetAnalytics?.recentReviews">
+          <div class="avatar">{{ review.user.charAt(0).toUpperCase() }}</div>
+          <div class="review-content">
+            <div class="review-header">
+              <strong>{{ review.user }}</strong>
+              <span class="date">{{ review.createdAt | date: 'shortDate' }}</span>
+            </div>
+            <p class="comment">“{{ review.comment }}”</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

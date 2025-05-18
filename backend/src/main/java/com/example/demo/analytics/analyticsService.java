@@ -314,13 +314,74 @@ public class analyticsService {
         } catch (Exception e) {
             analytics.put("reviewCount", 0);
         }
+        try {
+        	List<ReviewComment> allReviews = reviewService.getReviewsByAssetId(assetId);
 
+        	List<Map<String, Object>> recentReviews = allReviews.stream()
+        		    .sorted((a, b) -> b.getCreated_at().compareTo(a.getCreated_at()))
+        		    .limit(5)
+        		    .map(review -> {
+        		        Map<String, Object> map = new HashMap<>();
+
+        		        String username = authService.getUserById(review.getUserId())
+        		            .map(user -> user.getFirstName()) // or getUsername() / getEmail()
+        		            .orElse("Unknown");
+
+        		        map.put("user", username);
+        		        map.put("comment", review.getComment());
+        		        map.put("rating", ratingService.getOverallRating(assetId));
+        		        map.put("createdAt", review.getCreated_at());
+        		        return map;
+        		    }).toList();
+        	analytics.put("recentReviews", recentReviews);
+
+
+        } catch (Exception e) {
+            analytics.put("recentReviews", List.of());
+        }
         analytics.put("sentimentBreakdown", getReviewSentimentBreakdownByAsset(assetId));
         analytics.put("spamBreakdown", getSpamBreakdownByAsset(assetId));
         analytics.put("ratingDistribution", ratingService.getRatingDistribution(assetId));
+        analytics.put("ratingCommentTrend", getRatingAndCommentTrendByAsset(assetId));
 
         return analytics;
     }
+    public Map<String, Map<String, Integer>> getRatingAndCommentTrendByAsset(String assetId) {
+        Map<String, Map<String, Integer>> trend = new HashMap<>();
+
+        // Group comments by week/month
+        List<ReviewComment> comments = reviewService.getReviewsByAssetId(assetId);
+        for (ReviewComment comment : comments) {
+            if (comment.getCreated_at() == null) continue;
+
+            String period = comment.getCreated_at().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                .toString();
+
+            trend.putIfAbsent(period, new HashMap<>());
+            Map<String, Integer> entry = trend.get(period);
+            entry.put("comment", entry.getOrDefault("comment", 0) + 1);
+        }
+
+        // Group ratings by week/month
+        ratingService.getAllRatings().stream()
+            .filter(rating -> assetId.equals(rating.getAssetId()) && rating.getTimestamp() != null)
+            .forEach(rating -> {
+                String period = rating.getTimestamp().toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate()
+                    .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                    .toString();
+                trend.putIfAbsent(period, new HashMap<>());
+                Map<String, Integer> entry = trend.get(period);
+                entry.put("rating", entry.getOrDefault("rating", 0) + 1);
+            });
+        
+        return trend;
+    }
+
 
     
     
