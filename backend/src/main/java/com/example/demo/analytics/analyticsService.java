@@ -372,7 +372,13 @@ public class analyticsService {
             ));
     }
     
-
+  public Map<Object, Long> getAssetRatingDistribution() {
+     return ratingService.getAllRatings().stream()
+         .collect(Collectors.groupingBy(
+             rating -> rating.getRatingValue(),
+              Collectors.counting()
+            ));
+    }
 
     public Map<String, Object> getAssetAnalytics(String assetId) {
         Map<String, Object> analytics = new HashMap<>();
