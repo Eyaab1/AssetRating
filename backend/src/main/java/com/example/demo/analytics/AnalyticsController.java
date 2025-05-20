@@ -1,11 +1,17 @@
 package com.example.demo.analytics;
 
+import java.awt.PageAttributes.MediaType;
+import java.net.http.HttpHeaders;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -87,6 +93,18 @@ public class AnalyticsController {
         return ResponseEntity.ok(analyticsService.getAssetAnalytics(assetId));
     }
 
+    @GetMapping("/ratingDistribution")
+    public ResponseEntity<Map<Integer, Long>> getRatingDistribution(@RequestParam String assetId) {
+        return ResponseEntity.ok(analyticsService.getRatingDistributionForAsset(assetId));
+    }
+    @GetMapping("/topKeyword")
+    public ResponseEntity<Map<String, Long>> getTopKeywords(
+            @RequestParam String assetId,
+            @RequestParam(defaultValue = "10") int limit) {
+        return ResponseEntity.ok(analyticsService.getTopKeywords(assetId, limit));
+    }
 
+
+    
 
 }

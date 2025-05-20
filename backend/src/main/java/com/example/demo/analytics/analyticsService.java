@@ -344,7 +344,6 @@ public class analyticsService {
 
     public Map<String, Object> getAssetAnalytics(String assetId) {
         Map<String, Object> analytics = new HashMap<>();
-
         try {
             Asset asset = assetService.getAssetById(assetId)
                 .orElseThrow(() -> new RuntimeException("Asset not found with id: " + assetId));
@@ -352,7 +351,6 @@ public class analyticsService {
         } catch (Exception e) {
             analytics.put("downloadCount", 0);
         }
-
         try {
             int rating = ratingService.getOverallRating(assetId);
             analytics.put("averageRating", rating != 0 ? rating : 0);
@@ -366,25 +364,28 @@ public class analyticsService {
             analytics.put("reviewCount", 0);
         }
         try {
-        	List<ReviewComment> allReviews = reviewService.getReviewsByAssetId(assetId);
+            List<ReviewComment> allReviews = reviewService.getReviewsByAssetId(assetId);
 
-        	List<Map<String, Object>> recentReviews = allReviews.stream()
-        		    .sorted((a, b) -> b.getCreated_at().compareTo(a.getCreated_at()))
-        		    .limit(5)
-        		    .map(review -> {
-        		        Map<String, Object> map = new HashMap<>();
+            List<Map<String, Object>> recentReviews = allReviews.stream()
+                .filter(review -> review.getComment() != null && review.getComment().startsWith("__REVIEW__"))
+                .sorted((a, b) -> b.getCreated_at().compareTo(a.getCreated_at()))
+                .limit(5)
+                .map(review -> {
+                    Map<String, Object> map = new HashMap<>();
 
-        		        String username = authService.getUserById(review.getUserId())
-        		            .map(user -> user.getFirstName()) // or getUsername() / getEmail()
-        		            .orElse("Unknown");
+                    String username = authService.getUserById(review.getUserId())
+                        .map(user -> user.getFirstName())
+                        .orElse("Unknown");
 
-        		        map.put("user", username);
-        		        map.put("comment", review.getComment());
-        		        map.put("rating", ratingService.getOverallRating(assetId));
-        		        map.put("createdAt", review.getCreated_at());
-        		        return map;
-        		    }).toList();
-        	analytics.put("recentReviews", recentReviews);
+                    map.put("user", username);
+                    map.put("comment", review.getComment().replace("__REVIEW__", "").trim()); // clean it up
+                    map.put("createdAt", review.getCreated_at());
+                    map.put("rating", ratingService.getOverallRating(assetId));
+
+                    return map;
+                }).toList();
+
+            analytics.put("recentReviews", recentReviews);
 
 
         } catch (Exception e) {
@@ -432,7 +433,14 @@ public class analyticsService {
         
         return trend;
     }
-
+    
+    public Map<Integer, Long> getRatingDistributionForAsset(String assetId) {
+        return ratingService.getRatingDistribution(assetId);
+    }
+    
+    public Map<String, Long> getTopKeywords(String assetId, int limit) {
+        return reviewService.getTopKeywords(assetId, limit);
+    }
 
     
     

@@ -1,4 +1,4 @@
-.chart-card {
+/* .chart-card {
   background: white;
   border-radius: 20px;
   padding: 20px 25px;
@@ -7,9 +7,9 @@
   flex-direction: column;
   width: 100%;
   max-width: 850px; /* <- prevent it from stretching too far */
-  margin: auto;
-}
-
+  /* margin: auto; */
+/* } */
+/* 
 .chart-card h4 {
   text-align: center;
   margin-bottom: 10px;
@@ -22,4 +22,4 @@ canvas {
   max-height: 220px;
   width: 100% !important;
   height: auto !important;
-}
+}  */

@@ -1,6 +1,6 @@
 /* ========== Dashboard Wrapper & Header ========== */
 body {
-  overflow: hidden; /* not recommended unless your layout is fixed-height */
+  /* overflow: hidden; not recommended unless your layout is fixed-height */
 }
 .dashboard-wrapper {
   padding: 2rem;

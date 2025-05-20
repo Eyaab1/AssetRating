@@ -71,6 +71,26 @@ export class AnalyticsService {
       headers: this.getAuthHeaders()
     });
   }
+
+    getRatingDistribution(assetId: string) {
+      return this.http.get<{ [key: number]: number }>(
+        `${this.baseUrl}/ratingDistribution`,
+        { params: { assetId },
+          headers: this.getAuthHeaders()}
+      );
+      
+    }
+
+   getTopKeywords(assetId: string, limit: number = 10) {
+  return this.http.get<{ [word: string]: number }>(
+    `${this.baseUrl}/topKeyword`,
+    {
+      params: { assetId, limit },
+      headers: this.getAuthHeaders()
+    }
+  );
+}
+
   
 }
 

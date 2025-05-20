@@ -1,0 +1,10 @@
+<div class="chart-box keywords-box">
+  <div class="keyword-row header">
+    <span>Keyword</span>
+    <span>Count</span>
+  </div>
+  <div class="keyword-row" *ngFor="let keyword of keywordsArray">
+    <span>{{ keyword.word }}</span>
+    <span>{{ keyword.count }}</span>
+  </div>
+</div>

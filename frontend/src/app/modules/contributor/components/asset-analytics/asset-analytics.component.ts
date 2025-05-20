@@ -7,11 +7,13 @@ import { RatingDistributionForAssetComponent } from '../charts/rating-distributi
 import { SpamChartComponentComponent } from '../charts/spam-chart-component/spam-chart-component.component';
 import { FormsModule } from '@angular/forms';
 import { NgChartsModule } from 'ng2-charts';
+import { RatingLevelComponent } from '../charts/rating-level/rating-level.component';
+import { TopKeywordsComponent } from '../charts/top-keywords/top-keywords.component';
 
 @Component({
   selector: 'app-asset-analytics',
   standalone: true,
-  imports: [CommonModule,FormsModule,NgChartsModule,SentimentChartComponentComponent,RatingDistributionForAssetComponent,SpamChartComponentComponent],
+  imports: [CommonModule,FormsModule,NgChartsModule,SentimentChartComponentComponent,RatingDistributionForAssetComponent,SpamChartComponentComponent,RatingLevelComponent,TopKeywordsComponent],
   templateUrl: './asset-analytics.component.html',
   styleUrl: './asset-analytics.component.css'
 })
@@ -19,7 +21,10 @@ export class AssetAnalyticsComponent implements OnInit {
 assetAnalytics: any;
 
 quickStats: { label: string; value: any }[] = [];
-
+topKeywords: { [key: string]: number } = {};
+ratingDistributionLabels: string[] = ['1★', '2★', '3★', '4★', '5★'];
+ratingDistributionData: number[] = [0, 0, 0, 0, 0];
+topKeywordsArray: any;
 
 constructor(private route: ActivatedRoute, private analyticsService: AnalyticsService) { }
 ngOnInit(): void {
@@ -28,6 +33,20 @@ ngOnInit(): void {
     this.analyticsService.getAssetAnalytics(assetId).subscribe(data => {
       this.assetAnalytics = data;
     });
+    this.analyticsService.getRatingDistribution(assetId).subscribe((data) => {
+  
+    this.ratingDistributionData = [0, 0, 0, 0, 0];
+
+    for (let i = 1; i <= 5; i++) {
+      this.ratingDistributionData[i - 1] = data[i] || 0;
   }
+    });
+    this.analyticsService.getTopKeywords(assetId).subscribe(data => {
+    this.topKeywords = data;
+});
+
+
+  }
+  
 }
 }

@@ -1,0 +1,19 @@
+.keywords-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.keyword-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.keyword-row.header {
+  background-color: transparent;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}

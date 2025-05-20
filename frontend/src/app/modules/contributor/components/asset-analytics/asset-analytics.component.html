@@ -1,64 +1,69 @@
-<div class="dashboard-container">
-  <!-- Top Stats Row -->
-  <div class="top-cards">
-    <div class="info-card peach">
-      <p>Total Reviews</p>
-      <h2>{{ assetAnalytics?.reviewCount }}</h2>
+<div class="contributor-dashboard">
+  <!-- METRIC CARDS -->
+  <div class="metric-cards">
+    <div class="metric-card blue">
+      <i class="fas fa-comments icon"></i>
+      <div class="label">Total Reviews</div>
+      <div class="value">{{ assetAnalytics?.reviewCount }}</div>
     </div>
-    <div class="info-card lavender">
-      <p>Average Rating</p>
-      <h2>{{ assetAnalytics?.averageRating }}/5</h2>
+    <div class="metric-card green">
+      <i class="fas fa-star icon"></i>
+      <div class="label">Avg Rating</div>
+      <div class="value">{{ assetAnalytics?.averageRating }}/5</div>
     </div>
-    <div class="info-card aqua">
-      <p>Downloads</p>
-      <h2>{{ assetAnalytics?.downloadCount }}</h2>
+    <div class="metric-card orange">
+      <i class="fas fa-download icon"></i>
+      <div class="label">Downloads</div>
+      <div class="value">{{ assetAnalytics?.downloadCount }}</div>
+    </div>
+  </div>
+<!-- SMALL CHARTS GRID -->
+  <div class="dashboard-grid three">
+    <div class="chart-card">
+      <h4><i class="fas fa-smile"></i> Sentiment Breakdown</h4>
+      <app-sentiment-chart-component *ngIf="assetAnalytics?.sentimentBreakdown"
+        [sentiments]="assetAnalytics.sentimentBreakdown"></app-sentiment-chart-component>
+    </div>
+    <div class="chart-card">
+      <h4><i class="fas fa-shield-alt"></i> Spam Breakdown</h4>
+      <app-spam-chart-component *ngIf="assetAnalytics?.spamBreakdown"
+        [spam]="assetAnalytics.spamBreakdown"></app-spam-chart-component>
+    </div>
+    <div class="chart-card narrow">
+      <h4><i class="fas fa-key"></i> Top Keywords</h4>
+      <app-top-keywords *ngIf="topKeywords" [keywordsMap]="topKeywords"></app-top-keywords>
+    </div>
+    
+  </div>
+  <!-- WIDE CHART ROW -->
+  <div class="dashboard-grid custom-two">
+    <div class="chart-card wide">
+      <h4><i class="fas fa-chart-line"></i> Rating & Comments Over Time</h4>
+      <app-rating-distribution-for-asset *ngIf="assetAnalytics?.ratingCommentTrend"
+        [ratingCommentTrend]="assetAnalytics.ratingCommentTrend"></app-rating-distribution-for-asset>
+    </div>
+
+    
+    <div class="chart-card">
+      <h4><i class="fas fa-star-half-alt"></i> Rating Distribution</h4>
+      <app-rating-level [ratingDistributionLabels]="ratingDistributionLabels"
+        [ratingDistributionData]="ratingDistributionData"></app-rating-level>
     </div>
   </div>
 
-  <!-- Grid Layout -->
-  <div class="dashboard-grid">
-    <!-- Left Content -->
-    <div class="left-section">
-      <div class="mini-charts">
-        <div class="chart-box">
-          <h4>Sentiment Breakdown</h4>
-          <app-sentiment-chart-component
-            *ngIf="assetAnalytics?.sentimentBreakdown"
-            [sentiments]="assetAnalytics.sentimentBreakdown">
-          </app-sentiment-chart-component>
-        </div>
-        <div class="chart-box">
-          <h4>Spam Breakdown</h4>
-          <app-spam-chart-component
-            *ngIf="assetAnalytics?.spamBreakdown"
-            [spam]="assetAnalytics.spamBreakdown">
-          </app-spam-chart-component>
-        </div>
-      </div>
+  
 
-      <div class="chart-box wide">
-        <h4>Rating & Comment Over Time</h4>
-        <app-rating-distribution-for-asset
-          *ngIf="assetAnalytics?.ratingCommentTrend"
-          [ratingCommentTrend]="assetAnalytics.ratingCommentTrend">
-        </app-rating-distribution-for-asset>
-      </div>
-    </div>
-
-    <!-- Right Sidebar -->
-    <div class="right-section">
-      <div class="reviews-box">
-        <h4>Last Reviews</h4>
-        <div class="review" *ngFor="let review of assetAnalytics?.recentReviews">
-          <div class="avatar">{{ review.user.charAt(0).toUpperCase() }}</div>
-          <div class="content">
-            <div class="meta">
-              <strong>{{ review.user }}</strong>
-              <span>{{ review.createdAt | date: 'shortDate' }}</span>
-            </div>
-            <p>“{{ review.comment }}”</p>
-          </div>
+  <!-- RECENT REVIEWS -->
+  <div class="review-card">
+    <h4><i class="fas fa-clock"></i> Recent Reviews</h4>
+    <div class="review" *ngFor="let review of assetAnalytics?.recentReviews">
+      <div class="avatar">{{ review.user.charAt(0).toUpperCase() }}</div>
+      <div class="review-info">
+        <div class="review-meta">
+          <span class="username">{{ review.user }}</span>
+          <span class="date">{{ review.createdAt | date: 'shortDate' }}</span>
         </div>
+        <div class="comment">“{{ review.comment }}”</div>
       </div>
     </div>
   </div>
