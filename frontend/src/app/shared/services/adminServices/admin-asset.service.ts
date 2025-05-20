@@ -130,5 +130,37 @@ export class AdminAssetService {
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     return this.http.get<string[]>(`${this.baseUrl}/distinct/publishers?type=${type}`, { headers });
   }
+  // 📈 Get top-rated assets
+  getTopRatedAssets(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/top-rated`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
+  // 📊 Get upload trend
+  getUploadTrend(): Observable<{ [key: string]: number }> {
+    return this.http.get<{ [key: string]: number }>(`${this.baseUrl}/upload-trend`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  // 📦 Get asset status breakdown
+  getStatusBreakdown(): Observable<{ [key: string]: number }> {
+    return this.http.get<{ [key: string]: number }>(`${this.baseUrl}/status-breakdown`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  // 🔝 Get most downloaded asset
+  getMostDownloadedAsset(): Observable<Asset> {
+    return this.http.get<Asset>(`${this.baseUrl}/most-downloaded`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+  getTopAssetsBySentiment(): Observable<{ topPositive: string[], topNegative: string[] }> {
+    return this.http.get<{ topPositive: string[], topNegative: string[] }>(
+      `${this.baseUrl}/top-sentiment-assets`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
 }

@@ -89,6 +89,19 @@ export class DetailAssetComponent {
     const id = params.get('id');
     if (id) this.loadAssetById(id);
   });
+  this.route.queryParams.subscribe(params => {
+  const reviewId = params['highlightReview'];
+  if (reviewId) {
+    setTimeout(() => {
+      const el = document.getElementById('review-' + reviewId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('highlighted-review');
+      }
+    }, 800);
+  }
+});
+
 }
 
 

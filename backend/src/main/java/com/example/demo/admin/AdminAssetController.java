@@ -138,11 +138,6 @@ public class AdminAssetController {
         return analyticsService.getTopRatedAssets();
     }
 
-    @GetMapping("/rating-distribution")
-    public Map<Object, Long> getRatingDistribution() {
-        return analyticsService.getAssetRatingDistribution();
-    }
-
     @GetMapping("/upload-trend")
     public Map<String, Long> getUploadTrend() {
         return analyticsService.getAssetUploadTrend();
@@ -155,6 +150,10 @@ public class AdminAssetController {
     @GetMapping("/most-downloaded")
     public ResponseEntity<Asset> getMostDownloadedAsset() {
         return ResponseEntity.ok(analyticsService.getMostDownloadedAsset());
+    }
+    @GetMapping("/top-sentiment-assets")
+    public ResponseEntity<Map<String, List<String>>> getTopAssetsBySentiment() {
+        return ResponseEntity.ok(analyticsService.getTopAssetsBySentiment());
     }
 
 }

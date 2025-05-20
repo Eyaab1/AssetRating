@@ -46,21 +46,22 @@ export class MostDownloadsComponent {
       this.analyticsService.getTopDownloadedAssets(this.userEmail).subscribe(data => {
         console.log('Top downloaded assets:', data);
         this.chartData = {
-          labels: data.map(d => d.label),
-          datasets: [
-            {
-              label: 'Downloads',
-              data: data.map(d => d.averageRating),
-              backgroundColor: [
-                '#4F46E5',
-                '#6366F1',
-                '#818CF8',
-                '#A5B4FC',
-                '#C7D2FE'
-              ]
-            }
-          ]
-        };
+  labels: data.map(d => d.label),
+  datasets: [
+    {
+      label: 'Downloads',
+      data: data.map(d => d.averageRating), 
+      backgroundColor: [
+        '#4F46E5',
+        '#6366F1',
+        '#818CF8',
+        '#A5B4FC',
+        '#C7D2FE'
+      ]
+    }
+  ]
+};
+
       });
     }
   }

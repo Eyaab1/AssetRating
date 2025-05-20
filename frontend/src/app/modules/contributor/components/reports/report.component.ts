@@ -96,8 +96,10 @@ export class ReportComponent implements OnInit {
     this.markAsRead(report);
     this.router.navigate([`/contributorLayout/detail/${report.relatedAssetId}`], {
       queryParams: {
-        focusReviewId: report.relatedEntityId,
-        fromReport: true
+        focusReviewId: report.relatedAssetId,
+        fromReport: true,
+        highlightReview: report.relatedEntityId
+
       }
     });
   }

@@ -1,7 +1,11 @@
 <div class="review-component">
 
   <div *ngIf="visibleComments.length > 0; else noComments">
-    <div class="comment-card" *ngFor="let comment of visibleComments">
+    <div
+      class="comment-card"
+      *ngFor="let comment of visibleComments"
+      [id]="'review-' + comment.id"
+    >
       <div class="comment-card-header">
         <app-comment [comment]="comment"></app-comment>
       </div>

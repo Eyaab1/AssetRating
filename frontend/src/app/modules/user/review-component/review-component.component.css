@@ -215,3 +215,8 @@
   border-color: #7c3aed;
 }
 
+.comment-card.highlighted-review {
+  border: 2px solid #f87171;
+  background-color: #fff1f1;
+  transition: all 0.3s ease;
+}

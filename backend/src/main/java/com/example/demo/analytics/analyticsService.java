@@ -166,6 +166,45 @@ public class analyticsService {
             .toList();
     }
 
+    public Map<String, List<String>> getTopAssetsBySentiment() {
+        Map<String, Integer> positiveCounts = new HashMap<>();
+        Map<String, Integer> negativeCounts = new HashMap<>();
+
+        for (ReviewComment review : reviewService.getAllReviews()) {
+            String assetId = review.getAssetId();
+            if (assetId == null || review.getComment() == null) continue;
+
+            try {
+                String sentiment = reviewModerationService.analyzeReview(review.getComment()).getSentiment();
+                if ("positive".equalsIgnoreCase(sentiment)) {
+                    positiveCounts.put(assetId, positiveCounts.getOrDefault(assetId, 0) + 1);
+                } else if ("negative".equalsIgnoreCase(sentiment)) {
+                    negativeCounts.put(assetId, negativeCounts.getOrDefault(assetId, 0) + 1);
+                }
+            } catch (Exception e) {
+                System.err.println("Sentiment error for review ID " + review.getId() + ": " + e.getMessage());
+            }
+        }
+
+        List<String> topPositive = positiveCounts.entrySet().stream()
+            .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+            .limit(5)
+            .map(Map.Entry::getKey)
+            .toList();
+
+        List<String> topNegative = negativeCounts.entrySet().stream()
+            .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+            .limit(5)
+            .map(Map.Entry::getKey)
+            .toList();
+
+        Map<String, List<String>> result = new HashMap<>();
+        result.put("topPositive", topPositive);
+        result.put("topNegative", topNegative);
+
+        return result;
+    }
+
     // ========== USER METRICS ==========
 
     public int getTotalUsers() {
@@ -317,7 +356,6 @@ public class analyticsService {
                 Collectors.counting()
             ));
     }
-
 
     // ========== RATING METRICS ==========
 
