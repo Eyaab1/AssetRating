@@ -1,12 +1,11 @@
-<div class="dashboard-container">
-  <h1>Admin Dashboard</h1>
+<!-- <div class="dashboard-container">
+  <div class="tab-buttons">
+    <button [class.active]="activeTab === 'users'" (click)="activeTab = 'users'"> User Analytics</button>
+    <button [class.active]="activeTab === 'assets'" (click)="activeTab = 'assets'"> Asset Analytics</button>
+  </div>
 
   <div class="main-content">
-    <!-- LEFT CONTENT -->
-    <div class="analytics-section">
-      <h2>📊 Asset + User Analytics</h2>
-
-      <!-- User Role Cards -->
+    <div *ngIf="activeTab === 'users'" class="analytics-section">
       <div class="analytics-cards">
         <div class="analytics-card">
           <i class="fas fa-users card-icon"></i>
@@ -38,53 +37,48 @@
         </div>
       </div>
 
-      <!-- User Charts -->
       <div class="charts">
         <div class="mini-user-chart">
-          <h3>🔥 Most Active Users</h3>
+          <h3> Most Active Users</h3>
           <app-chart [type]="'bar'" [data]="mostActiveUsersChartData"></app-chart>
         </div>
         <div class="mini-user-chart">
-          <h3>🚀 Top Contributors</h3>
+          <h3> Top Contributors</h3>
           <app-chart [type]="'bar'" [data]="topContributorsChartData"></app-chart>
+        </div>
+        <div class="mini-user-list">
+          <div class="mini-list-title"> New Users This Month</div>
+          <div *ngFor="let user of newUsersThisMonth" class="mini-user-item">
+            <div class="user-info">
+              <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+              <span class="user-role">{{ user.role }}</span>
+            </div>
+            <div class="user-date">
+              <span class="badge">{{ user.createdAt | date: 'shortDate' }}</span>
+            </div>
+          </div>
+          <div class="new-user-count">
+            Total: <strong>{{ newUsersThisMonth.length }}</strong> new users this month
+          </div>
         </div>
       </div>
 
-      <!-- Asset Charts -->
-      <app-chart *ngIf="statusChart"
-        [type]="statusChart.type"
-        [data]="statusChart.data"
-        [options]="statusChart.options">
-      </app-chart>
-
-      <app-chart *ngIf="ratingChart"
-        [type]="ratingChart.type"
-        [data]="ratingChart.data"
-        [options]="ratingChart.options">
-      </app-chart>
-
-      <app-chart *ngIf="uploadTrendChart"
-        [type]="uploadTrendChart.type"
-        [data]="uploadTrendChart.data"
-        [options]="uploadTrendChart.options">
-      </app-chart>
-
-      <!-- Top Rated / Downloaded -->
-      <div class="stat-box">
-        <h3>🏆 Top Rated Assets</h3>
-        <ul>
-          <li *ngFor="let asset of topRatedAssets">{{ asset }}</li>
-        </ul>
+      <div class="dashboard-right">
+        
       </div>
+    </div>
 
-      <div class="stat-box" *ngIf="mostDownloadedAsset">
+    <div *ngIf="activeTab === 'assets'" class="analytics-section asset-analytics">
+      <div class="firstRow">
+        <div class="stat-box" *ngIf="mostDownloadedAsset">
         <h3>⬇️ Most Downloaded Asset</h3>
         <p>{{ mostDownloadedAsset.name || mostDownloadedAsset.label }}</p>
         <p>Downloads: {{ mostDownloadedAsset.downloadCount }}</p>
       </div>
 
-      <!-- Sentiment Toggle -->
-      <div class="sentiment-toggle">
+      
+      <div class="chard-card">
+         <div class="sentiment-toggle">
         <button (click)="activeSentimentChart = 'positive'" [class.active]="activeSentimentChart === 'positive'">
           👍 Top Positive Assets
         </button>
@@ -92,8 +86,7 @@
           👎 Top Negative Assets
         </button>
       </div>
-
-      <div *ngIf="activeSentimentChart === 'positive' && topPositiveAssetsChart">
+        <div *ngIf="activeSentimentChart === 'positive' && topPositiveAssetsChart">
         <app-chart 
           [type]="topPositiveAssetsChart.type" 
           [data]="topPositiveAssetsChart.data" 
@@ -108,25 +101,213 @@
           [options]="topNegativeAssetsChart.options">
         </app-chart>
       </div>
-    </div>
 
-    <!-- RIGHT SIDEBAR -->
-    <div class="dashboard-right">
-      <div class="mini-user-list">
-        <div class="mini-list-title">🆕 New Users This Month</div>
-        <div *ngFor="let user of newUsersThisMonth" class="mini-user-item">
-          <div class="user-info">
-            <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
-            <span class="user-role">{{ user.role }}</span>
-          </div>
-          <div class="user-date">
-            <span class="badge">{{ user.createdAt | date: 'shortDate' }}</span>
-          </div>
-        </div>
-        <div class="new-user-count">
-          Total: <strong>{{ newUsersThisMonth.length }}</strong> new users this month
-        </div>
       </div>
+     
+
+
+
+    </div>
+     <div class="stat-box">
+  <h3>Top Rated Assets</h3>
+  <div class="keywords-box">
+    <div class="keyword-row header">
+      <span>Asset Name</span>
+      <span>Rank</span>
+    </div>
+    <div class="keyword-row" *ngFor="let asset of topRatedAssets; let i = index">
+      <span>{{ asset }}</span>
+      <span>#{{ i + 1 }}</span>
     </div>
   </div>
 </div>
+<div class="chart-card">
+      <app-chart *ngIf="statusChart"
+        [type]="statusChart.type"
+        [data]="statusChart.data"
+        [options]="statusChart.options">
+      </app-chart>
+      </div>
+
+
+      
+     
+    
+    </div>
+  </div>
+</div> -->
+
+      <!-- <app-chart *ngIf="uploadTrendChart"
+        [type]="uploadTrendChart.type"
+        [data]="uploadTrendChart.data"
+        [options]="uploadTrendChart.options">
+      </app-chart> -->
+
+      <div class="dashboardContainer">
+         <div class="tab-buttons">
+          <button [class.active]="activeTab === 'users'" (click)="activeTab = 'users'"> User Analytics</button>
+          <button [class.active]="activeTab === 'assets'" (click)="activeTab = 'assets'"> Asset Analytics</button>
+        </div>
+        <div class="main-content">
+    <div *ngIf="activeTab === 'users'" class="analytics-section">
+      <div class="analytics-cards">
+        <div class="analytics-card">
+          <i class="fas fa-users card-icon"></i>
+          <div>
+            <h3>{{ totalUsers }}</h3>
+            <p>Total Users</p>
+          </div>
+        </div>
+        <div class="analytics-card">
+          <i class="fas fa-user card-icon"></i>
+          <div>
+            <h3>{{ users }}</h3>
+            <p>Normal Users</p>
+          </div>
+        </div>
+        <div class="analytics-card">
+          <i class="fas fa-user-cog card-icon"></i>
+          <div>
+            <h3>{{ contributors }}</h3>
+            <p>Contributors</p>
+          </div>
+        </div>
+        <div class="analytics-card">
+          <i class="fas fa-user-shield card-icon"></i>
+          <div>
+            <h3>{{ admins }}</h3>
+            <p>Admins</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="charts">
+        <div class="mini-user-chart">
+          <h3> Most Active Users</h3>
+          <app-chart [type]="'bar'" [data]="mostActiveUsersChartData"></app-chart>
+        </div>
+        <div class="mini-user-chart">
+          <h3> Top Contributors</h3>
+          <app-chart [type]="'bar'" [data]="topContributorsChartData"></app-chart>
+        </div>
+        <div class="mini-user-list">
+          <div class="mini-list-title"> New Users This Month</div>
+          <div *ngFor="let user of newUsersThisMonth" class="mini-user-item">
+            <div class="user-info">
+              <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+              <span class="user-role">{{ user.role }}</span>
+            </div>
+            <div class="user-date">
+              <span class="badge">{{ user.createdAt | date: 'shortDate' }}</span>
+            </div>
+          </div>
+          <div class="new-user-count">
+            Total: <strong>{{ newUsersThisMonth.length }}</strong> new users this month
+          </div>
+        </div>
+      </div>
+      </div>
+      <div *ngIf="activeTab === 'assets'" class="analytics-section asset-analytics">
+        <div class="statCardGrid">
+          <div class="statCard" *ngIf="mostDownloadedAsset">
+            <div class="iconWrapper blue">
+              <i class="fas fa-download"></i>
+            </div>
+            <div class="statContent">
+              <span class="statLabel">Most Downloaded</span>
+              <div class="statTitle">{{ mostDownloadedAsset.name || mostDownloadedAsset.label }}</div>
+              <div class="statSubtext">{{ mostDownloadedAsset.downloadCount }} downloads</div>
+            </div>
+          </div>
+
+        <div class="statCard">
+          <div class="iconWrapper purple">
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="statContent">
+            <span class="statLabel">Top Rated</span>
+            <div class="statTitle">{{ topRatedAsset?.name || topRatedAsset?.label }}</div>
+            <div class="statSubtext">{{ topRatedAsset?.averageRating }}/5</div>
+          </div>
+        </div>
+
+        <div class="statCard" *ngIf="lastUploadedAsset">
+          <div class="iconWrapper indigo">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="statContent">
+            <span class="statLabel">Last Uploaded</span>
+            <div class="statTitle">{{ lastUploadedAsset.name || lastUploadedAsset.label }}</div>
+            <div class="statSubtext">{{ lastUploadedAsset.publishDate | date:'short' }}</div>
+          </div>
+        </div>
+
+        <div class="statCard">
+          <div class="iconWrapper teal">
+            <i class="fas fa-boxes"></i>
+          </div>
+          <div class="statContent">
+            <span class="statLabel">Total Assets</span>
+            <div class="statTitle">{{ totalAssets }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="charts">
+        <div class="chartsFirstRow">
+          <div class="chartCard">
+
+            <div class="sentiment-toggle">
+              <button (click)="activeSentimentChart = 'positive'" [class.active]="activeSentimentChart === 'positive'">
+                👍 Top Positive Assets
+              </button>
+              <button (click)="activeSentimentChart = 'negative'" [class.active]="activeSentimentChart === 'negative'">
+                👎 Top Negative Assets
+              </button>
+            </div>
+              <div *ngIf="activeSentimentChart === 'positive' && topPositiveAssetsChart">
+              <app-chart 
+                [type]="topPositiveAssetsChart.type" 
+                [data]="topPositiveAssetsChart.data" 
+                [options]="topPositiveAssetsChart.options">
+              </app-chart>
+            </div>
+
+            <div *ngIf="activeSentimentChart === 'negative' && topNegativeAssetsChart">
+              <app-chart 
+                [type]="topNegativeAssetsChart.type" 
+                [data]="topNegativeAssetsChart.data" 
+                [options]="topNegativeAssetsChart.options">
+              </app-chart>
+            </div>
+
+
+
+          </div>
+          <div class="chartCard">
+            <app-chart *ngIf="statusChart"
+              [type]="statusChart.type"
+              [data]="statusChart.data"
+              [options]="statusChart.options">
+            </app-chart>
+        </div>
+
+      </div>
+      <div class="chartsSecondRow">
+        <div class="chartCard">
+          <app-chart *ngIf="uploadTrendChart"
+            [type]="uploadTrendChart.type"
+            [data]="uploadTrendChart.data"
+            [options]="uploadTrendChart.options">
+          </app-chart>
+        </div>
+        <!-- <div class="chartCard">
+          <app-chart *ngIf="downloadTrendChart"
+            [type]="downloadTrendChart.type"
+            [data]="downloadTrendChart.data"
+            [options]="downloadTrendChart.options">
+          </app-chart>
+        </div> -->
+      </div>
+
+      </div>
+    </div>

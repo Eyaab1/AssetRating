@@ -22,7 +22,7 @@ export class AppComponent {
     if (!token) return false;
 
     const decoded: any = JSON.parse(atob(token.split('.')[1]));
-    return decoded?.role === 'USER';
+    return decoded?.role === 'USER' || decoded?.role === 'ADMIN' || decoded?.role === 'CONTRIBUTOR';
   }
 
 }

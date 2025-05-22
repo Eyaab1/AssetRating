@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -18,6 +18,11 @@ import { jwtDecode } from 'jwt-decode';
 })
 export class FullAssetListComponent {
   allAssets: Asset[] = [];
+  paginatedAssets: Asset[] = [];
+  currentPage = 1;
+  itemsPerPage = 10;
+  totalPages = 1;
+
   userEmail = '';
   showMyAssetsOnly = true;
   publishedCount = 0;
@@ -46,17 +51,49 @@ export class FullAssetListComponent {
             this.ratingService.getAveragerating(asset.id).subscribe(avg => asset.averageRating = avg || 0);
             this.commentService.getCommentsByAsset(asset.id).subscribe(reviews => asset.reviewsCount = reviews.length);
           });
+
+          this.calculateItemsPerPage();
         }
       });
     }
   }
 
+  @HostListener('window:resize')
+  calculateItemsPerPage(): void {
+    const screenHeight = window.innerHeight;
+    const headerHeight = 350;
+    const rowHeight = 60;
+    this.itemsPerPage = Math.max(1, Math.floor((screenHeight - headerHeight) / rowHeight));
+    this.totalPages = Math.ceil(this.filteredAssets().length / this.itemsPerPage);
+    this.currentPage = 1;
+    this.updatePaginatedAssets();
+  }
+
+  updatePaginatedAssets(): void {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    const assets = this.filteredAssets();
+    this.paginatedAssets = assets.slice(start, end);
+    this.totalPages = Math.ceil(assets.length / this.itemsPerPage);
+  }
+
   filteredAssets(): Asset[] {
-    return this.showMyAssetsOnly
+    const assets = this.showMyAssetsOnly
       ? this.allAssets.filter(a => a.publisherMail === this.userEmail)
       : this.allAssets;
+    return assets;
   }
-  goToAddAseet() {
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedAssets();
+    }
+  }
+
+  goToAddAseet(): void {
     this.router.navigate(['/contributorLayout/addAsset']);
   }
 }
+
+

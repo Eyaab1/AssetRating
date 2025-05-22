@@ -2,7 +2,6 @@
   width: 260px;
   background: #0d0d0d;
   color: #fff;
-  height: 100%; /* leave space for navbar */
   position: fixed;
   left: 0;
   z-index: 1000;

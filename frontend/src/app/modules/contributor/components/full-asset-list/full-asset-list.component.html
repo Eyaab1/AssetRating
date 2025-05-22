@@ -19,7 +19,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let asset of filteredAssets()">
+      <tr *ngFor="let asset of paginatedAssets">
           <td>{{ asset.name }}</td>
           <td>{{ asset.type }}</td>
           <td>
@@ -38,5 +38,18 @@
         </tr>
       </tbody>
     </table>
+    <!-- Pagination -->
+<div class="pagination-bar">
+  <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1">&laquo;</button>
+
+  <button *ngFor="let page of [].constructor(totalPages); let i = index"
+          [class.active]="currentPage === (i + 1)"
+          (click)="onPageChange(i + 1)">
+    {{ i + 1 }}
+  </button>
+
+  <span>Page {{ currentPage }} / {{ totalPages }} ({{ filteredAssets().length }} items)</span>
+</div>
+
   </div>
   

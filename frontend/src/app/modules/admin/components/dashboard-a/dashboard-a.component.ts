@@ -8,10 +8,12 @@ import { UserDTO } from '../../../../shared/models/user-dto.model';
 import { ChartData } from 'chart.js';
 import { NgChartsModule } from 'ng2-charts';
 import { Location } from '@angular/common';
+import { RatingDistributionChartComponent } from '../../../contributor/components/charts/rating-distribution-chart/rating-distribution-chart.component';
+import { RatingService } from '../../../../shared/services/rating.service';
 @Component({
   selector: 'app-dashboard-a',
   standalone: true,
-  imports: [CommonModule, NgChartsModule, ChartComponent],
+  imports: [CommonModule, NgChartsModule, ChartComponent,RatingDistributionChartComponent],
   templateUrl: './dashboard-a.component.html',
   styleUrl: './dashboard-a.component.css'
 })
@@ -20,6 +22,8 @@ export class DashboardAComponent implements OnInit {
   statusChart: any;
   ratingChart: any;
   uploadTrendChart: any;
+  activeTab: 'users' | 'assets' = 'users';
+
 
   // Raw data
   topRatedAssets: string[] = [];
@@ -27,7 +31,6 @@ export class DashboardAComponent implements OnInit {
   topPositiveAssetsChart: any;
   topNegativeAssetsChart: any;
   activeSentimentChart: 'positive' | 'negative' = 'positive';
-
   totalUsers = 0;
   users = 0;
   contributors = 0;
@@ -35,6 +38,10 @@ export class DashboardAComponent implements OnInit {
   newUsersThisMonth: UserDTO[] = [];
   mostActiveUsers: any[] = [];
   topContributors: any[] = [];
+  topRatedAsset: Asset | null = null;
+  allAssets: Asset[] = [];
+  lastUploadedAsset?: Asset;
+  totalAssets: number = 0;
 
   mostActiveUsersChartData: ChartData<'bar'> = {
     labels: [],
@@ -59,7 +66,8 @@ export class DashboardAComponent implements OnInit {
   };
   constructor(private assetService: AdminAssetService,
     private adminUserService: AdminUserService,
-    private location: Location
+    private location: Location,
+    private ratingService : RatingService
   ) {}
 
   ngOnInit(): void {
@@ -89,7 +97,10 @@ export class DashboardAComponent implements OnInit {
       type: 'bar',
       data: {
         labels: data.topPositive,
-        datasets: [{ data: Array(data.topPositive.length).fill(1), label: 'Positive Reviews' }]
+        datasets: [{ data: Array(data.topPositive.length).fill(1), 
+          label: 'Positive Reviews' ,
+          backgroundColor: '#096B68'
+}]
       },
       options: {
         responsive: true,
@@ -101,7 +112,12 @@ export class DashboardAComponent implements OnInit {
       type: 'bar',
       data: {
         labels: data.topNegative,
-        datasets: [{ data: Array(data.topNegative.length).fill(1), label: 'Negative Reviews' }]
+        datasets: [{ 
+          data: Array(data.topNegative.length).fill(1),
+           label: 'Negative Reviews',
+          backgroundColor: '#096B68'
+
+           }]
       },
       options: {
         responsive: true,
@@ -162,8 +178,33 @@ export class DashboardAComponent implements OnInit {
         ]
       };
     });
+       this.assetService.getAllAssets().subscribe({
+        next: (data) => {
+          this.allAssets = data;
+          this.totalAssets = data.length;
+          console.log('All Assets:', this.allAssets);
+           this.lastUploadedAsset = [...data].sort((a, b) =>
+          new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime()
+          )[0];
+          let maxRating = -1;
+          this.allAssets.forEach(asset => {
+            this.ratingService.getAveragerating(asset.id).subscribe(avg => {
+              asset.averageRating = avg || 0;
+      
+              if ((asset.averageRating ?? 0) > maxRating) {
+                maxRating = asset.averageRating ?? 0;
+                this.topRatedAsset = asset;
+                console.log('Top Rated Asset:', this.topRatedAsset);
+              }
+            });
+      
+          
+          });
+        }
+      });
   }
   goBack(): void {
     this.location.back();
   }
+
 }

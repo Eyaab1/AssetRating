@@ -68,5 +68,6 @@ public class AdminUserAnalyticsController {
     public ResponseEntity<List<UserActivityDTO>> getTopContributors() {
         return ResponseEntity.ok(analyticsService.getTopContributors());
     }
+    
 
 }
