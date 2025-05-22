@@ -18,14 +18,10 @@ import { RatingService } from '../../../../shared/services/rating.service';
   styleUrl: './dashboard-a.component.css'
 })
 export class DashboardAComponent implements OnInit {
-  // Chart data
   statusChart: any;
   ratingChart: any;
   uploadTrendChart: any;
   activeTab: 'users' | 'assets' = 'users';
-
-
-  // Raw data
   topRatedAssets: string[] = [];
   mostDownloadedAsset?: Asset;
   topPositiveAssetsChart: any;
@@ -42,6 +38,9 @@ export class DashboardAComponent implements OnInit {
   allAssets: Asset[] = [];
   lastUploadedAsset?: Asset;
   totalAssets: number = 0;
+
+  reviewRatingTrendChart: any;
+
 
   mostActiveUsersChartData: ChartData<'bar'> = {
     labels: [],
@@ -84,8 +83,9 @@ export class DashboardAComponent implements OnInit {
         type: 'pie',
         data: {
           labels: Object.keys(res),
-          datasets: [{ data: Object.values(res) }]
-        },
+          datasets: [{ data: Object.values(res) }],
+          backgroundColor: ['#3b82f6', '#10b981', '#ef4444', '#f97316']
+       },
         options: {
           responsive: true,
           plugins: { legend: { position: 'bottom' } }
@@ -99,8 +99,7 @@ export class DashboardAComponent implements OnInit {
         labels: data.topPositive,
         datasets: [{ data: Array(data.topPositive.length).fill(1), 
           label: 'Positive Reviews' ,
-          backgroundColor: '#096B68'
-}]
+          backgroundColor: ["#3b82f6", "#10b981", "#8b5cf6"]}]
       },
       options: {
         responsive: true,
@@ -115,7 +114,7 @@ export class DashboardAComponent implements OnInit {
         datasets: [{ 
           data: Array(data.topNegative.length).fill(1),
            label: 'Negative Reviews',
-          backgroundColor: '#096B68'
+          backgroundColor: '#ef4444'
 
            }]
       },
@@ -126,17 +125,34 @@ export class DashboardAComponent implements OnInit {
     };
   });
     this.assetService.getUploadTrend().subscribe(res => {
-      this.uploadTrendChart = {
-        type: 'line',
-        data: {
-          labels: Object.keys(res),
-          datasets: [{ data: Object.values(res), label: 'Uploads' }]
-        },
-        options: {
-          responsive: true,
-          scales: { y: { beginAtZero: true } }
-        }
-      };
+     this.uploadTrendChart = {
+  type: 'line',
+  data: {
+    labels: Object.keys(res),
+    datasets: [
+      {
+        label: 'Uploads',
+        data: Object.values(res),
+        borderColor: '#8b5cf6', // Violet
+        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+        pointBackgroundColor: '#8b5cf6',
+        fill: true,
+        tension: 0.4
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom' }
+    },
+    scales: {
+      y: { beginAtZero: true },
+      x: { grid: { color: '#f9fafb' } }
+    }
+  }
+};
+
     });
     this.adminUserService.getUserSummary().subscribe(res => {
       this.totalUsers = res.total;
@@ -202,7 +218,82 @@ export class DashboardAComponent implements OnInit {
           });
         }
       });
+      this.loadReviewRatingTrendChart();
+
   }
+loadReviewRatingTrendChart(): void {
+  this.assetService.getReviewActivityTrend().subscribe(reviews => {
+    this.assetService.getRatingVolumeTrend().subscribe(ratings => {
+      const allWeeks = Array.from(new Set([
+        ...Object.keys(reviews),
+        ...Object.keys(ratings)
+      ])).sort();
+
+      const reviewData = allWeeks.map(week => reviews[week] || 0);
+      const ratingData = allWeeks.map(week => ratings[week] || 0);
+
+      this.reviewRatingTrendChart = {
+        type: 'line',
+        data: {
+          labels: allWeeks,
+          datasets: [
+            {
+              label: 'Reviews',
+              data: reviewData,
+              borderColor: '#6366f1',
+              backgroundColor: 'rgba(99, 102, 241, 0.1)',
+              pointBackgroundColor: '#6366f1',
+              tension: 0.4,
+              fill: true
+            },
+            {
+              label: 'Ratings',
+              data: ratingData,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              pointBackgroundColor: '#10b981',
+              tension: 0.4,
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: {
+              mode: 'index',
+              intersect: false
+            }
+          },
+          interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              },
+              grid: {
+                color: '#f3f4f6'
+              }
+            },
+            x: {
+              grid: {
+                color: '#f9fafb'
+              }
+            }
+          }
+        }
+      };
+    });
+  });
+}
+
+
   goBack(): void {
     this.location.back();
   }

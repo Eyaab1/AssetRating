@@ -59,16 +59,7 @@ public class AnalyticsController {
         return ResponseEntity.ok(analyticsService.getAssetUploadTrend());
     }
 
-    @GetMapping("/review-activity-trend")
-    public ResponseEntity<Map<String, Long>> getReviewActivityTrend() {
-        return ResponseEntity.ok(analyticsService.getReviewActivityTrend());
-    }
-
-    @GetMapping("/rating-volume-trend")
-    public ResponseEntity<Map<String, Long>> getRatingVolumeTrend() {
-        return ResponseEntity.ok(analyticsService.getRatingVolumeTrend());
-    }
-
+  
     @GetMapping("/review-sentiment")
     public ResponseEntity<Map<String, Integer>> getReviewSentimentBreakdown() {
         return ResponseEntity.ok(analyticsService.getSentimentBreakdown());

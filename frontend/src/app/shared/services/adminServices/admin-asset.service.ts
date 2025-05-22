@@ -163,4 +163,19 @@ export class AdminAssetService {
       { headers: this.getAuthHeaders() }
     );
   }
+  
+  getReviewActivityTrend(): Observable<{ [key: string]: number }> {
+  return this.http.get<{ [key: string]: number }>(`${this.baseUrl}/reviewactivity`,
+  {
+  headers: this.getAuthHeaders()
+  });
+}
+
+getRatingVolumeTrend(): Observable<{ [key: string]: number }> {
+  return this.http.get<{ [key: string]: number }>(`${this.baseUrl}/ratingactivity`,
+    {
+      headers: this.getAuthHeaders()
+    }
+  );
+}
 }
