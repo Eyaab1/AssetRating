@@ -5,7 +5,9 @@ import com.example.demo.notification.NotificationService;
 import com.example.demo.notification.NotificationType;
 import com.example.demo.asset.model.Asset;
 import com.example.demo.asset.repository.AssetRepository;
+import com.example.demo.asset.service.AssetService;
 import com.example.demo.auth.AuthRepository;
+import com.example.demo.auth.AuthService;
 import com.example.demo.auth.User;
 
 import org.springframework.stereotype.Component;
@@ -15,22 +17,22 @@ import jakarta.annotation.PostConstruct;
 public class ReviewReportHookConfigurer {
 
     private final NotificationService notificationService;
-    private final AssetRepository assetRepository;
-    private final AuthRepository authRepository;
+    private final AssetService assetService;
+    private final AuthService authService;
 
-    public ReviewReportHookConfigurer(NotificationService notificationService, AssetRepository assetRepository,AuthRepository authRepository) {
+    public ReviewReportHookConfigurer(NotificationService notificationService, AssetService assetService,AuthService authService) {
         this.notificationService = notificationService;
-        this.assetRepository = assetRepository;
-        this.authRepository=authRepository;
+        this.assetService = assetService;
+        this.authService=authService;
     }
 
     @PostConstruct
     public void init() {
     	ReviewCommentReportService.setOnReviewReported((review, reason, reporterId, reportId) -> {
-    	    Asset asset = assetRepository.findById(review.getAssetId())
+    	    Asset asset = assetService.findById(review.getAssetId())
     	        .orElseThrow(() -> new RuntimeException("Asset not found"));
 
-    	    User reporter = authRepository.findById(reporterId)
+    	    User reporter = authService.findById(reporterId)
     	        .orElseThrow(() -> new RuntimeException("Reporter not found"));
     	    String paddedId = String.format("%03d", reportId);
     	    

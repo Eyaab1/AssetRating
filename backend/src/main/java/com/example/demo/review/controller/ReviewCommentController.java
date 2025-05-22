@@ -4,16 +4,13 @@ import com.example.demo.dto.ReviewRequest;
 import com.example.demo.dto.ModerationResult;
 import com.example.demo.dto.ProfanityCheckResponse;
 import com.example.demo.dto.ReplyRequest;
-import com.example.demo.asset.repository.AssetRepository;
 import com.example.demo.asset.service.AssetService;
-import com.example.demo.auth.AuthRepository;
+import com.example.demo.auth.AuthService;
 import com.example.demo.auth.User;
 import com.example.review.model.ReviewComment;
-import com.example.review.repository.ReviewCommentRepository;
 import com.example.review.service.ReviewCommentService;
 import com.example.demo.review.ReviewAnalysisClient;
 import com.example.demo.notification.NotificationService;
-import com.example.demo.notification.NotificationType;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +31,7 @@ public class ReviewCommentController {
     private final AssetService assetService;
     private final ReviewAnalysisClient reviewModerationService;
     private final NotificationService notificationService;
-    private final AuthRepository authRepository;
-    private final ReviewCommentRepository reviewRepository;
+    private final AuthService authService;
 
     // Profanity service URL (Flask microservice)
     private final String PROFANITY_SERVICE_URL = "http://localhost:5000/check_profanity";
@@ -45,15 +41,13 @@ public class ReviewCommentController {
     	    AssetService assetService,
     	    ReviewAnalysisClient reviewModerationService,
     	    NotificationService notificationService,
-    	    AuthRepository authRepository,
-    	    ReviewCommentRepository reviewRepository
+    	    AuthService authService
     	) {
     	    this.reviewService = reviewService;
     	    this.assetService = assetService;
     	    this.reviewModerationService = reviewModerationService;
     	    this.notificationService = notificationService;
-    	    this.authRepository = authRepository;
-    	    this.reviewRepository = reviewRepository;
+    	    this.authService = authService;
     	}
 
 
@@ -92,7 +86,7 @@ public class ReviewCommentController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Review contains inappropriate language.");
         }
 
-        User reviewer = authRepository.findByEmail(principal.getName())
+        User reviewer = authService.findByEmail(principal.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         ReviewComment review = new ReviewComment(reviewer.getId(), request.getAssetId(), request.getComment());
@@ -105,12 +99,12 @@ public class ReviewCommentController {
 
     @PostMapping("/{reviewId}/like")
     public ResponseEntity<Void> likeReview(@PathVariable Long reviewId, Principal principal) {
-        User liker = authRepository.findByEmail(principal.getName())
+        User liker = authService.findByEmail(principal.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         reviewService.addLike(reviewId, liker.getId());
 
-        ReviewComment review = reviewRepository.findById(reviewId)
+        ReviewComment review = reviewService.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
         notificationService.notifyUserOfLikedReview(review, liker);
@@ -122,7 +116,7 @@ public class ReviewCommentController {
     public ResponseEntity<?> addReply(@PathVariable Long reviewId, @RequestBody ReplyRequest replyRequest, Principal principal) {
         ReviewComment parent = reviewService.getReviewById(reviewId);
 
-        User replier = authRepository.findByEmail(principal.getName())
+        User replier = authService.findByEmail(principal.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // ✅ Check the reply text, not the parent comment

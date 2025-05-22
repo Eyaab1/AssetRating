@@ -1,6 +1,7 @@
 package com.example.demo.rating.controller;
 
 import com.example.demo.asset.repository.AssetRepository;
+import com.example.demo.asset.service.AssetService;
 import com.example.demo.dto.RatingRequest;
 import com.example.rating.model.Rating;
 import com.example.rating.model.UserRatingResponse;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")
 public class RatingController {
 	@Autowired
-	private AssetRepository assetRepository;
+	private AssetService assetService;
     private final RatingService ratingService;
 
     public RatingController(RatingService ratingService) {
@@ -27,7 +28,7 @@ public class RatingController {
 
     @PostMapping("/rate")
     public ResponseEntity<Map<String, String>> rateAsset(@RequestBody RatingRequest request) {
-        boolean assetExists = assetRepository.existsById(request.getAssetId());
+        boolean assetExists = assetService.existsById(request.getAssetId());
         if (!assetExists) {
             Map<String, String> response = new HashMap<>();
             response.put("error", "Asset with ID " + request.getAssetId() + " does not exist.");
@@ -96,7 +97,7 @@ public class RatingController {
 //Update 
     @PutMapping("/update")
     public ResponseEntity<?> updateRating(@RequestBody RatingRequest request) {
-        boolean assetExists = assetRepository.existsById(request.getAssetId());
+        boolean assetExists = assetService.existsById(request.getAssetId());
         if (!assetExists) {
             return ResponseEntity.badRequest().body(Map.of("error", "Asset not found."));
         }

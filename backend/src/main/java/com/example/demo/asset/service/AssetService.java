@@ -482,5 +482,15 @@ public class AssetService {
 	            .count();
 	    }
 
+		public Optional<Asset> findById(String assetId) {
+			// TODO Auto-generated method stub
+			return assetRepository.findById(assetId);
+		}
+
+		public boolean existsById(String assetId) {
+			// TODO Auto-generated method stub
+			return assetRepository.existsById(assetId);
+		}
+
 
 }
