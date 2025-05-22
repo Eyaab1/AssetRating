@@ -3,6 +3,7 @@ package com.example.demo.notification;
 import com.example.demo.asset.model.Asset;
 import com.example.demo.asset.repository.AssetRepository;
 import com.example.demo.auth.AuthRepository;
+import com.example.demo.auth.AuthService;
 import com.example.demo.auth.User;
 import com.example.review.model.ReviewComment;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -17,16 +18,16 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final AssetRepository assetRepository;
-    private final AuthRepository authRepository;
+    private final AuthService authService;
     private final SimpMessagingTemplate messagingTemplate;
 
     public NotificationService(NotificationRepository notificationRepository,
                                AssetRepository assetRepository,
-                               AuthRepository authRepository,
+                               AuthService authService,
                                SimpMessagingTemplate messagingTemplate) {
         this.notificationRepository = notificationRepository;
         this.assetRepository = assetRepository;
-        this.authRepository = authRepository;
+        this.authService = authService;
         this.messagingTemplate = messagingTemplate;
     }
 
@@ -76,7 +77,7 @@ public class NotificationService {
 
         String publisherEmail = asset.getPublisherMail();
         if (publisherEmail != null) {
-            User contributor = authRepository.findByEmail(publisherEmail)
+            User contributor = authService.findByEmail(publisherEmail)
                     .orElseThrow(() -> new RuntimeException("User not found by email: " + publisherEmail));
 
             String content = commenter.getFirstName() + " " + commenter.getLastName() +
@@ -94,7 +95,7 @@ public class NotificationService {
 
         String publisherEmail = asset.getPublisherMail();
         if (publisherEmail != null) {
-            User contributor = authRepository.findByEmail(publisherEmail)
+            User contributor = authService.findByEmail(publisherEmail)
                     .orElseThrow(() -> new RuntimeException("User not found: " + publisherEmail));
 
             String content = "Review by " + commenter.getFirstName() + " " + commenter.getLastName()
@@ -117,7 +118,7 @@ public class NotificationService {
     }
 
     public void notifyUserOfLikedReview(ReviewComment review, User liker) {
-        User author = authRepository.findById(review.getUserId())
+        User author = authService.findById(review.getUserId())
                 .orElseThrow(() -> new RuntimeException("Review author not found"));
 
         Asset asset = assetRepository.findById(review.getAssetId())
@@ -131,7 +132,7 @@ public class NotificationService {
     }
 
     public void notifyUserOfReply(ReviewComment parentReview, User replier) {
-        User originalCommenter = authRepository.findById(parentReview.getUserId())
+        User originalCommenter = authService.findById(parentReview.getUserId())
                 .orElseThrow(() -> new RuntimeException("Original commenter not found"));
 
         Asset asset = assetRepository.findById(parentReview.getAssetId())
@@ -152,7 +153,7 @@ public class NotificationService {
             message = "🔁 \"" + asset.getName() + "\" just got a new version! Discover the latest update now.";
         }
 
-        List<User> allUsers = authRepository.findAll();
+        List<User> allUsers = authService.findAll();
         for (User user : allUsers) {
             notifyUser(user, actor, message, type, asset.getId(), asset.getId(), asset);
         }
@@ -164,7 +165,7 @@ public class NotificationService {
 
         String publisherEmail = asset.getPublisherMail();
         if (publisherEmail != null) {
-            User contributor = authRepository.findByEmail(publisherEmail)
+            User contributor = authService.findByEmail(publisherEmail)
                     .orElseThrow(() -> new RuntimeException("User not found by email: " + publisherEmail));
             notifyUser(contributor, actor, content, type, assetId, assetId, asset);
         }

@@ -188,7 +188,6 @@ public class AssetService {
         newRelease.setProjectType(original.getProjectType());
         newRelease.setCategories(original.getCategories());
         newRelease.setTags(original.getTags());
-        newRelease.setParentAsset(original); // 🔗 Link to original
 
         if (original instanceof Template templateOriginal && newRelease instanceof Template templateClone) {
             templateClone.setTemplateCategory(templateOriginal.getTemplateCategory());
@@ -244,12 +243,13 @@ public class AssetService {
     }
 
     public List<Asset> getAllAssets() {
-        List<Asset> assets = assetRepository.findAll();
+        List<String> releasedAssetIds = assetReleaseRepository.findAllReleasedAssetIds(); // this is a custom query
 
-        return assets.stream()
-            .filter(asset -> asset.getParentAsset() == null) 
+        return assetRepository.findAll().stream()
+            .filter(asset -> !releasedAssetIds.contains(asset.getId()))
             .collect(Collectors.toList());
     }
+
 
     public Optional<Asset> getAssetById(String id) {
         return assetRepository.findById(id);
@@ -317,8 +317,13 @@ public class AssetService {
 
     //get assets eli andhom the same categ
     public List<Asset> getAssetsByCategory(Long categoryId) {
-        return assetRepository.findAssetsByCategoryId(categoryId);
+        List<String> releasedAssetIds = assetReleaseRepository.findAllReleasedAssetIds();
+
+        return assetRepository.findAssetsByCategoryId(categoryId).stream()
+            .filter(asset -> !releasedAssetIds.contains(asset.getId()))
+            .collect(Collectors.toList());
     }
+
     
     public String uploadReleaseDocumentation(MultipartFile file) {
         if (file == null || file.isEmpty()) {
@@ -412,19 +417,21 @@ public class AssetService {
             .collect(Collectors.toList());
     }
     public List<Asset> getAssetsByType(String type) {
-    	List<Asset> rawResults = assetRepository.findByType(type.toUpperCase());
+        List<String> releasedAssetIds = assetReleaseRepository.findAllReleasedAssetIds();
+        List<Asset> rawResults = assetRepository.findByType(type.toUpperCase());
 
         return rawResults.stream()
             .filter(asset -> asset != null && asset.getId() != null)
+            .filter(asset -> !releasedAssetIds.contains(asset.getId()))
             .collect(Collectors.toList());
     }
-    
+
     public List<Asset> filterAssets(String type, String name, String publisher, Status status,
             Framework framework, Format format, ProjectType projectType) {
-			List<Asset> allAssets = assetRepository.findAll();
-			
-			return allAssets.stream()
-			.filter(asset -> asset.getParentAsset() == null)
+    	 	List<String> releasedAssetIds = assetReleaseRepository.findAllReleasedAssetIds();
+
+    	    return assetRepository.findAll().stream()
+    	    .filter(asset -> !releasedAssetIds.contains(asset.getId()))
 			.filter(asset -> type == null || asset.getClass().getSimpleName().equalsIgnoreCase(type))
 			.filter(asset -> name == null || asset.getName().equalsIgnoreCase(name))
 			.filter(asset -> publisher == null || asset.getPublisher().equalsIgnoreCase(publisher))

@@ -82,11 +82,6 @@ public abstract class Asset {
     @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.EAGER)
     private List<AssetReleases> releases;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_asset_id")
-    @JsonBackReference
-    private Asset parentAsset;
-
     @Enumerated(EnumType.STRING)
     private ProjectType projectType;
 
@@ -248,13 +243,6 @@ public abstract class Asset {
 		this.projectType = projectType;
 	}
 
-	public Asset getParentAsset() {
-		return parentAsset;
-	}
-
-	public void setParentAsset(Asset parentAsset) {
-		this.parentAsset = parentAsset;
-	}
 
 	public void setId(String id) {
 		this.id = id;

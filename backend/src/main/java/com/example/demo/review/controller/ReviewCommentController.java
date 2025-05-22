@@ -100,8 +100,6 @@ public class ReviewCommentController {
 
         notificationService.notifyContributorOfNewReview(savedReview, reviewer);
 
-
-
         return ResponseEntity.ok(savedReview);
     }
 

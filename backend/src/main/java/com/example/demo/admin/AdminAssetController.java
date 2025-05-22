@@ -47,10 +47,7 @@ public class AdminAssetController {
 
     @GetMapping("/type/{type}")
     public List<Asset> getAssetsByType(@PathVariable String type) {
-    	List<Asset> assets = assetService.getAssetsByType(type);
-        return assets.stream()
-                .filter(asset -> asset.getParentAsset() == null) // ✅ only original assets, not released versions
-                .collect(Collectors.toList());
+    	return assetService.getAssetsByType(type);
     }
 
     @GetMapping

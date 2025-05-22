@@ -115,5 +115,10 @@ public class AuthService {
         return authRepository.countActiveUsersLast30Days();
     }
 
+	public List<User> findAll() {
+		// TODO Auto-generated method stub
+		return authRepository.findAll();
+	}
+
 
 }
