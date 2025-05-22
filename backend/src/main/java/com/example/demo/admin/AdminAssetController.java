@@ -152,5 +152,16 @@ public class AdminAssetController {
     public ResponseEntity<Map<String, List<String>>> getTopAssetsBySentiment() {
         return ResponseEntity.ok(analyticsService.getTopAssetsBySentiment());
     }
+    
+    @GetMapping("/reviewactivity")
+    public ResponseEntity<Map<String, Long>> getReviewActivityTrend() {
+        return ResponseEntity.ok(analyticsService.getReviewActivityTrend());
+    }
+
+    @GetMapping("/ratingactivity")
+    public ResponseEntity<Map<String, Long>> getRatingVolumeTrend() {
+        return ResponseEntity.ok(analyticsService.getRatingVolumeTrend());
+    }
+
 
 }
