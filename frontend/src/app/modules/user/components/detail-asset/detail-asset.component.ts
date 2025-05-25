@@ -4,8 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
-import { CommentComponent } from '../comment/comment.component';
-import { CommentFormComponent } from '../comment-form/comment-form.component';
 import { ReviewPopupComponent } from '../review-popup/review-popup.component';
 import { ReviewComponentComponent } from '../../review-component/review-component.component';
 
@@ -25,7 +23,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-detail-asset',
   standalone: true,
-  imports: [CommonModule, CommentComponent, ReviewPopupComponent, ReviewComponentComponent, FormsModule],
+  imports: [CommonModule, ReviewPopupComponent, ReviewComponentComponent, FormsModule],
   templateUrl: './detail-asset.component.html',
   styleUrl: './detail-asset.component.css'
 })
@@ -76,7 +74,10 @@ export class DetailAssetComponent {
     private cdr: ChangeDetectorRef,
 
   ) {}
-
+  highlightReviewId: string | null = null;
+highlightReportId: string | null = null;
+focusReviewId: string | null = null;
+fromReport: boolean = false;
   //  Initialization
  ngOnInit(): void {
   const token = localStorage.getItem('token');
@@ -90,20 +91,47 @@ export class DetailAssetComponent {
     if (id) this.loadAssetById(id);
   });
   this.route.queryParams.subscribe(params => {
-  const reviewId = params['highlightReview'];
-  if (reviewId) {
-    setTimeout(() => {
-      const el = document.getElementById('review-' + reviewId);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el.classList.add('highlighted-review');
-      }
-    }, 800);
-  }
-});
+    this.focusReviewId = params['focusReviewId'];
+    this.fromReport = params['fromReport'] === 'true';
+
+    if (this.focusReviewId) {
+      setTimeout(() => {
+        const type = this.fromReport ? 'report' : 'review';
+        this.scrollToComment(this.focusReviewId!, type);
+      }, 500);
+    }
+  });
 
 }
 
+scrollToComment(commentId: string, type: 'review' | 'report') {
+  const el = document.getElementById(`review-${commentId}`);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // First clear any existing highlight
+    this.highlightReviewId = null;
+    this.highlightReportId = null;
+
+    // Wait for DOM to update, then set the new highlight
+    setTimeout(() => {
+      if (type === 'review') {
+        this.highlightReviewId = commentId;
+      } else {
+        this.highlightReportId = commentId;
+      }
+
+      // Remove highlight after 2.5s
+      setTimeout(() => {
+        if (type === 'review') {
+          this.highlightReviewId = null;
+        } else {
+          this.highlightReportId = null;
+        }
+      }, 2500);
+    }, 100); // Give Angular a moment to render the element
+  }
+}
 
 loadAssetById(id: string): void {
   this.assetService.getAssetById(id).subscribe({

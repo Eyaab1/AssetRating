@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, inject, Input, OnInit, SimpleChanges, ViewContainerRef,  ElementRef, Renderer2 } from '@angular/core';
 import { Comment } from '../../../../shared/models/comment';
 import { NgIf,NgFor,CommonModule } from '@angular/common';
 import { UserServiceService } from '../../../../shared/services/user-service.service';
@@ -30,51 +30,114 @@ export class CommentComponent implements OnInit {
   liked = false;
   likesCount = 0;
   profanityWarning: string = '';
+@Input() highlightReviewId: string | null = null;
+@Input() highlightReportId: string | null = null;
+highlightActive = false;
+sentiment: string | null = null;
+spamLabel: string | null = null;
+userRole: string | null = null;
+replyAnalyses: Record<number, { sentiment: string; spamLabel: string }> = {};
 
   private vcr = inject(ViewContainerRef);
 
   constructor(
     private userService: UserServiceService,
     private commentService: CommentService,
-    private ratingService: RatingService
+    private ratingService: RatingService,
+    private el: ElementRef,
+    private renderer: Renderer2
   ) {}
 
-  ngOnInit(): void {
-    // Fetch main comment author
-    this.userService.getUserById(Number(this.comment.userId)).subscribe({
-      next: (user) => {
-        if (user) this.userC = user;
-      },
-      error: (error) => console.error('Error fetching user:', error)
-    });
-  console.log(this.comment);
-    // Fetch each reply user
-    this.comment.replies?.forEach(reply => {
-      const userId = Number(reply.userId); // safely convert once
-      if (!this.replyUsers[userId]) {
-        this.userService.getUserById(userId).subscribe({
-          next: (user) => {
-            if (user) {
-              this.replyUsers[userId] = user;
-            }
-          },
-          error: (error) => console.error(`Error fetching user ${userId}`, error)
-        });
+ngOnChanges(changes: SimpleChanges): void {
+  const commentId = this.comment?.id?.toString();
+  const isReviewMatch = this.highlightReviewId === commentId;
+  const isReportMatch = this.highlightReportId === commentId;
+
+  const shouldHighlight =
+    (changes['highlightReviewId'] && isReviewMatch) ||
+    (changes['highlightReportId'] && isReportMatch);
+
+  if (shouldHighlight && commentId) {
+    setTimeout(() => {
+      const container = this.el.nativeElement.querySelector('.comment-container');
+      if (container) {
+        const className = isReviewMatch ? 'highlight-review' : 'highlight-report';
+
+        // ⚠️ Remove first in case it's already present (for retriggers)
+        this.renderer.removeClass(container, className);
+        void container.offsetWidth; // force reflow
+
+        this.renderer.addClass(container, className);
+
+        // ✅ Remove highlight after 2.5s
+        setTimeout(() => {
+          this.renderer.removeClass(container, className);
+        }, 2500);
       }
-    });
-    
-    
-  
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded: any = jwtDecode(token);
-      this.currentUserId = decoded.userId ? Number(decoded.userId) : null;
-    }
-  
-    this.likesCount = this.comment.likes?.length ?? 0;
-    this.liked = this.comment.likes?.includes(this.currentUserId!) ?? false;
+    }, 100); // wait to ensure DOM is rendered
   }
-  
+}
+ngOnInit(): void {
+  // 1. Decode token
+  const token = localStorage.getItem('token');
+  if (token) {
+    const decoded: any = jwtDecode(token);
+    this.currentUserId = decoded.userId ? Number(decoded.userId) : null;
+    this.userRole = decoded.role || null;
+  }
+
+  // 2. Fetch comment author
+  this.userService.getUserById(Number(this.comment.userId)).subscribe({
+    next: (user) => { if (user) this.userC = user; },
+    error: (error) => console.error('Error fetching user:', error)
+  });
+
+  // 3. Fetch replies' users
+this.comment.replies?.forEach(reply => {
+  const userId = Number(reply.userId);
+
+  // Fetch reply's author
+  if (!this.replyUsers[userId]) {
+    this.userService.getUserById(userId).subscribe({
+      next: (user) => {
+        if (user) {
+          this.replyUsers[userId] = user;
+        }
+      },
+      error: (error) => console.error(`Error fetching user ${userId}`, error)
+    });
+  }
+
+  // Fetch reply's sentiment/spam analysis
+  this.commentService.getReview(reply.id).subscribe({
+    next: (res) => {
+      this.replyAnalyses[reply.id] = {
+        sentiment: res.analysis.sentiment,
+        spamLabel: res.analysis.spamLabel
+      };
+    },
+    error: (err) => console.error(`Error analyzing reply ${reply.id}`, err)
+  });
+});
+
+  // 4. Set like data
+  this.likesCount = this.comment.likes?.length ?? 0;
+  this.liked = this.comment.likes?.includes(this.currentUserId!) ?? false;
+
+  // 5. Fetch sentiment analysis
+  this.commentService.getReview(this.comment.id).subscribe({
+    next: (res) => {
+      console.log('[Analysis]', res.analysis);
+      this.sentiment = res.analysis.sentiment;
+      this.spamLabel = res.analysis.spamLabel;  // ✅ add this
+
+    },
+    error: (err) => {
+      console.error('Error loading sentiment/spam analysis', err);
+    }
+  });
+}
+
 
   toggleLikeComment(): void {
     if (!this.currentUserId) return;

@@ -53,21 +53,9 @@ constructor(private router: Router) {}
     const token = localStorage.getItem('token');
     if (token) {
       const decoded: any = JSON.parse(atob(token.split('.')[1]));
-      const first = decoded.firstName || '';
-      const last = decoded.lastName || '';
-      this.firstNameInitial = first.charAt(0).toUpperCase();
-      this.fullName = `${first} ${last}`;
     }
   }
 
-  toggleProfileDropdown(): void {
-    this.showProfileMenu = !this.showProfileMenu;
-  }
-
-  logout(): void {
-    localStorage.removeItem('token');
-    location.href = '/login'; 
-  }
   toggleAssetView(): void {
     this.isAssetView = !this.isAssetView;
   }

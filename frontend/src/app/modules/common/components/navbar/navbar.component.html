@@ -90,15 +90,19 @@
 
   
 </div>
-
-
-  <!-- Logout icon -->
-  <button class="icon-btn logout-btn" (click)="logout()" title="Logout">
-    <i class="fas fa-sign-out-alt"></i>
-  </button>
-
-  <!-- Profile circle -->
-  <div class="profile-icon">F</div>
+<div class="navbar-profile" (click)="toggleProfileDropdown()">
+  <div class="profile-badge">{{ firstNameInitial }}</div>
+  <div class="profile-dropdown" *ngIf="showProfileMenu">
+    <div class="user-name">{{ fullName }}</div>
+    <hr />
+    <a routerLink="/admin/profile" class="dropdown-link">
+      <i class="fas fa-user me-2"></i> Profile
+    </a>
+    <button (click)="logout()" class="dropdown-link">
+      <i class="fas fa-sign-out-alt me-2"></i> Logout
+    </button>
+  </div>
+</div>
 </div>
 
 </nav>

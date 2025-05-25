@@ -18,6 +18,9 @@ export class NavbarComponent implements OnInit {
   notifications: Notification[] = [];
   showDropdown = false;
   private role: string | null = null;
+  showProfileMenu = false;
+  firstNameInitial = '';
+  fullName = '';
   groupedNotifications: Record<GroupKey, Notification[]> = {
     today: [],
     yesterday: [],
@@ -42,13 +45,19 @@ export class NavbarComponent implements OnInit {
     this.logout(); // 👈 call your existing logout function
     return;
   }
-
-  this.role = decoded?.role;
-  const userId = decoded?.id;
+  const first = decoded.firstName || '';
+      const last = decoded.lastName || '';
+      this.firstNameInitial = first.charAt(0).toUpperCase();
+      this.fullName = `${first} ${last}`;
+      this.role = decoded?.role;
+      const userId = decoded?.id;
 
   this.fetchNotifications();
 }
 
+toggleProfileDropdown(): void {
+  this.showProfileMenu = !this.showProfileMenu;
+}
 
   fetchNotifications() {
     const token = localStorage?.getItem('token');
@@ -184,7 +193,6 @@ navigateBasedOnNotification(notification: Notification): void {
   const reviewId = notification.relatedEntityId;
   const baseRoute = this.role === 'CONTRIBUTOR' ? '/contributorLayout/detail' : '/detail';
 
-  // ✅ Mark as read immediately
   this.markAsRead(notification);
 
   switch (notification.type) {

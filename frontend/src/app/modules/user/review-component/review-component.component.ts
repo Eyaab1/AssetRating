@@ -28,6 +28,8 @@ export class ReviewComponentComponent implements OnChanges {
   averageRating: number = 0;
   loading = false;
   errorMessage: string = '';
+@Input() highlightReviewId: string | null = null;
+@Input() highlightReportId: string | null = null;
 
   constructor(
     private commentService: CommentService,

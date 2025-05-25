@@ -117,7 +117,11 @@
             <app-review-component
               *ngIf="release.releasedAsset?.id"
               [assetId]="release.releasedAsset.id"
+              [highlightReviewId]="highlightReviewId"
+              [highlightReportId]="highlightReportId"
             ></app-review-component>
+
+
           </div>
         </div>
       </div>
@@ -143,7 +147,13 @@
       <button class="add-btn" (click)="reviewModal.open(assetSelected?.id || '')">Add Review</button>
     </div>
 
-    <app-review-component     *ngIf="activeTab !== 'releases'" [assetId]="assetSelected?.id || ''"></app-review-component>
+<app-review-component
+  *ngIf="activeTab !== 'releases'"
+  [assetId]="assetSelected?.id || ''"
+  [highlightReviewId]="highlightReviewId"
+  [highlightReportId]="highlightReportId"
+></app-review-component>
+
   </div>
 
   <!--  RIGHT COLUMN  -->

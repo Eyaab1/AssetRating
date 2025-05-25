@@ -7,7 +7,11 @@
       [id]="'review-' + comment.id"
     >
       <div class="comment-card-header">
-        <app-comment [comment]="comment"></app-comment>
+        <app-comment
+          [comment]="comment"
+          [highlightReviewId]="highlightReviewId"
+          [highlightReportId]="highlightReportId"
+        ></app-comment>
       </div>
     </div>
 

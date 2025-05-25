@@ -133,7 +133,6 @@ navigateBasedOnNotification(notification: Notification): void {
   const reviewId = notification.relatedEntityId;
   const baseRoute = this.role === 'CONTRIBUTOR' ? '/contributorLayout/detail' : '/detail';
 
-  // ✅ Mark as read
   this.markAsRead(notification);
 
   switch (notification.type) {
@@ -141,7 +140,6 @@ navigateBasedOnNotification(notification: Notification): void {
     case NotificationType.ASSET_UPDATED:
       this.router.navigate([`${baseRoute}/${assetId}`]);
       break;
-
     case NotificationType.REVIEW_ADDED:
     case NotificationType.REVIEW_REPORTED:
     case NotificationType.REVIEW_LIKED:

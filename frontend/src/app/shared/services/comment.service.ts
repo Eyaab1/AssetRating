@@ -61,6 +61,12 @@ export class CommentService {
   getReviewById(commentId: number): Observable<Comment> {
     return this.http.get<Comment>(`${this.baseUrl}/${commentId}`,{headers: this.getAuthHeaders()});
   }
+getReview(commentId: number): Observable<{ review: Comment, analysis: { sentiment: string, spamLabel: string } }> {
+  return this.http.get<{ review: Comment, analysis: { sentiment: string, spamLabel: string } }>(
+    `${this.baseUrl}/${commentId}`, 
+    { headers: this.getAuthHeaders() }
+  );
+}
 
   // ➡️ Get reviews by user
   getReviewsByUser(userId: number): Observable<Comment[]> {
