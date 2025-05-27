@@ -183,6 +183,9 @@ goToFullNotifications() {
     this.router.navigate(['/contributorLayout/notificationAll']);
   }
 }
+goToUserProfile(){
+  this.router.navigate(['/profile']);
+}
 markAllAsRead() {
   const unread = this.notifications.filter(n => !n.read);
   unread.forEach(n => this.markAsRead(n));
@@ -191,8 +194,9 @@ markAllAsRead() {
 navigateBasedOnNotification(notification: Notification): void {
   const assetId = notification.relatedAssetId;
   const reviewId = notification.relatedEntityId;
-  const baseRoute = this.role === 'CONTRIBUTOR' ? '/contributorLayout/detail' : '/detail';
-
+  const baseRoute = this.role === 'CONTRIBUTOR'
+    ? '/contributorLayout/detail'
+    : '/detail';
   this.markAsRead(notification);
 
   switch (notification.type) {

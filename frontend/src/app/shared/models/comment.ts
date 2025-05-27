@@ -7,6 +7,7 @@ export class Comment {
         public likes: number[],
         public replies: Comment[],
         public parentReviewId: number ,
+        public assetId:string,
         public userRating?: {
          average: number,
         }

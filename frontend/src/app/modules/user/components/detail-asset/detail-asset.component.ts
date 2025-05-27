@@ -280,8 +280,6 @@ loadReleases(assetId: string): void {
       }
     });
   }
-  
-  
 
   onReviewSubmitted(): void {
     if (this.assetSelected?.id) {
@@ -335,11 +333,6 @@ toggleRelease(releasedAssetId: string): void {
   }
 }
 
-
-
-
-  
-
   selectRelease(release: AssetRelease): void {
     this.selectedRelease = release;
   }
@@ -387,9 +380,6 @@ toggleRelease(releasedAssetId: string): void {
     return releasedAsset?.id ?? '';
   }
 
-
-
-  
   getIcon(img: string): string {
     return img ? `assets/images/${img}` : 'assets/images/default4.jpg';
   }

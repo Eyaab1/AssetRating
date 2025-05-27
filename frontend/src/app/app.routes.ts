@@ -28,6 +28,7 @@ import { AddAssetAdminComponent } from './modules/admin/components/add-asset-adm
 import { EditAssetAdminComponent } from './modules/admin/components/edit-asset-admin/edit-asset-admin.component';
 import { UserOverviewComponent } from './modules/admin/components/user-overview/user-overview.component';
 import { AdminChatbotComponent } from './modules/admin/components/admin-chatbot/admin-chatbot.component';
+import { UserProfileComponent } from './modules/common/components/user-profile/user-profile.component';
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
   
@@ -37,6 +38,7 @@ export const routes: Routes = [
     { path: 'marketplace', component: UserHomeComponent, canActivate: [onlyGuardGuard] },
     { path: 'detail/:id', component: DetailAssetComponent, canActivate: [onlyGuardGuard] },
     {path: 'notificationAll',component:NotificationSeeAllComponent,canActivate:[onlyGuardGuard]},
+    {path:'profile', component:UserProfileComponent, canActivate:[onlyGuardGuard]},
     {
       path: 'contributorLayout',
       component: ContributerLayoutComponent,

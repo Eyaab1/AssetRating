@@ -95,7 +95,7 @@
   <div class="profile-dropdown" *ngIf="showProfileMenu">
     <div class="user-name">{{ fullName }}</div>
     <hr />
-    <a routerLink="/admin/profile" class="dropdown-link">
+    <a (click)="goToUserProfile()" class="dropdown-link">
       <i class="fas fa-user me-2"></i> Profile
     </a>
     <button (click)="logout()" class="dropdown-link">

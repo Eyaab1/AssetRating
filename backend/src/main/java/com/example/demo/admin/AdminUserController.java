@@ -49,6 +49,7 @@ public class AdminUserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         return ResponseEntity.ok(authService.deleteUser(id));
+        
     }
 
     @PutMapping("/{id}/activation")

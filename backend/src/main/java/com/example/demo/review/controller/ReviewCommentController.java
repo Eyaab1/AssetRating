@@ -185,10 +185,11 @@ public class ReviewCommentController {
         return ResponseEntity.ok("Review submitted for release.");
     }
 
-
     @GetMapping("/release/{releasedAssetId}")
     public ResponseEntity<List<ReviewComment>> getReviewsForRelease(@PathVariable String releasedAssetId) {
         List<ReviewComment> reviews = reviewService.getReviewsByAssetId(releasedAssetId);
         return ResponseEntity.ok(reviews);
     }
+    
+
 }

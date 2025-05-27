@@ -91,11 +91,16 @@ getReview(commentId: number): Observable<{ review: Comment, analysis: { sentimen
     );
   }
   addReviewForRelease(comment: Comment): Observable<any> {
-    return this.http.post(`${this.baseUrl}/reviews/release`, comment);
-  }
-  
-  getReviewsForRelease(releasedAssetId: string): Observable<Comment[]> {
-    return this.http.get<Comment[]>(`${this.baseUrl}/reviews/release/${releasedAssetId}`);
-  }
+  return this.http.post(`${this.baseUrl}/reviews/release`, comment, {
+    headers: this.getAuthHeaders()
+  });
+}
+
+getReviewsForRelease(releasedAssetId: string): Observable<Comment[]> {
+  return this.http.get<Comment[]>(`${this.baseUrl}/reviews/release/${releasedAssetId}`, {
+    headers: this.getAuthHeaders()
+  });
+}
+
   
 }

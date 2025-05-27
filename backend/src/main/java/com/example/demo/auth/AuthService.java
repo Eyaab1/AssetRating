@@ -71,6 +71,10 @@ public class AuthService {
         return authRepository.findByEmail(email);
     }
 
+    public Optional<UserDTO> getUserByEmail(String email) {
+        return authRepository.findByEmail(email).map(UserDTO::new);
+    }
+
     public List<UserDTO> getAllUsers() {
         return authRepository.findAll().stream().map(UserDTO::new).toList();
     }
@@ -118,6 +122,24 @@ public class AuthService {
 	public List<User> findAll() {
 		// TODO Auto-generated method stub
 		return authRepository.findAll();
+	}
+	public String updatePassword(Long userId, String oldPassword, String newPassword) {
+	    Optional<User> userOpt = authRepository.findById(userId);
+
+	    if (userOpt.isEmpty()) {
+	        return "User not found.";
+	    }
+
+	    User user = userOpt.get();
+
+	    if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+	        return "Old password is incorrect.";
+	    }
+
+	    user.setPassword(passwordEncoder.encode(newPassword));
+	    authRepository.save(user);
+
+	    return "Password updated successfully.";
 	}
 
 

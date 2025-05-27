@@ -54,7 +54,6 @@ export class AssetServiceService {
       headers: this.getAuthHeaders().set('Content-Type', 'application/json')
     });
   }
-  
 
   uploadDocumentationFile(fileData: FormData): Observable<string> {
     return this.http.post<string>('http://localhost:8081/api/assets/docs/upload', fileData, {
