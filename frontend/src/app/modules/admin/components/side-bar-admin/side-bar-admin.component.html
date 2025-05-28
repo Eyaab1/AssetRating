@@ -6,6 +6,8 @@
       <ul class="nav-links" *ngIf="!isAssetView">
         <li><a routerLink="/admin/dashboard" routerLinkActive="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a routerLink="/admin/users" routerLinkActive="active"><i class="fas fa-user"></i> Users</a></li>
+        <li><a routerLink="/admin/marketplace" routerLinkActive="active"><i class="fas fa-store"></i> MarketPlace</a></li>
+
         <li><a routerLink="/admin/reports" routerLinkActive="active"><i class="fas fa-chart-line"></i> Reports</a></li>
         <li><a (click)="toggleAssetView()" style="cursor:pointer;"><i class="fas fa-box-open"></i> Assets</a></li>
         <li><a routerLink="/admin/chat-bot" routerLinkActive="active"><i class="fas fa-robot"></i> ChatBot</a></li>

@@ -136,11 +136,13 @@ toggleProfileDropdown(): void {
   goHome() {
   if (this.role === 'USER') {
     this.router.navigate(['/marketplace']);
-  } else {
+  } else if(this.role ==='CONTRIBUTOR') {
     this.router.navigate(['/contributorLayout/marketplace']);
   
-}
+  }else if(this.role ==='ADMIN') {
+    this.router.navigate(['/admin/marketplace']);
   }
+}
 
   logout() {
     localStorage.removeItem('token');
@@ -183,9 +185,16 @@ goToFullNotifications() {
     this.router.navigate(['/contributorLayout/notificationAll']);
   }
 }
-goToUserProfile(){
-  this.router.navigate(['/profile']);
+goToUserProfile() {
+  if (this.role === 'USER') {
+    this.router.navigate(['/profile']);
+  } else if (this.role === 'CONTRIBUTOR') {
+    this.router.navigate(['/contributorLayout/profile']);
+  } else if (this.role === 'ADMIN') {
+    this.router.navigate(['/admin/profile']);
+  }
 }
+
 markAllAsRead() {
   const unread = this.notifications.filter(n => !n.read);
   unread.forEach(n => this.markAsRead(n));

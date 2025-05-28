@@ -1,6 +1,6 @@
 .admin-container {
   display: flex;
-  height: 100vh;
+  height: 100%;
   font-family: 'Segoe UI', sans-serif;
 }
 
@@ -8,6 +8,8 @@ app-side-bar-admin {
   width: 250px;
   flex-shrink: 0;
   z-index: 2;
+  position: fixed;
+  height: 100%;
 }
 
 .main-content {
@@ -15,13 +17,12 @@ app-side-bar-admin {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
-  
+  margin-left: 250px; /* Adjust based on sidebar width */
 }
 
 .content-area {
   flex: 1;
-  padding: 20px;
+  padding: 10px;
   overflow-y: auto;
   background-color: #f4f6f8;
   z-index: 1;

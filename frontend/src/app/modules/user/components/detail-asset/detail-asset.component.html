@@ -1,4 +1,8 @@
-<div class="detail-container">
+
+<button class="btn-back" (click)="goBack()">
+        <i class="fas fa-arrow-left me-2"></i> Back
+    </button>
+  <div class="detail-container">
 
   <!--  LEFT COLUMN  -->
   <div class="left-column">
@@ -54,15 +58,19 @@
     >
       <!-- RELEASE HEADER -->
       <div class="release-header" (click)="toggleRelease(getReleasedAssetId(release.releasedAsset))">
-        <div class="release-meta">
-          <span class="arrow" [class.expanded]="getReleasedAssetId(selectedRelease?.releasedAsset) === getReleasedAssetId(release.releasedAsset)">▶</span>
-          <span class="release-version">Version {{ release.releaseVersion }}</span>
-          <span *ngIf="releaseRatings[release.id] > 0" class="release-rating">
-            <i class="fas fa-star star"></i> {{ releaseRatings[release.id] }}/5
-          </span>
+       <div class="release-meta">
+          <div class="meta-left">
+            <span class="arrow" [class.expanded]="getReleasedAssetId(selectedRelease?.releasedAsset) === getReleasedAssetId(release.releasedAsset)">▶</span>
+            <span class="release-version">Version {{ release.releaseVersion }}</span>
+          </div>
+          <div class="meta-right">
+            <span *ngIf="releaseRatings[release.id] > 0" class="release-rating">
+              <i class="fas fa-star star"></i> {{ releaseRatings[release.id] }}/5
+            </span>
 
+            <span class="release-date">{{ release.publishedDate | date: 'mediumDate' }}</span>
+          </div>
         </div>
-        <span class="release-date">{{ release.publishedDate | date: 'mediumDate' }}</span>
       </div>
 
       <!-- RELEASE CONTENT -->

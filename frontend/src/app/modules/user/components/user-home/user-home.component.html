@@ -1,3 +1,4 @@
+
 <div class="marketplace-page">
   <!-- Sidebar -->
   <aside class="marketplace-sidebar stickySidebar"  
@@ -5,6 +6,18 @@
     'stickySidebar': role !== 'CONTRIBUTOR',
     'stickySidebarContributer': role === 'CONTRIBUTOR'
   }">
+  <div class="filter-section">
+  <h4>Types</h4>
+  <label *ngFor="let type of assetTypes">
+    <input
+      type="checkbox"
+      [value]="type"
+      (change)="onFilterChange('type', $event)"
+    />
+    {{ capitalizeFirst(type) }}
+  </label>
+</div>
+
     <div class="filter-section">
       <h4>Categories ({{ allCategories.length }})</h4>
       <label *ngFor="let category of allCategories">
@@ -43,6 +56,7 @@
       />
     </div>
 
+
     <!-- Recommendations -->
     <section *ngIf="loadingRecommendations" class="loading-box">Loading recommendations...</section>
 
@@ -71,10 +85,10 @@
     </section>
 
     <!-- Trending -->
-    <section *ngIf="trendingAssets.length > 0" class="group-section">
-      <h3><i class="fas fa-fire"></i>&nbsp;Trending Assets</h3>
+    <section *ngIf="topRated.length > 0" class="group-section">
+      <h3><i class="fas fa-fire"></i>&nbsp;Top Rated Assets</h3>
       <div class="asset-grid">
-        <ng-container *ngFor="let asset of trendingAssets">
+        <ng-container *ngFor="let asset of topRated">
           <div class="asset-card" (click)="openQuickView(asset)">
            <img [src]="getIcon(asset.image)" (error)="onImageError($event)" />
             <div class="card-body">
@@ -123,6 +137,9 @@
     </section>
   </main>
 </div>
+
+
+
 <div class="quick-view-overlay" *ngIf="quickViewAsset" (click)="quickViewAsset = null">
   <div class="quick-view-panel" (click)="$event.stopPropagation()">
     <button class="close-btn" (click)="quickViewAsset = null">
@@ -136,10 +153,9 @@
         <span class="type">{{ quickViewAsset.type }}</span>
 
 
-
-    <div *ngIf="quickViewAsset?.categories?.length" class="category-label">
-      Category: {{ quickViewAsset.categories[0].name }}
-    </div>
+   <div *ngIf="quickViewAsset?.categories?.length && quickViewAsset.categories[0]?.name" class="category-label">
+  Category: {{ quickViewAsset.categories[0].name }}
+</div>
   </div>
   
 </div>

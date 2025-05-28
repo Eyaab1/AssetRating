@@ -4,6 +4,7 @@ import { NgIf, NgFor, CommonModule } from '@angular/common';
 import { CommentService } from '../../../../shared/services/comment.service';
 import { RatingService } from '../../../../shared/services/rating.service';
 import { jwtDecode } from 'jwt-decode';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-review-popup',
@@ -138,10 +139,18 @@ export class ReviewPopupComponent {
     };
 
     const handleSuccess = () => {
-      this.reviewSubmitted.emit();
-      this.isEditing = false;
-      this.close();
-    };
+  Swal.fire({
+    title: this.hasPreviousRating ? 'Review Updated' : 'Review Submitted',
+    icon: 'success',
+    timer: 2000,
+    showConfirmButton: false
+  });
+
+  this.reviewSubmitted.emit();
+  this.isEditing = false;
+  this.close();
+};
+
     
 
     const request$ = this.hasPreviousRating
@@ -183,5 +192,7 @@ export class ReviewPopupComponent {
     this.hasPreviousRating = false;
     this.isEditing = false;
 
+
   }
+  
 }

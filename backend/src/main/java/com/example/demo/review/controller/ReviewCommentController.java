@@ -111,6 +111,17 @@ public class ReviewCommentController {
 
         return ResponseEntity.ok().build();
     }
+    
+    @DeleteMapping("/{reviewId}/unlike")
+    public ResponseEntity<Void> unlikeReview(@PathVariable Long reviewId, Principal principal) {
+        User liker = authService.findByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        reviewService.removeLike(reviewId, liker.getId());
+
+        return ResponseEntity.ok().build();
+    }
+
 
     @PostMapping("/{reviewId}/reply")
     public ResponseEntity<?> addReply(@PathVariable Long reviewId, @RequestBody ReplyRequest replyRequest, Principal principal) {

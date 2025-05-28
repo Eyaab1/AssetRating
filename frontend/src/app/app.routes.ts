@@ -53,7 +53,9 @@ export const routes: Routes = [
         {path: 'full-assets',component:FullAssetListComponent},
         {path: 'notificationAll',component:NotificationSeeAllComponent},
         { path: 'reports', component: ReportComponent },
-        {path:'assetAnalytics/:id',component:AssetAnalyticsComponent}
+        {path:'assetAnalytics/:id',component:AssetAnalyticsComponent},
+        {path:'profile', component:UserProfileComponent},
+
         
 
       ]
@@ -65,6 +67,7 @@ export const routes: Routes = [
       children: [
         {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
         {path: 'dashboard', component: DashboardAComponent },
+        { path: 'marketplace', component: UserHomeComponent},
         {path : 'reports', component: ReportAComponent},
         { path: 'users', component: UserListComponent },
         { path: 'users/add', component: AddUserComponent },
@@ -75,7 +78,12 @@ export const routes: Routes = [
         {path:'assets/add', component: AddAssetAdminComponent},
         {path :'assets/edit/:id', component:EditAssetAdminComponent},
         {path: 'users/overview', component: UserOverviewComponent},
-        {path :'chat-bot', component: AdminChatbotComponent}
+        {path :'chat-bot', component: AdminChatbotComponent},
+        {path:'profile', component:UserProfileComponent},
+        {path: 'notificationAll',component:NotificationSeeAllComponent},
+        { path: 'detail/:id', component: DetailAssetComponent},
+
+
 
       ] 
     },

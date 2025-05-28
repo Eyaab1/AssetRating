@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { jwtDecode } from 'jwt-decode';
 import { CommentService } from '../../../shared/services/comment.service';
@@ -17,6 +17,8 @@ import { catchError, map } from 'rxjs/operators';
 })
 export class ReviewComponentComponent implements OnChanges {
   @Input() assetId!: string;
+  @Output() commentAdded = new EventEmitter<void>();
+
 
   allComments: any[] = [];        
   visibleComments: any[] = [];    
@@ -142,6 +144,7 @@ export class ReviewComponentComponent implements OnChanges {
       next: () => {
         this.commentText = '';
         this.errorMessage = '';
+        this.commentAdded.emit(); 
         this.loadComments();
       },
       error: (err) => {

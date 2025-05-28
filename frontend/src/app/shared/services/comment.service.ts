@@ -37,12 +37,13 @@ export class CommentService {
       headers: this.getAuthHeaders()
     });
   }
-  unlikeReview(commentId: number, userId: number): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/${commentId}/unlike`, null, {
-      params: { userId: userId.toString() },
-      headers: this.getAuthHeaders()
-    });
-  } 
+unlikeReview(commentId: number, userId: number): Observable<void> {
+  return this.http.delete<void>(`${this.baseUrl}/${commentId}/unlike`, {
+    params: { userId: userId.toString() },
+    headers: this.getAuthHeaders()
+  });
+}
+
   replyToReview(commentId: number, payload: { userId: number; comment: string }): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/${commentId}/reply`, payload,{headers: this.getAuthHeaders()});
   }
