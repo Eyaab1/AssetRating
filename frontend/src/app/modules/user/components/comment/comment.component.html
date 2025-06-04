@@ -20,6 +20,7 @@
           
         </div>
         <div class="right-meta">
+          <span  *ngIf="comment.userRating" class="user-rating">⭐ {{ comment.userRating.average }}/5</span>
           <div *ngIf="userRole === 'CONTRIBUTOR'" class="analysis-badge-row">
             <ng-container *ngIf="spamLabel === 'spam'; else showSentiment">
               <span class="badge badge-spam">⚠️ Spam</span>
@@ -29,7 +30,7 @@
               <span *ngIf="sentiment === 'NEGATIVE'" class="badge badge-negative">🔴 Negative</span>
             </ng-template>
           </div>
-          <span  *ngIf="comment.userRating" class="user-rating">⭐ {{ comment.userRating.average }}/5</span>
+          
         </div>
       </div>
 

@@ -1,86 +1,105 @@
+<div class="analytics-header">
+  <div class="asset-info">
+    <h2>{{ selectedAsset?.name }} <span class="type-tag">{{ selectedAsset?.type }}</span></h2>
+    <p>ID: {{ selectedAsset?.id }}</p>
+  </div>
+</div>
+
 <div class="contributor-dashboard">
-  <div class="topContainer">
-    
-    <!-- LEFT COLUMN -->
-    <div class="main-column">
-      <div class="metric-cards">
-        <div class="metric-card">
-          <div class="metric-icon metric-blue">
-            <i class="fas fa-comments"></i>
-          </div>
-          <div class="text-block">
-            <div class="label">Total Reviews</div>
-            <div class="value">{{ assetAnalytics?.reviewCount }}</div>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-icon metric-green">
-            <i class="fas fa-star"></i>
-          </div>
-          <div class="text-block">
-            <div class="label">Avg Rating</div>
-            <div class="value">{{ assetAnalytics?.averageRating }}/5</div>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-icon metric-orange">
-            <i class="fas fa-download"></i>
-          </div>
-          <div class="text-block">
-            <div class="label">Downloads</div>
-            <div class="value">{{ assetAnalytics?.downloadCount }}</div>
-          </div>
-        </div>
+  <div class="leftOnes">
+  <div class="metric-cards">
+    <div class="metric-card">
+      <div class="metric-icon metric-blue">
+        <i class="fas fa-comments"></i>
       </div>
-
-      <!-- CHARTS -->
-      <div class="dashboard-grid three">
-        <div class="chart-card">
-          <h4><i class="fas fa-smile"></i> Sentiment Breakdown</h4>
-          <app-sentiment-chart-component *ngIf="assetAnalytics?.sentimentBreakdown"
-            [sentiments]="assetAnalytics.sentimentBreakdown"></app-sentiment-chart-component>
-        </div>
-        <div class="chart-card">
-          <h4><i class="fas fa-shield-alt"></i> Spam Breakdown</h4>
-          <app-spam-chart-component *ngIf="assetAnalytics?.spamBreakdown"
-            [spam]="assetAnalytics.spamBreakdown"></app-spam-chart-component>
-        </div>
-        <div class="chart-card narrow">
-          <h4><i class="fas fa-key"></i> Top Keywords</h4>
-          <app-top-keywords *ngIf="topKeywords" [keywordsMap]="topKeywords"  [limit]="5"></app-top-keywords>
-        </div>
-      </div>
-
-      <div class="dashboard-grid custom-two">
-        <div class="chart-card wide">
-          <h4><i class="fas fa-chart-line"></i> Rating & Comments Over Time</h4>
-          <app-rating-distribution-for-asset *ngIf="assetAnalytics?.ratingCommentTrend"
-            [ratingCommentTrend]="assetAnalytics.ratingCommentTrend"></app-rating-distribution-for-asset>
-        </div>
-
-        <div class="chart-card">
-          <h4><i class="fas fa-star-half-alt"></i> Rating Distribution</h4>
-          <app-rating-level [ratingDistributionLabels]="ratingDistributionLabels"
-            [ratingDistributionData]="ratingDistributionData"></app-rating-level>
-        </div>
+      <div class="text-block">
+        <div class="label">Total Reviews</div>
+        <div class="value">{{ assetAnalytics?.reviewCount }}</div>
       </div>
     </div>
 
-    <!-- RIGHT COLUMN: RECENT REVIEWS -->
-    <div class="review-card">
-      <h4><i class="fas fa-clock"></i> Recent Reviews</h4>
-      <div class="review" *ngFor="let review of assetAnalytics?.recentReviews">
-        <div class="avatar">{{ review.user.charAt(0).toUpperCase() }}</div>
-        <div class="review-info">
-          <div class="review-meta">
-            <span class="username">{{ review.user }}</span>
-            <span class="date">{{ review.createdAt | date: 'shortDate' }}</span>
-          </div>
-          <div class="comment">“{{ review.comment }}”</div>
-        </div>
+    <div class="metric-card">
+      <div class="metric-icon metric-green">
+        <i class="fas fa-star"></i>
+      </div>
+      <div class="text-block">
+        <div class="label">Avg Rating</div>
+        <div class="value">{{ assetAnalytics?.averageRating }}/5</div>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-icon metric-orange">
+        <i class="fas fa-download"></i>
+      </div>
+      <div class="text-block">
+        <div class="label">Downloads</div>
+        <div class="value">{{ assetAnalytics?.downloadCount }}</div>
       </div>
     </div>
   </div>
+
+  <div class="dashboard-grid three">
+    <div class="chart-card">
+      <h4><i class="fas fa-smile"></i> Sentiment Breakdown</h4>
+      <app-sentiment-chart-component *ngIf="assetAnalytics?.sentimentBreakdown"
+        [sentiments]="assetAnalytics.sentimentBreakdown"></app-sentiment-chart-component>
+    </div>
+    <div class="chart-card">
+      <h4><i class="fas fa-shield-alt"></i> Spam Breakdown</h4>
+      <app-spam-chart-component *ngIf="assetAnalytics?.spamBreakdown"
+        [spam]="assetAnalytics.spamBreakdown"></app-spam-chart-component>
+    </div>
+    <div class="chart-card narrow">
+      <h4><i class="fas fa-key"></i> Top Keywords</h4>
+      <app-top-keywords *ngIf="topKeywords" [keywordsMap]="topKeywords" [limit]="5"></app-top-keywords>
+    </div>
+  </div>
+
+  <div class="dashboard-grid custom-two">
+    <div class="chart-card wide">
+      <h4><i class="fas fa-chart-line"></i> Rating & Comments Over Time</h4>
+      <app-rating-distribution-for-asset *ngIf="assetAnalytics?.ratingCommentTrend"
+        [ratingCommentTrend]="assetAnalytics.ratingCommentTrend"></app-rating-distribution-for-asset>
+    </div>
+
+    
+  </div>
+  </div>
+  <div class="side-card-column">
+      <div class="chatbot-embed-card">
+        <div class="header"> <h4><i class="fas fa-robot"></i>Chatbot</h4>
+  <button class="btnChat" (click)="toggleChatbotModal()">
+    <i class="fa-solid fa-expand"></i>
+  </button></div>
+        <app-contributor-chat-bot [assetId]="selectedAsset?.id!"></app-contributor-chat-bot>
+      </div>
+      <div class="review-card">
+        <h4><i class="fas fa-clock"></i> Recent Reviews</h4>
+        <div class="review" *ngFor="let review of assetAnalytics?.recentReviews">
+          <div class="avatar">{{ review.user.charAt(0).toUpperCase() }}</div>
+          <div class="review-info">
+            <div class="review-meta">
+              <span class="username">{{ review.user }}</span>
+              <span class="date">{{ review.createdAt | date: 'shortDate' }}</span>
+            </div>
+            <div class="comment">“{{ review.comment }}”</div>
+          </div>
+        </div>
+      </div>
+
+
+<div class="modal-backdrop" *ngIf="isChatbotModalOpen" (click)="toggleChatbotModal()"></div>
+
+<div class="chatbot-modal" *ngIf="isChatbotModalOpen">
+  <div class="chatbot-modal-content">
+    <div class="modal-header">
+      <h4>What do you want to ask today?</h4>
+      <button class="close-btn" (click)="toggleChatbotModal()">&times;</button>
+    </div>
+    <app-contributor-chat-bot [assetId]="selectedAsset?.id!"></app-contributor-chat-bot>
+  </div>
+</div>
+
+    </div>
 </div>

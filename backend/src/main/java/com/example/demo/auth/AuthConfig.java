@@ -56,6 +56,8 @@ public class AuthConfig {
             	    .requestMatchers("/api/analytics/**").permitAll()
             	    .requestMatchers("/api/notifications").authenticated()
             	    .requestMatchers("/admin/**").hasRole("ADMIN")
+            	    .requestMatchers("/api/chatbot/**").authenticated()
+
             	    .anyRequest().authenticated()
             	)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

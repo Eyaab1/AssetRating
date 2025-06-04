@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
@@ -32,7 +33,8 @@ public class ReviewCommentController {
     private final ReviewAnalysisClient reviewModerationService;
     private final NotificationService notificationService;
     private final AuthService authService;
-
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
     // Profanity service URL (Flask microservice)
     private final String PROFANITY_SERVICE_URL = "http://localhost:5000/check_profanity";
 
@@ -53,6 +55,7 @@ public class ReviewCommentController {
 
 
     private boolean checkProfanity(String assetId, String reviewText) {
+    	if ("test".equals(activeProfile)) return false;
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -178,7 +181,7 @@ public class ReviewCommentController {
     @DeleteMapping("/{reviewId}")
     public ResponseEntity<?> deleteReview(@PathVariable Long reviewId) {
         reviewService.deleteReview(reviewId);
-        return ResponseEntity.ok("Review deleted.");
+        return ResponseEntity.ok(Map.of("message", "Review deleted."));
     }
 
     @GetMapping("/user/{userId}")

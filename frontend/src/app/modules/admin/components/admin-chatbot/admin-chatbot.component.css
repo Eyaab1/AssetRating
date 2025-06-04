@@ -9,7 +9,7 @@ body {
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: 80vh; /* Slightly reduced to avoid overflow issues */
+  height: 80vh;
   margin: 10px; /* Minimal margin for breathing room */
   background: #ffffff;
   border-radius: 10px;
