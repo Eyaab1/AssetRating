@@ -35,7 +35,6 @@ public class AdminUserController {
         return ResponseEntity.ok(authService.register(user));
     }
 
-
     @GetMapping
     public List<UserDTO> getAllUsers() {
         return authService.getAllUsers();

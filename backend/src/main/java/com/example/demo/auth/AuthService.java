@@ -10,26 +10,48 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.security.SecureRandom;
 
 @Service
 public class AuthService {
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
-    public AuthService(AuthRepository authRepository, PasswordEncoder passwordEncoder,JwtUtils jwtUtils) {
+    private final emailService emailService;
+    public AuthService(AuthRepository authRepository, PasswordEncoder passwordEncoder,JwtUtils jwtUtils,emailService emailService) {
         this.authRepository = authRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils=jwtUtils;
+        this.emailService = emailService;
     }
-
+    
+    public String generateRandomPassword(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString();
+    }
+    
     public String register(User user) {
         Optional<User> existingUser = authRepository.findByEmail(user.getEmail());
         if (existingUser.isPresent()) {
             return "Email already exists!";
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        String rawPassword = (user.getPassword() == null || user.getPassword().isBlank())
+            ? generateRandomPassword(10)
+            : user.getPassword();
+
+        user.setPassword(passwordEncoder.encode(rawPassword));
         user.setEnabled(true);
         authRepository.save(user);
+
+        // Send password by email (see next step)
+        emailService.sendAccountCreationEmail(user.getEmail(), rawPassword,user.getRole().name());
+
         return "User registered successfully!";
     }
 

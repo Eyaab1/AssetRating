@@ -25,7 +25,6 @@ export class AddUserComponent implements OnInit {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
       role: ['USER', Validators.required],
       enabled: [true, Validators.required]
     });
@@ -37,9 +36,10 @@ export class AddUserComponent implements OnInit {
     this.userService.createUser(this.userForm.value).subscribe({
       next: () => {
         Swal.fire({
-          title: 'User Added',
+          title: 'User Created!',
+          text: 'Login credentials have been sent via email.',
           icon: 'success',
-          timer: 2000,
+          timer: 2500,
           showConfirmButton: false
         });
         this.router.navigate(['/admin/users']);

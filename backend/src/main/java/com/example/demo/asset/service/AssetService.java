@@ -259,8 +259,20 @@ public class AssetService {
         assetRepository.findById(id).ifPresent(asset -> {
             asset.setStatus(Status.DELETED);
             assetRepository.save(asset);
+
+            List<AssetReleases> releases = asset.getReleases();
+            if (releases != null) {
+                for (AssetReleases release : releases) {
+                    Asset released = release.getReleasedAsset();
+                    if (released != null) {
+                        released.setStatus(Status.DELETED);
+                        assetRepository.save(released);
+                    }
+                }
+            }
         });
     }
+
     public Asset updateAsset(String id, Asset updatedAsset) {
         return assetRepository.findById(id)
                 .map(asset -> {
