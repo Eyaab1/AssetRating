@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { jwtDecode } from 'jwt-decode';
 import { CommentService } from '../../../shared/services/comment.service';
@@ -8,6 +8,7 @@ import { Comment } from '../../../shared/models/comment';
 import { CommentComponent } from '../components/comment/comment.component';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-review-component',
   standalone: true,
@@ -17,6 +18,8 @@ import { catchError, map } from 'rxjs/operators';
 })
 export class ReviewComponentComponent implements OnChanges {
   @Input() assetId!: string;
+  @Output() commentAdded = new EventEmitter<void>();
+
 
   allComments: any[] = [];        
   visibleComments: any[] = [];    
@@ -130,31 +133,40 @@ export class ReviewComponentComponent implements OnChanges {
   }
 
   submitComment() {
-    if (!this.commentText.trim()) return;
+  if (!this.commentText.trim()) return;
 
-    const payload = {
-      userId: Number(this.userId),
-      assetId: this.assetId,
-      comment: this.commentText.trim()
-    };
+  const payload = {
+    userId: Number(this.userId),
+    assetId: this.assetId,
+    comment: this.commentText.trim()
+  };
 
-    this.commentService.addComment(payload).subscribe({
-      next: () => {
-        this.commentText = '';
-        this.errorMessage = '';
-        this.loadComments();
-      },
-      error: (err) => {
-        if (
-          err.status === 400 &&
-          err.error === 'Review contains inappropriate language.'
-        ) {
-          this.errorMessage = '⚠️ Your comment contains inappropriate language.';
-        } else {
-          console.error('Error adding comment', err);
-          this.errorMessage = '⚠️ Failed to submit comment.';
-        }
+  this.commentService.addComment(payload).subscribe({
+    next: () => {
+      this.commentText = '';
+      this.errorMessage = '';
+      this.commentAdded.emit();
+      this.loadComments();
+    },
+    error: (err) => {
+      if (
+        err.status === 400 &&
+        err.error === 'Review contains inappropriate language.'
+      ) {
+        // Show SweetAlert warning popup
+        Swal.fire({
+          icon: 'warning',
+          title: 'Inappropriate Comment',
+          text: 'Your comment contains inappropriate language. Please revise it before submitting.',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#f59e0b'
+        });
+        this.errorMessage = ''; // Optional: clear inline error
+      } else {
+        console.error('Error adding comment', err);
+        this.errorMessage = '⚠️ Failed to submit comment.';
       }
-    });
-  }
+    }
+  });
+}
 }

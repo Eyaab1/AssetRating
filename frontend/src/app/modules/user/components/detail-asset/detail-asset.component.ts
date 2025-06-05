@@ -19,6 +19,7 @@ import { DecodedToken } from '../../../../shared/decoded-token';
 
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-detail-asset',
@@ -187,37 +188,41 @@ loadAssetById(id: string): void {
 loadReleases(assetId: string): void {
   this.assetService.getReleasesByAsset(assetId).subscribe({
     next: (data: AssetRelease[]) => {
-      console.log('Loaded releases:', data);
       this.assetReleases = data;
 
-      data.forEach((release: AssetRelease) => {
-        const releasedAsset = release.releasedAsset;
-        const releasedAssetId = typeof releasedAsset === 'string' ? releasedAsset : releasedAsset?.id;
-        const releaseId = release?.id;
+      // Initialize rating map
+      this.releaseRatings = data.reduce((acc, release) => {
+        if (release.id != null) acc[release.id] = 0;
+        return acc;
+      }, {} as { [releaseId: number]: number });
 
-        console.log('Released Asset ID:', releasedAssetId);
-        console.log('Release ID:', releaseId);
+      // Fetch rating for each release
+      data.forEach((release) => {
+        const releaseId = release.id;
+        const releasedAssetId = release.releasedAsset?.id;
 
-        if (releasedAssetId && releaseId != null) {
+        if (releaseId != null && releasedAssetId) {
           this.ratingService.getAverageRatingForRelease(releasedAssetId).subscribe({
             next: (ratingResponse) => {
-              console.log(`✅ Rating for release ${releaseId}:`, ratingResponse);
-              this.releaseRatings[releaseId] = ratingResponse.overall;
-              this.cdr.detectChanges(); // ✅ ensure UI updates
+              this.releaseRatings = {
+                ...this.releaseRatings,
+                [releaseId]: ratingResponse.overall || 0
+              };
+              this.cdr.markForCheck();
             },
-            error: (err) => console.error(`❌ Error fetching rating for release ${releaseId}`, err)
+            error: () => {
+              console.error(`Error fetching rating for release ${releaseId}`);
+            }
           });
-        } else {
-          console.warn('⚠️ Missing releaseId or releasedAssetId', release);
         }
       });
     },
-    error: (err) => console.error('❌ Error loading releases', err)
+    error: (err) => {
+      console.error('Error loading releases', err);
+    }
   });
 }
 
-
-  
   loadSameCategoryAssets(categoryId: number): void {
     this.assetService.getAssetsByCategory(categoryId).subscribe({
       next: assets => {
@@ -229,7 +234,11 @@ loadReleases(assetId: string): void {
 
   loadCategoryAverages(assetId: string): void {
     this.ratingService.getAverageRatingPerCategory(assetId).subscribe({
-      next: averages => this.categoryAverages = averages,
+      next: averages => {
+        this.categoryAverages = averages;
+        console.log('Average ratings by category:', this.categoryAverages);
+        this.cdr.detectChanges();
+      },
       error: err => console.error('Error fetching average ratings by category', err)
     });
   }
@@ -283,41 +292,41 @@ loadReleases(assetId: string): void {
 
   onReviewSubmitted(): void {
     if (this.assetSelected?.id) {
-      this.loadComments();
-      this.loadRatings(this.assetSelected.id);
-      this.loadCategoryAverages(this.assetSelected.id);
-      this.reviewComponent?.loadComments(); // 🟢 This updates the child component too
+      this.loadComments(); 
+    this.loadRatings(this.assetSelected.id); 
+    this.loadCategoryAverages(this.assetSelected.id);
+    this.reviewComponent?.loadComments(); 
     }
   }
   
 
   // Release Submission
-  submitRelease(): void {
-    if (!this.assetSelected || !this.newReleaseFileObject) return;
+  // submitRelease(): void {
+  //   if (!this.assetSelected || !this.newReleaseFileObject) return;
 
-    this.assetService.uploadReleaseDocumentation(this.newReleaseFileObject).subscribe({
-      next: (docPath) => {
-        const payload = {
-          originalAssetId: this.assetSelected!.id,
-          version: this.newReleaseVersion,
-          documentation: docPath,
-          fileUrl: "/uploads/fake-path.zip"
-        };
+  //   this.assetService.uploadReleaseDocumentation(this.newReleaseFileObject).subscribe({
+  //     next: (docPath) => {
+  //       const payload = {
+  //         originalAssetId: this.assetSelected!.id,
+  //         version: this.newReleaseVersion,
+  //         documentation: docPath,
+  //         fileUrl: "/uploads/fake-path.zip"
+  //       };
 
-        this.assetService.uploadAssetReleaseFull(payload).subscribe({
-          next: () => {
-            this.loadReleases(this.assetSelected!.id);
-            this.newReleaseVersion = '';
-            this.newReleaseDoc = '';
-            this.newReleaseFileObject = null;
-            this.showReleasePopup = false;
-          },
-          error: (err) => console.error('Failed to create release:', err)
-        });
-      },
-      error: (err) => console.error('Failed to upload PDF:', err)
-    });
-  }
+  //       this.assetService.uploadAssetReleaseFull(payload).subscribe({
+  //         next: () => {
+  //           this.loadReleases(this.assetSelected!.id);
+  //           this.newReleaseVersion = '';
+  //           this.newReleaseDoc = '';
+  //           this.newReleaseFileObject = null;
+  //           this.showReleasePopup = false;
+  //         },
+  //         error: (err) => console.error('Failed to create release:', err)
+  //       });
+  //     },
+  //     error: (err) => console.error('Failed to upload PDF:', err)
+  //   });
+  // }
 
 toggleRelease(releasedAssetId: string): void {
   if (this.selectedRelease?.releasedAsset?.id === releasedAssetId) {
@@ -348,7 +357,7 @@ toggleRelease(releasedAssetId: string): void {
     this.newReleaseFileObject = event.target.files[0];
   }
 
-  // Utility Methods 
+ 
   createStarDisplay(average: number): string[] {
     const stars: string[] = [];
     const fullStars = Math.floor(average);
@@ -399,14 +408,28 @@ toggleRelease(releasedAssetId: string): void {
       const asset = this.assetSelected;
       if (asset) {
         asset.downloadCount = (asset.downloadCount || 0) + 1;
-        alert('Downloaded successfully!');
+
+        Swal.fire({
+          title: 'Download Successful',
+          text: 'The asset has been downloaded',
+          icon: 'success',
+          confirmButtonColor: '#4f46e5',
+          confirmButtonText: 'OK'
+        });
       }
     },
     error: (err) => {
       console.error('Failed to increment download count', err);
+      Swal.fire({
+        title: 'Download Failed',
+        text: 'The asset could not be downloaded at this time.',
+        icon: 'error',
+        confirmButtonColor: '#ef4444'
+      });
     }
   });
 }
+
 goTheDetail(assetId:String){
   this.router.navigate(['/contributorLayout/detail', assetId]);
 }

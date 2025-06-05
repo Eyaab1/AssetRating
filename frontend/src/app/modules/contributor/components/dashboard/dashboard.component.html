@@ -90,7 +90,7 @@
   <div class="dashboard-right">
     <div class="mini-asset-list">
       <div class="mini-list-title">My Assets</div>
-      <div *ngFor="let asset of allAssets" class="mini-asset-item">
+      <div *ngFor="let asset of allAssets | slice:0:5" class="mini-asset-item">
         <div class="left-info">
           <span class="asset-name">{{ asset.name }}</span>
           <span class="asset-type">{{ asset.type }}</span>

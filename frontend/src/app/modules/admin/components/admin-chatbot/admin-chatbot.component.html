@@ -9,7 +9,6 @@
       <strong>Bot:</strong>
       <span><em>Typing...</em></span>
     </div>
-
     <div class="prompt-suggestions" *ngIf="chatHistory.length === 0 && !loading">
       <div class="prompt-title">Try asking:</div>
       <div class="prompt-item" *ngFor="let prompt of suggestedPrompts" (click)="setInput(prompt)">

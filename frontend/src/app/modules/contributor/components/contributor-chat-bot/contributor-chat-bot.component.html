@@ -1,0 +1,34 @@
+<div class="chat-container">
+  <!-- Suggested Prompts -->
+  <div class="suggested-prompts" *ngIf="showPrompts">
+    <div class="prompt-suggestions">
+      <div class="prompt-title">Try asking:</div>
+      <div class="prompt-list">
+        <span *ngFor="let prompt of suggestedPrompts" class="prompt-chip" (click)="setInput(prompt)">
+          {{ prompt }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat History -->
+  <div #chatHistoryRef class="chat-history"  *ngIf="!showPrompts">
+    <div *ngFor="let msg of chatHistory" [ngClass]="msg.role" class="chat-bubble">
+  <div class="bubble">
+    <div class="sender">{{ msg.role === 'user' ? 'You' : 'Bot' }}</div>
+    <div class="message">{{ msg.text }}</div>
+  </div>
+</div>
+
+    <div *ngIf="loading" class="bot loading">
+      <strong>Bot:</strong> Typing...
+    </div>
+  </div>
+
+  <!-- Chat Input -->
+  <div class="chat-input">
+    <input [(ngModel)]="message" placeholder="Ask about this asset..." (keyup.enter)="sendMessage()" (input)="onInputChange()" />
+    <button (click)="sendMessage()" [disabled]="loading || !message.trim()">Send</button>
+  </div>
+</div>
+

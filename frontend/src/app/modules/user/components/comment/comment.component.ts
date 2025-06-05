@@ -8,6 +8,8 @@ import { jwtDecode } from 'jwt-decode';
 import { FormsModule } from '@angular/forms';
 import { ReportModelComponent } from '../../../common/components/report-model/report-model.component';
 import { RatingService } from '../../../../shared/services/rating.service';
+import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-comment',
   standalone: true,
@@ -214,35 +216,53 @@ this.comment.replies?.forEach(reply => {
     this.replyText = '';
   }
 
-  openReportPopup(): void {
-    const modal = this.vcr.createComponent(ReportModelComponent);
-    modal.instance.reviewId = this.comment.id;
+openReportPopup(): void {
+  Swal.fire({
+    title: 'Report Comment',
+    input: 'text',
+    inputLabel: 'Reason for reporting',
+    inputPlaceholder: 'Enter your reason...',
+    inputAttributes: {
+      maxlength: '100'
+    },
+    showCancelButton: true,
+    confirmButtonText: 'Submit Report',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#6b7280',
+    preConfirm: (value) => {
+      if (!value.trim()) {
+        Swal.showValidationMessage('Reason is required');
+        return false;
+      }
+      return value;
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.submitReport(result.value);
+    }
+  });
+}
 
-    modal.instance.submitted.subscribe((reason: string) => {
-      this.submitReport(reason);
-      modal.destroy();
-    });
-
-    modal.instance.cancelled.subscribe(() => {
-      modal.destroy();
-    });
-
-    document.body.style.overflow = 'hidden';
-  }
 
   submitReport(reason: string): void {
-    this.commentService.reportReview(this.comment.id, reason).subscribe({
-      next: () => {
-        alert('Review reported successfully.');
-        document.body.style.overflow = 'auto';
-      },
-      error: (err) => {
-        console.error('Error reporting review', err);
-        alert('Failed to report review.');
-        document.body.style.overflow = 'auto';
-      }
-    });
-  }
+  this.commentService.reportReview(this.comment.id, reason).subscribe({
+    next: () => {
+      Swal.fire({
+        title: 'Reported!',
+        text: 'Your report has been submitted.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    },
+    error: (err) => {
+      console.error('Error reporting review', err);
+      Swal.fire('Error', 'Failed to report the comment.', 'error');
+    }
+  });
+}
+
 
   cancelReport(): void {
     document.body.style.overflow = 'auto';
@@ -269,21 +289,53 @@ submitEdit(): void {
     next: () => {
       this.comment.comment = this.editText;
       this.editing = false;
+
+      Swal.fire({
+        title: 'Comment Updated',
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false
+      });
     },
-    error: err => console.error('Edit failed', err)
+    error: err => {
+      console.error('Edit failed', err);
+      Swal.fire('Error', 'Failed to update comment.', 'error');
+    }
   });
 }
 
+
 deleteComment(): void {
-  if (confirm('Are you sure you want to delete this comment?')) {
-    this.commentService.deleteReview(this.comment.id).subscribe({
-      next: () => {
-        // Optionally emit an event to parent to reload comments
-        alert('Comment deleted');
-      },
-      error: err => console.error('Delete failed', err)
-    });
-  }
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You are about to delete this comment.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#6b7280',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.commentService.deleteReview(this.comment.id).subscribe({
+        next: () => {
+          Swal.fire({
+            title: 'Deleted!',
+            text: 'The comment has been deleted.',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false
+          });
+          // Optionally emit event or remove from list
+        },
+        error: err => {
+          console.error('Delete failed', err);
+          Swal.fire('Error', 'Something went wrong while deleting.', 'error');
+        }
+      });
+    }
+  });
 }
+
 
 }

@@ -3,86 +3,81 @@ body {
   min-height: 100vh;
   display: flex;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f5f7fa; /* Subtle background for better contrast */
 }
 
 .chat-container {
   display: flex;
   flex-direction: column;
-  height:94vh;
-  overflow: hidden;
+  height: 80vh;
+  margin: 10px; /* Minimal margin for breathing room */
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Softer shadow for modern look */
+  overflow: hidden; /* Prevents internal overflow */
 }
-
 
 .chat-history {
   flex: 1;
   overflow-y: auto;
-  min-height: 0;
-  padding: 10px;
-  margin-bottom: 0;
-  border-radius: 8px;
-  background: #f8fafc;
+  padding: 9px; /* Reduced padding for tighter layout */
+  background: #fafbfc; /* Lighter background for chat area */
   display: flex;
   flex-direction: column;
+  gap: 8px; /* Consistent spacing between messages */
 }
 
-
 .chat-history::-webkit-scrollbar {
-  width: 8px;
+  width: 6px; /* Thinner scrollbar for elegance */
 }
 
 .chat-history::-webkit-scrollbar-track {
-  background: #f8fafc;
-  border-radius: 4px;
+  background: transparent; /* Seamless track */
 }
 
 .chat-history::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: #b0b8c4; /* Neutral thumb color */
+  border-radius: 3px;
 }
 
 .chat-history::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #8b96a5; /* Subtle hover effect */
 }
 
 .prompt-suggestions {
   text-align: center;
-  color: #64748b;
-  font-size: 0.95rem;
+  color: #5f6b7a; /* Softer color for suggestions */
+  font-size: 0.9rem; /* Slightly smaller for hierarchy */
+  padding: 12px; /* Reduced padding */
   margin: auto;
-  padding: 20px;
 }
 
 .prompt-title {
   font-weight: 600;
-  margin-bottom: 15px;
-  color: #1f2937;
+  color: #1a202c; /* Darker for emphasis */
+  margin-bottom: 10px; /* Tighter spacing */
 }
 
 .prompt-item {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 10px 15px;
-  margin: 8px 0;
+  border: 1px solid #dfe3e8; /* Lighter border */
+  border-radius: 6px;
+  padding: 8px 12px; /* Reduced padding for compactness */
+  margin: 6px 0; /* Tighter margin */
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
+  transition: background 0.15s ease, transform 0.1s ease;
 }
 
 .prompt-item:hover {
-  background: #f1f5f9;
-  transform: translateY(-2px);
+  background: #edf2f7; /* Subtle hover effect */
+  transform: translateY(-1px); /* Lighter lift effect */
 }
 
 .user, .bot {
   display: flex;
-  margin: 10px 0;
-  gap: 8px;
+  gap: 6px; /* Reduced gap for tighter alignment */
   align-items: flex-start;
+  margin: 4px 0; /* Minimized margin */
 }
 
 .user {
@@ -95,81 +90,76 @@ body {
 
 .user strong, .bot strong {
   font-weight: 600;
-  font-size: 0.9rem;
-  color: #1f2937;
-  padding: 6px 12px;
-  border-radius: 12px;
-  display: inline-block;
+  font-size: 0.85rem; /* Slightly smaller for cleaner look */
+  color: #1a202c;
+  padding: 4px 8px; /* Reduced padding */
+  border-radius: 10px;
 }
 
 .user span, .bot span {
-  background: #ffffff;
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  max-width: 70%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 8px 12px; /* Tighter padding for messages */
+  border-radius: 10px;
+  font-size: 0.9rem; /* Slightly smaller for readability */
+  line-height: 1.4; /* Improved line spacing */
+  max-width: 75%; /* Slightly wider for better text flow */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06); /* Lighter shadow */
 }
 
 .user span {
-  background: #4f46e5;
+  background: #4f46e5; /* Consistent brand color */
   color: #ffffff;
-  border-bottom-right-radius: 4px;
+  border-bottom-right-radius: 3px; /* Subtle asymmetry */
 }
 
 .bot span {
-  background: #e2e8f0;
-  color: #1f2937;
-  border-bottom-left-radius: 4px;
+  background: #e4e8ed; /* Softer bot message background */
+  color: #1a202c;
+  border-bottom-left-radius: 3px;
 }
 
 .bot em {
-  color: #64748b;
+  color: #6b7280; /* Softer italic color */
   font-style: italic;
 }
 
 .chat-form {
-  padding: 10px;
+  padding: 8px; /* Reduced padding */
   background: #f1f5f9;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #dfe3e8; /* Lighter border */
   display: flex;
-  gap: 12px;
-  border-radius: 0;
-  position: relative;
+  gap: 8px; /* Tighter gap */
 }
-
 
 .chat-form input {
   flex: 1;
-  padding: 10px 14px;
+  padding: 8px 12px; /* Reduced padding */
   border: none;
-  border-radius: 6px;
-  font-size: 0.95rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
   background: #ffffff;
-  color: #1f2937;
-  transition: box-shadow 0.2s ease;
+  color: #1a202c;
+  transition: box-shadow 0.15s ease;
 }
 
 .chat-form input:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25); /* Subtle focus ring */
 }
 
 .chat-form button {
-  padding: 10px 20px;
+  padding: 8px 16px; /* Reduced padding */
   background: #4f46e5;
   color: #ffffff;
   border: none;
-  border-radius: 6px;
-  font-size: 0.95rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
+  transition: background 0.15s ease, transform 0.1s ease;
 }
 
 .chat-form button:hover {
-  background: #4338ca;
+  background: #4338ca; /* Slightly darker hover */
 }
 
 .chat-form button:active {
@@ -179,29 +169,28 @@ body {
 /* Responsive adjustments */
 @media (max-width: 600px) {
   .chat-container {
-    margin: 10px;
-    padding: 15px;
-    height: calc(100vh - 20px);
+    margin: 8px; /* Reduced margin */
+    height: calc(100vh - 16px); /* Adjusted for smaller screens */
   }
 
   .chat-history {
-    max-height: none;
+    padding: 8px; /* Tighter padding */
   }
 
   .user span, .bot span {
-    max-width: 85%;
+    max-width: 80%; /* Adjusted for smaller screens */
   }
 
   .chat-form {
-    flex-direction: column;
-    gap: 10px;
+    padding: 6px; /* Minimal padding */
+    gap: 6px; /* Tighter gap */
   }
 
   .chat-form button {
-    width: 100%;
+    padding: 8px; /* Consistent padding */
   }
 
   .prompt-suggestions {
-    padding: 15px;
+    padding: 10px; /* Reduced padding */
   }
 }

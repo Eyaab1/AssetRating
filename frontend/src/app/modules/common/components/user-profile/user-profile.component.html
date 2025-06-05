@@ -70,26 +70,65 @@
     </div>
 
     <div class="dynamic-section" *ngIf="userRole !== 'USER'">
-      <header class="assets-header">
-        <h2 class="assets-title">Your Assets</h2>
-      </header>
-      <div class="assets-content">
-        <div class="assets-list" *ngIf="assets.length > 0; else noAssets">
-          <!-- Inside the assets loop -->
-          <div class="asset-card" *ngFor="let asset of assets" (click)="navigateToAsset(asset.id)">
-            <img [src]="getIcon(asset.image || '')" alt="Asset Icon" class="asset-icon" />
-            <div class="asset-details">
-              <h4 class="asset-label">{{ asset.label }}</h4>
-              <p class="asset-status">Status: {{ asset.status }}</p>
-              <p class="asset-type">Type: {{ asset.type }}</p>
-            </div>
-          </div>
+  <!-- Tab Buttons -->
+  <div class="tab-buttons">
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'assets'" 
+      (click)="activeTab = 'assets'">
+      Assets
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'reviews'" 
+      (click)="activeTab = 'reviews'">
+      Reviews
+    </button>
+  </div>
+
+  <!-- Assets Section -->
+  <div class="assets-content" *ngIf="activeTab === 'assets'">
+    <div class="assets-list" *ngIf="assets.length > 0; else noAssets">
+      <div class="asset-card" *ngFor="let asset of assets" (click)="navigateToAsset(asset.id)">
+        <img [src]="getIcon(asset.image || '')" alt="Asset Icon" class="asset-icon" />
+        <div class="asset-details">
+          <h4 class="asset-label">{{ asset.label }}</h4>
+          <p class="asset-status">Status: {{ asset.status }}</p>
+          <p class="asset-type">Type: {{ asset.type }}</p>
         </div>
-        <ng-template #noAssets>
-          <p class="no-assets">No assets found.</p>
-        </ng-template>
       </div>
     </div>
+    <ng-template #noAssets>
+      <p class="no-assets">No assets found.</p>
+    </ng-template>
+  </div>
+
+  <!-- Reviews Section -->
+  <div class="reviews-content" *ngIf="activeTab === 'reviews'">
+    <div class="filter-bar">
+      <label for="timeFilter" class="filter-label">Filter by:</label>
+      <select id="timeFilter" [(ngModel)]="selectedTimeFilter" (ngModelChange)="filterReviewsByTime()" class="filter-select">
+        <option value="all">All</option>
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+        <option value="earlier">Earlier</option>
+      </select>
+    </div>
+
+    <div class="reviews-list" *ngIf="filteredReviews.length > 0; else noReviews">
+      <div class="review-card" *ngFor="let comment of filteredReviews" (click)="navigateToReview(comment.assetId, comment.id)">
+        <p class="review-content">🗨️ {{ comment.comment }}</p>
+        <small class="review-date">{{ comment.created_at | date:'medium' }}</small>
+      </div>
+    </div>
+    <ng-template #noReviews>
+      <p class="no-reviews">No reviews match the selected period.</p>
+    </ng-template>
+  </div>
+    </div>
+
+
 
     <!-- Password Modal -->
     <div class="modal-backdrop" *ngIf="showPasswordModal" (click)="closePasswordModal()">

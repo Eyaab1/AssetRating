@@ -20,10 +20,11 @@ import { forkJoin } from 'rxjs';
 export class UserHomeComponent implements OnInit {
   assets: Asset[] = [];
   filteredAssets: Asset[] = [];
-
+  assetTypes: string[] = ['widget', 'theme', 'sheet', 'template', 'utility', 'connector'];
+  selectedTypes: string[] = [];
   availableAssets: Asset[] = [];
   recommendedAssets: Asset[] = [];
-  trendingAssets: Asset[] = [];
+  topRated: Asset[] = [];
   loadingRecommendations = true;
   role: string='';
   groupedAssets: { label: string; assets: Asset[] }[] = [];
@@ -36,6 +37,19 @@ export class UserHomeComponent implements OnInit {
 
   searchQuery: string = '';
   quickViewRating: number | null = null;
+breadcrumb: string[] = ['Homepage'];
+
+navigateToBreadcrumb(index: number): void {
+  const label = this.breadcrumb[index];
+  if (label === 'Homepage') {
+    this.clearAllFilters();
+    this.searchQuery = '';
+    this.filteredAssets = [...this.assets];
+    this.groupByType();
+    this.updateSections();
+  }
+  this.breadcrumb = this.breadcrumb.slice(0, index + 1);
+}
 
   constructor(
     private assetService: AssetServiceService,
@@ -81,42 +95,62 @@ export class UserHomeComponent implements OnInit {
 
   }
   
-  onFilterChange(type: 'tags' | 'categories', event: Event): void {
-    const checkbox = event.target as HTMLInputElement;
-  
-    if (type === 'tags') {
-      const value: string = checkbox.value;
-      if (checkbox.checked) {
-        this.selectedTagNames.push(value);
-      } else {
-        this.selectedTagNames = this.selectedTagNames.filter(tag => tag !== value);
-      }
+onFilterChange(type: 'tags' | 'categories' | 'type', event: Event): void {
+  const checkbox = event.target as HTMLInputElement;
+
+  if (type === 'tags') {
+    const value: string = checkbox.value;
+    if (checkbox.checked) {
+      this.selectedTagNames.push(value);
     } else {
-      const value: number = +checkbox.value; 
-      if (checkbox.checked) {
-        this.selectedCategoryIds.push(value);
-      } else {
-        this.selectedCategoryIds = this.selectedCategoryIds.filter(id => id !== value);
-      }
+      this.selectedTagNames = this.selectedTagNames.filter(tag => tag !== value);
     }
-  
-    this.applyFilters();
+  } else if (type === 'categories') {
+    const value: number = +checkbox.value;
+    if (checkbox.checked) {
+      this.selectedCategoryIds.push(value);
+    } else {
+      this.selectedCategoryIds = this.selectedCategoryIds.filter(id => id !== value);
+    }
+  } else if (type === 'type') {
+    const value: string = checkbox.value;
+    if (checkbox.checked) {
+      this.selectedTypes.push(value);
+    } else {
+      this.selectedTypes = this.selectedTypes.filter(t => t !== value);
+    }
   }
+
+  this.applyFilters();
+}
+
 
   applyFilters(): void {
-    this.filteredAssets = this.assets.filter(asset => {
-      const matchesCategory = this.selectedCategoryIds.length === 0 ||
-        asset.categories?.some(c => c.id !== null && this.selectedCategoryIds.includes(c.id));
-      
-      const matchesTag = this.selectedTagNames.length === 0 ||
-        asset.tags?.some(t => this.selectedTagNames.includes(t.name));
-      
-      return matchesCategory && matchesTag;
-    });
+  this.filteredAssets = this.assets.filter(asset => {
+    const matchesCategory = this.selectedCategoryIds.length === 0 ||
+      asset.categories?.some(c => c.id !== null && this.selectedCategoryIds.includes(c.id));
 
-    this.groupByType();
-    this.updateSections();
-  }
+    const matchesTag = this.selectedTagNames.length === 0 ||
+      asset.tags?.some(t => this.selectedTagNames.includes(t.name));
+
+    const matchesType = this.selectedTypes.length === 0 ||
+      this.selectedTypes.includes(asset.type?.toLowerCase());
+   
+
+    return matchesCategory && matchesTag && matchesType;
+  });
+ if (this.selectedTypes.length === 1) {
+      this.breadcrumb = ['Homepage', this.capitalizeFirst(this.selectedTypes[0])];
+    } else if (this.selectedCategoryIds.length === 1) {
+      const catName = this.getCategoryNameById(this.selectedCategoryIds[0]);
+      this.breadcrumb = ['Homepage', 'Category', catName];
+    } else {
+      this.breadcrumb = ['Homepage'];
+    }
+  this.groupByType();
+  this.updateSections();
+}
+
 
   getAssetDetailLink(assetId: string): string {
     const decoded: DecodedToken | null = this.authService.decodeToken();
@@ -133,14 +167,15 @@ export class UserHomeComponent implements OnInit {
     );
     this.groupByType();
     this.updateSections();
-        this.trendingAssets = [...this.filteredAssets]
+        this.topRated = [...this.filteredAssets]
       .sort((a, b) => (b.ratings?.length || 0) - (a.ratings?.length || 0))
       .slice(0, 5);
+
   }
 
  updateSections(): void {
   const ratingRequests = this.filteredAssets.map(asset =>
-    this.ratingService.getAveragerating(asset.id).pipe()
+    this.ratingService.getAveragerating(asset.id)
   );
 
   forkJoin(ratingRequests).subscribe((averages) => {
@@ -155,19 +190,34 @@ export class UserHomeComponent implements OnInit {
       .slice(0, 5)
       .map(entry => entry.asset);
 
-    this.trendingAssets = trendingSorted;
+    this.topRated = trendingSorted;
 
     this.availableAssets = this.filteredAssets.filter(
-      asset => !this.trendingAssets.includes(asset)
+      asset => !this.topRated.includes(asset)
+    );
+
+    this.recommendedAssets = this.recommendedAssets.filter(asset =>
+      this.selectedTypes.length === 0 || this.selectedTypes.includes(asset.type?.toLowerCase())
     );
   });
 }
 
+//  if (this.role === 'USER') {
+//     this.router.navigate(['/profile']);
+//   } else if (this.role === 'CONTRIBUTOR') {
+//     this.router.navigate(['/contributorLayout/profile']);
+//   } else if (this.role === 'ADMIN') {
+//     this.router.navigate(['/admin/profile']);
+//   }
 goToDetail(assetId: string) {
   if(this.role === 'CONTRIBUTOR') {
-  this.router.navigate(['contributorLayout/detail', assetId])} 
-  else{
-  this.router.navigate(['detail', assetId]);}
+  this.router.navigate(['/contributorLayout/detail', assetId])} 
+  
+  else if (this.role === 'USER') {
+  this.router.navigate(['/detail', assetId]);}
+  else if (this.role === 'ADMIN') {
+  this.router.navigate(['/admin/detail', assetId]);
+  }
 }
 
   groupByType(): void {
@@ -210,14 +260,14 @@ quickViewAsset: any = null;
 
 openQuickView(asset: any) {
   this.quickViewAsset = asset;
-  this.quickViewRating = null; // reset before loading
-
+  console.log("aasset ", this.quickViewAsset);
+  this.quickViewRating = null; 
+  console.log("categories: ", this.quickViewAsset.categories[0].name);
   this.ratingService.getAveragerating(asset.id).subscribe({
    next: (res) => {
   console.log("resultat: ", res);
   console.log('type:', typeof res);
-  console.log('res.overall:', res?.overall);
-
+  
   this.quickViewRating = res ?? 0;},
     error: () => this.quickViewRating = null
   });
@@ -226,15 +276,38 @@ createStarDisplay(average: number): string[] {
   const stars: string[] = [];
   const fullStars = Math.floor(average);
   const hasHalfStar = average - fullStars >= 0.5;
-
   for (let i = 0; i < fullStars; i++) stars.push('full');
   if (hasHalfStar) stars.push('half');
   while (stars.length < 5) stars.push('empty');
-
   return stars;
 }
 
 
 
+hasActiveFilters(): boolean {
+  return this.selectedTypes.length > 0 || this.selectedCategoryIds.length > 0 || this.selectedTagNames.length > 0;
+}
+
+getCategoryNameById(id: number): string {
+  return this.allCategories.find(cat => cat.id === id)?.name || '';
+}
+
+removeFilter(type: 'type' | 'category' | 'tag', value: any): void {
+  if (type === 'type') {
+    this.selectedTypes = this.selectedTypes.filter(t => t !== value);
+  } else if (type === 'category') {
+    this.selectedCategoryIds = this.selectedCategoryIds.filter(id => id !== value);
+  } else if (type === 'tag') {
+    this.selectedTagNames = this.selectedTagNames.filter(t => t !== value);
+  }
+  this.applyFilters();
+}
+
+clearAllFilters(): void {
+  this.selectedTypes = [];
+  this.selectedCategoryIds = [];
+  this.selectedTagNames = [];
+  this.applyFilters();
+}
 
 }

@@ -9,6 +9,7 @@ import { ProjectType } from '../../../../shared/enums/ProjectType';
 import { StatusType } from '../../../../shared/enums/StatusType';
 import { Framework } from '../../../../shared/enums/framework';
 import { TagAndcategoryService } from '../../../../shared/services/tag-andcategory.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-add-asset-form',
@@ -229,102 +230,110 @@ onDocumentationSelect(event: Event): void {
     reader.readAsDataURL(file);
   }
 
-  submitAsset() {
-    if (this.assetForm.valid) {
-      const formValues = this.assetForm.value;
-  
-      const selectedTagNames: string[] = formValues.tags || [];
-      const matchedTagIds: number[] = [];
-      selectedTagNames.forEach(tagName => {
-        const tagObj = this.allTags.find(t => t.name === tagName);
-        if (tagObj?.id != null) {
-          matchedTagIds.push(tagObj.id);
-        }
-      });
-  
-      let matchedCategoryIds: number[] = [];
-      const catObj = this.allCategories.find(c => c.name === formValues.category);
-      if (catObj?.id != null) {
-        matchedCategoryIds = [catObj.id]; 
-      }
-  
-      const payload: any = {
-        name: formValues.name,
-        label: formValues.label,
-        publisher: formValues.publisher,
-        publisherMail: formValues.publisherMail,
-        publishDate: formValues.publishDate,
-        license: formValues.license.toUpperCase(),
-        status: formValues.status.toUpperCase(),
-        image: this.imageFile ? this.imageFile.name : formValues.image || null,
-        documentation: null, // Let backend set this
-        description: formValues.description || '',
-        projectType: formValues.projectType,
-        type: formValues.assetType,
-        tagIds: matchedTagIds,
-        categoryIds: matchedCategoryIds
-      };
-  
-      // Add subtype-specific fields
-      switch (formValues.assetType) {
-        case 'Widget':
-        case 'Sheet':
-          payload.icon = this.iconFile ? this.iconFile.name : formValues.icon || null;
-          payload.framework = formValues.framework;
-          if (formValues.assetType === 'Sheet') {
-            payload.format = formValues.format;
-          }
-          break;
-        case 'Theme':
-          payload.themeType = formValues.themeType;
-          payload.primaryColor = formValues.primaryColor;
-          payload.framework = formValues.framework;
-          break;
-        case 'Template':
-          payload.templateCategory = formValues.templateCategory;
-          payload.framework = formValues.framework;
-          break;
-        case 'Connector':
-          payload.preconfigured = formValues.preconfigured;
-          break;
-        case 'Utility':
-          payload.dependencies = formValues.dependencies;
-          break;
-      }
-  
-      const formData = new FormData();
-      formData.append('request', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
-      
-      if (this.documentationFile) {
-        formData.append('documentation', this.documentationFile);
-      }
-  
-      this.assetService.addAsset(formData).subscribe({
-        next: () => {
-          alert(`Asset of type '${payload.type}' created successfully!`);
-          this.assetForm.reset({
-            license: LicenseType.Free,
-            status: StatusType.Published,
-            assetType: AssetType.Widget,
-            projectType: ProjectType.FRONTEND,
-            publishDate: this.getTodayDate()
-          });
-          this.imageFile = null;
-          this.imagePreview = null;
-          this.iconFile = null;
-          this.iconPreview = null;
-          this.documentationFile = null;
-          this.addSubtypeFields(AssetType.Widget);
-        },
-        error: (err) => {
-          console.error('Asset creation failed:', err);
-          alert('Failed to create asset.');
-        }
-      });
-    } else {
-      alert('Please fill in all required fields.');
+submitAsset() {
+  if (this.assetForm.valid) {
+    const formValues = this.assetForm.value;
+
+    const selectedTagNames: string[] = formValues.tags || [];
+    const matchedTagIds: number[] = [];
+    selectedTagNames.forEach(tagName => {
+      const tagObj = this.allTags.find(t => t.name === tagName);
+      if (tagObj?.id != null) matchedTagIds.push(tagObj.id);
+    });
+
+    let matchedCategoryIds: number[] = [];
+    const catObj = this.allCategories.find(c => c.name === formValues.category);
+    if (catObj?.id != null) matchedCategoryIds = [catObj.id];
+
+    const payload: any = {
+      name: formValues.name,
+      label: formValues.label,
+      publisher: formValues.publisher,
+      publisherMail: formValues.publisherMail,
+      publishDate: formValues.publishDate,
+      license: formValues.license.toUpperCase(),
+      status: formValues.status.toUpperCase(),
+      image: this.imageFile ? this.imageFile.name : formValues.image || null,
+      documentation: null,
+      description: formValues.description || '',
+      projectType: formValues.projectType,
+      type: formValues.assetType,
+      tagIds: matchedTagIds,
+      categoryIds: matchedCategoryIds
+    };
+
+    // Subtype fields
+    switch (formValues.assetType) {
+      case 'Widget':
+      case 'Sheet':
+        payload.icon = this.iconFile ? this.iconFile.name : formValues.icon || null;
+        payload.framework = formValues.framework;
+        if (formValues.assetType === 'Sheet') payload.format = formValues.format;
+        break;
+      case 'Theme':
+        payload.themeType = formValues.themeType;
+        payload.primaryColor = formValues.primaryColor;
+        payload.framework = formValues.framework;
+        break;
+      case 'Template':
+        payload.templateCategory = formValues.templateCategory;
+        payload.framework = formValues.framework;
+        break;
+      case 'Connector':
+        payload.preconfigured = formValues.preconfigured;
+        break;
+      case 'Utility':
+        payload.dependencies = formValues.dependencies;
+        break;
     }
+
+    const formData = new FormData();
+    formData.append('request', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+    if (this.documentationFile) formData.append('documentation', this.documentationFile);
+
+    this.assetService.addAsset(formData).subscribe({
+      next: () => {
+        Swal.fire({
+          title: `✔️ Asset "${payload.name}" Created!`,
+          text: `Type: ${payload.type}`,
+          icon: 'success',
+          confirmButtonText: 'OK',
+          timer: 2000
+        });
+
+        this.assetForm.reset({
+          license: LicenseType.Free,
+          status: StatusType.Published,
+          assetType: AssetType.Widget,
+          projectType: ProjectType.FRONTEND,
+          publishDate: this.getTodayDate()
+        });
+        this.imageFile = null;
+        this.imagePreview = null;
+        this.iconFile = null;
+        this.iconPreview = null;
+        this.documentationFile = null;
+        this.addSubtypeFields(AssetType.Widget);
+      },
+      error: (err) => {
+        console.error('Asset creation failed:', err);
+        Swal.fire({
+          title: '❌ Asset Creation Failed',
+          text: err.error?.message || 'An unexpected error occurred.',
+          icon: 'error',
+          confirmButtonText: 'Close'
+        });
+      }
+    });
+  } else {
+    Swal.fire({
+      title: ' Invalid Form',
+      text: 'Please fill in all required fields before submitting.',
+      icon: 'warning',
+      confirmButtonText: 'OK'
+    });
   }
+}
   
   
   removeTag(tag: string) {

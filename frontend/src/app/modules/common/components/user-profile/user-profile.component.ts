@@ -22,6 +22,7 @@ import { RatingService } from '../../../../shared/services/rating.service';
 export class UserProfileComponent implements OnInit {
   user!: UserDTO;
   userRole: string = '';
+  activeTab: 'assets' | 'reviews' = 'assets';
 
   // Reviews
   reviews: Comment[] = [];
@@ -69,8 +70,10 @@ export class UserProfileComponent implements OnInit {
 
         if (this.userRole === 'USER') {
           this.loadUserReviews(data.id);
+          
         } else {
-          this.loadUserAssets(data.email); // 🔁 Use email for publisherMail comparison
+          this.loadUserReviews(data.id);
+          this.loadUserAssets(data.email);  
         }
       },
       error: () => Swal.fire('Error', 'Failed to load user info', 'error')
@@ -85,7 +88,7 @@ export class UserProfileComponent implements OnInit {
         this.reviews = comments;
         this.filterReviewsByTime();
       },
-      error: (err) => console.error('❌ Failed to load user reviews:', err)
+      error: (err) => console.error('failed to load user reviews:', err)
     });
   }
 
@@ -95,8 +98,6 @@ export class UserProfileComponent implements OnInit {
         this.assets = data.filter(a => a.publisherMail === userEmail);
         this.publishedCount = this.assets.filter(a => a.status === StatusType.Published).length;
         this.unpublishedCount = this.assets.filter(a => a.status === StatusType.Unpublished).length;
-
-        // Fetch stats per asset
         this.assets.forEach(asset => {
           this.ratingService.getAveragerating(asset.id).subscribe(avg => asset.averageRating = avg || 0);
           this.commentService.getCommentsByAsset(asset.id).subscribe(reviews => asset.reviewsCount = reviews.length);
