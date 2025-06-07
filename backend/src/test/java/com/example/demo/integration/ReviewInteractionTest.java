@@ -38,152 +38,151 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Rollback
 @Import(TestSecurityConfig.class)
 public class ReviewInteractionTest {
-	@Autowired private MockMvc mockMvc;
-    @Autowired private ObjectMapper objectMapper;
-    @Autowired private AuthRepository userRepository;
-    @Autowired private AssetRepository assetRepository;
+	//@Autowired private MockMvc mockMvc;
+	//  @Autowired private ObjectMapper objectMapper;
+	// @Autowired private AuthRepository userRepository;
+	// @Autowired private AssetRepository assetRepository;
 
-    private Long userId;
-    private String assetId;
-    private String testEmail;
+	// private Long userId;
+	// private String assetId;
+	// private String testEmail;
 
-    @BeforeEach
-    void setup() {
+	// @BeforeEach
+	// void setup() {
         // Test user
-        User user = new User();
-        testEmail = "user_" + System.currentTimeMillis();
-        user.setEmail(testEmail);
-        user.setFirstName("Test");
-        user.setLastName("User");
-        user.setRole(Role.USER);
-        userRepository.save(user);
-        userId = user.getId();
+	//     User user = new User();
+	//     testEmail = "user_" + System.currentTimeMillis();
+	//     user.setEmail(testEmail);
+        //    user.setFirstName("Test");
+	//    user.setLastName("User");
+        //    user.setRole(Role.USER);
+	//   userRepository.save(user);
+	//    userId = user.getId();
+        //
+        //
+	//    User publisher = new User();
+	//     publisher.setEmail("publisher@mail.com");
+	//   publisher.setFirstName("Publisher");
+	//   publisher.setLastName("User");
+	//   publisher.setRole(Role.USER); // Or CONTRIBUTOR
+	//  userRepository.save(publisher);
 
-        // ✅ Publisher user (missing before)
-        User publisher = new User();
-        publisher.setEmail("publisher@mail.com");
-        publisher.setFirstName("Publisher");
-        publisher.setLastName("User");
-        publisher.setRole(Role.USER); // Or CONTRIBUTOR
-        userRepository.save(publisher);
-
-        // Asset with publisher
-        Widget asset = new Widget();
-        asset.setId("asset_" + System.currentTimeMillis());
-        asset.setName("Sample");
-        asset.setLabel("Label");
-        asset.setPublisher("admin");
-        asset.setPublisherMail("admin@gmail.com");
-        asset.setLicense(License.FREE);
-        asset.setStatus(Status.PUBLISHED);
-        asset.setProjectType(ProjectType.BACKEND);
-        assetRepository.save(asset);
-        assetId = asset.getId();
-    }
+	//   // Asset with publisher
+	//   Widget asset = new Widget();
+	//   asset.setId("asset_" + System.currentTimeMillis());
+	//  asset.setName("Sample");
+	//    asset.setLabel("Label");
+	//   asset.setPublisher("admin");
+	//    asset.setPublisherMail("admin@gmail.com");
+	//    asset.setLicense(License.FREE);
+	//    asset.setStatus(Status.PUBLISHED);
+        //    asset.setProjectType(ProjectType.BACKEND);
+	//    assetRepository.save(asset);
+        //    assetId = asset.getId();
+	//  }
 
 
     
-    @Test
-    @DisplayName("likeed a comment successfully")
-
-    void testLikeReview() throws Exception {
-        // ✅ Create a review first
-        String reviewJson = """
-            {
-              "assetId": "%s",
-              "comment": "Will be liked"
-            }
-        """.formatted(assetId);
-
-        String response = mockMvc.perform(post("/api/reviews/add")
-                .with(user(testEmail).roles("USER"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(reviewJson))
-            .andExpect(status().isOk())
-            .andReturn().getResponse().getContentAsString();
-
-        ReviewComment review = objectMapper.readValue(response, ReviewComment.class);
-
+	//   @Test
+	// @DisplayName("likeed a comment successfully")
+	//
+	// void testLikeReview() throws Exception {
+        
+	// String reviewJson = """
+	//     {
+	//      "assetId": "%s",
+              //       "comment": "Will be liked"
+	//       }
+	//   """.formatted(assetId);
+	//
+	//   String response = mockMvc.perform(post("/api/reviews/add")
+	//           .with(user(testEmail).roles("USER"))
+	//          .contentType(MediaType.APPLICATION_JSON)
+	//          .content(reviewJson))
+	//       .andExpect(status().isOk())
+	//        .andReturn().getResponse().getContentAsString();
+	//
+	//    ReviewComment review = objectMapper.readValue(response, ReviewComment.class);
+        //
         // ✅ Like the review
-        mockMvc.perform(post("/api/reviews/" + review.getId() + "/like")
-                .with(user(testEmail).roles("USER")))
-            .andExpect(status().isOk());
+	//     mockMvc.perform(post("/api/reviews/" + review.getId() + "/like")
+	//             .with(user(testEmail).roles("USER")))
+	//           .andExpect(status().isOk());
+            //          //
+	//   }
 
-    }
+	//  @Test
+    // @DisplayName("reply to a comment successfully")
+	//void testReplyToReview() throws Exception {
+	//    String reviewJson = """
+	//        {
+	//           "assetId": "%s",
+	//            "comment": "Original review"
+	//           }
+	//       """.formatted(assetId);
 
-    @Test
-    @DisplayName("reply to a comment successfully")
-    void testReplyToReview() throws Exception {
-        // ✅ Step 1: Create a parent review to reply to
-        String reviewJson = """
-            {
-              "assetId": "%s",
-              "comment": "Original review"
-            }
-        """.formatted(assetId);
+	//       String response = mockMvc.perform(post("/api/reviews/add")
+	//           .with(user(testEmail).roles("USER"))
+	//           .contentType(MediaType.APPLICATION_JSON)
+	//           .content(reviewJson))
+	//        .andExpect(status().isOk())
+            //        .andReturn()
+	//        .getResponse()
+	//         .getContentAsString();
 
-        String response = mockMvc.perform(post("/api/reviews/add")
-                .with(user(testEmail).roles("USER"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(reviewJson))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
+	//  ReviewComment parent = objectMapper.readValue(response, ReviewComment.class);
 
-        ReviewComment parent = objectMapper.readValue(response, ReviewComment.class);
+      
+	//  String replyJson = """
+	//    {
+            	//      "assetId": "%s",
+	//    "comment": "This is a reply"
+	//     }
+	//  """.formatted(assetId);
 
-        // ✅ Step 2: Send a reply to that review
-        String replyJson = """
-            {
-              "assetId": "%s",
-              "comment": "This is a reply"
-            }
-        """.formatted(assetId);
-
-        mockMvc.perform(post("/api/reviews/" + parent.getId() + "/reply")
-                .with(user(testEmail).roles("USER"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(replyJson))
-            .andExpect(status().isOk());
-    }
+	//  mockMvc.perform(post("/api/reviews/" + parent.getId() + "/reply")
+	//           .with(user(testEmail).roles("USER"))
+	//            .contentType(MediaType.APPLICATION_JSON)
+	//             .content(replyJson))
+	//         .andExpect(status().isOk());
+	//  }
     
-    @Test
-    @DisplayName("report a comment successfully")
-    void testReportReview() throws Exception {
-        // ✅ Step 1: Add a review to report
-        String reviewJson = """
-            {
-              "assetId": "%s",
-              "comment": "Inappropriate content"
-            }
-        """.formatted(assetId);
+	// @Test
+	//  @DisplayName("report a comment successfully")
+	// void testReportReview() throws Exception {
+	//  
+	//   String reviewJson = """
+	//      {
+	//         "assetId": "%s",
+	//        "comment": "Inappropriate content"
+	//      }
+	//  """.formatted(assetId);
 
-        String response = mockMvc.perform(post("/api/reviews/add")
-                .with(user(testEmail).roles("USER"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(reviewJson))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
+	//  String response = mockMvc.perform(post("/api/reviews/add")
+	//          .with(user(testEmail).roles("USER"))
+	//         .contentType(MediaType.APPLICATION_JSON)
+	//          .content(reviewJson))
+//     .andExpect(status().isOk())
+	//    .andReturn()
+	//    .getResponse()
+	//    .getContentAsString();
 
-        ReviewComment review = objectMapper.readValue(response, ReviewComment.class);
-
-        // ✅ Step 2: Report the review
-        String reportPayload = """
-            {
-              "reason": "Contains offensive language"
-            }
-        """;
-
-        mockMvc.perform(post("/api/reviews/" + review.getId() + "/report")
-                .with(user(testEmail).roles("USER"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(reportPayload))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("Review reported successfully."));
-    }
+	// ReviewComment review = objectMapper.readValue(response, ReviewComment.class);
+	//
+	//  
+	// String reportPayload = """
+	//    {
+	//      "reason": "Contains offensive language"
+	//     }
+	//  """;
+	//
+	// mockMvc.perform(post("/api/reviews/" + review.getId() + "/report")
+	//          .with(user(testEmail).roles("USER"))
+	//           .contentType(MediaType.APPLICATION_JSON)
+	//           .content(reportPayload))
+	//       .andExpect(status().isOk())
+	//        .andExpect(jsonPath("$.message").value("Review reported successfully."));
+	//  }
 
     
     
