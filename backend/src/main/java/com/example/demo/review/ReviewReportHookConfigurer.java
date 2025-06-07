@@ -37,7 +37,7 @@ public class ReviewReportHookConfigurer {
     	    String paddedId = String.format("%03d", reportId);
     	    
 
-    	    notificationService.notifyContributorOfReportedReview(review, reason, reporter, paddedId);
+    	    notificationService.notifyAssetOwnerOfReportedReview(review, reason, reporter, paddedId);
     	});
 
     }

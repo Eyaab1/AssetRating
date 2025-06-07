@@ -59,28 +59,21 @@ toggleProfileDropdown(): void {
   this.showProfileMenu = !this.showProfileMenu;
 }
 
-  fetchNotifications() {
-    const token = localStorage?.getItem('token');
-    if (!token) return;
 
-    const decoded: any = JSON.parse(atob(token.split('.')[1]));
-    const role = decoded?.role;
+fetchNotifications() {
+  const token = localStorage?.getItem('token');
+  if (!token) return;
 
-    this.notificationService.getNotifications().subscribe({
-      next: (notifs) => {
-        this.notifications = notifs.filter(n => {
-          if (role === 'CONTRIBUTOR') return true;
-          return n.type === 'COMMENT_REPLIED' || n.type === 'REVIEW_LIKED';
-        });
+  this.notificationService.getNotifications().subscribe({
+    next: (notifs) => {
+      this.notifications = notifs
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
-        this.notifications = this.notifications.sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-        this.groupNotificationsByDate(this.notifications);
-      },
-      error: (err) => console.error('Error loading notifications', err)
-    });
-  }
+      this.groupNotificationsByDate(this.notifications);
+    },
+    error: (err) => console.error('Error loading notifications', err)
+  });
+}
 
   groupNotificationsByDate(notifs: Notification[]) {
     const now = new Date();
@@ -181,10 +174,13 @@ toggleSectionExpand(section: GroupKey) {
 goToFullNotifications() {
   if (this.role === 'USER') {
     this.router.navigate(['/notificationAll']);
-  } else {
+  } else if (this.role === 'CONTRIBUTOR') {
     this.router.navigate(['/contributorLayout/notificationAll']);
+  } else if (this.role === 'ADMIN') {
+    this.router.navigate(['/admin/notificationAll']);
   }
 }
+
 goToUserProfile() {
   if (this.role === 'USER') {
     this.router.navigate(['/profile']);

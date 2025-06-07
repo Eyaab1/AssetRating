@@ -34,12 +34,9 @@ public class NotificationService {
     private boolean shouldReceiveNotification(User recipient, User actor, NotificationType type, Asset asset) {
         boolean isSelfAction = recipient.getId().equals(actor.getId());
 
-        return switch (type) {
-            case REVIEW_LIKED, COMMENT_REPLIED, ASSET_PUBLISHED, ASSET_UPDATED -> !isSelfAction;
-            case REVIEW_ADDED, REVIEW_REPORTED -> true;
-            default -> true;
-        };
+        return !isSelfAction;  // Admins, contributors, users — all get notified, unless they triggered it themselves
     }
+
 
     public void notifyUser(User recipient, User actor, String content, NotificationType type,
                            String relatedEntityId, String relatedAssetId, Asset asset, String forcedId) {
@@ -71,7 +68,7 @@ public class NotificationService {
         notifyUser(recipient, actor, content, type, relatedEntityId, relatedAssetId, asset, null);
     }
 
-    public void notifyContributorOfNewReview(ReviewComment review, User commenter) {
+    public void notifyAssetOwnerOfNewReview(ReviewComment review, User commenter) {
         Asset asset = assetRepository.findById(review.getAssetId())
                 .orElseThrow(() -> new RuntimeException("Asset not found"));
 
@@ -89,7 +86,7 @@ public class NotificationService {
     }
 
 
-    public void notifyContributorOfReportedReview(ReviewComment review, String reason, User commenter, String reportId) {
+    public void notifyAssetOwnerOfReportedReview(ReviewComment review, String reason, User commenter, String reportId) {
         Asset asset = assetRepository.findById(review.getAssetId())
                 .orElseThrow(() -> new RuntimeException("Asset not found: " + review.getAssetId()));
 
@@ -159,7 +156,7 @@ public class NotificationService {
         }
     }
 
-    public void notifyContributorByAssetId(String assetId, User actor, String content, NotificationType type) {
+    public void notifyAssetOwnerByAssetId(String assetId, User actor, String content, NotificationType type) {
         Asset asset = assetRepository.findById(assetId)
                 .orElseThrow(() -> new RuntimeException("Asset not found"));
 

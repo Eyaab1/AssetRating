@@ -8,6 +8,7 @@ import { Comment } from '../../../shared/models/comment';
 import { CommentComponent } from '../components/comment/comment.component';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { AssetServiceService } from '../../../shared/services/asset-service.service';
 import Swal from 'sweetalert2';
 @Component({
   selector: 'app-review-component',
@@ -19,25 +20,45 @@ import Swal from 'sweetalert2';
 export class ReviewComponentComponent implements OnChanges {
   @Input() assetId!: string;
   @Output() commentAdded = new EventEmitter<void>();
+  @Input() highlightReviewId: string | null = null;
+  @Input() highlightReportId: string | null = null;
 
-
-  allComments: any[] = [];        
-  visibleComments: any[] = [];    
+  allComments: any[] = [];
+  visibleComments: any[] = [];
   showAllComments = false;
   maxVisible = 3;
 
   commentText: string = '';
   userId: string = '';
+  userRole: string = '';
+  userEmail: string = '';
   averageRating: number = 0;
   loading = false;
   errorMessage: string = '';
-@Input() highlightReviewId: string | null = null;
-@Input() highlightReportId: string | null = null;
+  assetPublisherMail: string = '';
 
   constructor(
     private commentService: CommentService,
-    private ratingService: RatingService
+    private ratingService: RatingService,
+    private assetService: AssetServiceService
   ) {}
+
+  ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decoded: any = jwtDecode(token);
+      this.userId = decoded.userId?.toString() ?? '';
+      this.userRole = decoded.role ?? '';
+      this.userEmail = decoded.sub || decoded.email || '';
+      console.log('[DEBUG] currentUserEmail:', this.userEmail);
+    }
+
+
+    if (this.assetId) {
+      this.loadComments();
+      this.loadAverageRating();
+    }
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['assetId'] && this.assetId) {
@@ -46,65 +67,58 @@ export class ReviewComponentComponent implements OnChanges {
     }
   }
 
-  ngOnInit(): void {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded: any = jwtDecode(token);
-      this.userId = decoded.userId?.toString() ?? '';
-    }
-
-    if (this.assetId) {
-      this.loadComments();
-      this.loadAverageRating();
-    }
-  }
-
   loadComments() {
     this.loading = true;
 
-    this.commentService.getCommentsByAsset(this.assetId).subscribe({
-      next: (data) => {
-        const ratingRequests = data.map((c: any) => {
-          const isReview = c.comment.startsWith('__REVIEW__ ');
-          const cleanedComment = isReview ? c.comment.replace('__REVIEW__ ', '') : c.comment;
+    // ✅ Step 1: Fetch asset to get the publisherMail
+    this.assetService.getAssetById(this.assetId).subscribe({
+      next: (asset) => {
+        this.assetPublisherMail = asset.publisherMail;
+  console.log('[DEBUG] assetPublisherMail:', this.assetPublisherMail);
 
-          const baseComment = {
-            ...c,
-            comment: cleanedComment
-          };
+        // ✅ Step 2: Fetch comments
+        this.commentService.getCommentsByAsset(this.assetId).subscribe({
+          next: (data) => {
+            const ratingRequests = data.map((c: any) => {
+              const isReview = c.comment.startsWith('__REVIEW__ ');
+              const cleanedComment = isReview ? c.comment.replace('__REVIEW__ ', '') : c.comment;
+              const baseComment = { ...c, comment: cleanedComment };
 
-          return isReview
-            ? this.ratingService.getUserRating(Number(c.userId), this.assetId).pipe(
-                map((rating) => ({
-                  ...baseComment,
-                  userRating: { average: rating.average }
-                })),
-                catchError(() =>
-                  of({
-                    ...baseComment,
-                    userRating: undefined
-                  })
-                )
-              )
-            : of(baseComment);
-        });
+              return isReview
+                ? this.ratingService.getUserRating(Number(c.userId), this.assetId).pipe(
+                    map((rating) => ({
+                      ...baseComment,
+                      userRating: { average: rating.average }
+                    })),
+                    catchError(() =>
+                      of({ ...baseComment, userRating: undefined })
+                    )
+                  )
+                : of(baseComment);
+            });
 
-        forkJoin(ratingRequests).subscribe({
-          next: (mergedComments) => {
-            this.allComments = mergedComments.sort((a, b) =>
-              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-            );
-            this.updateVisibleComments();
-            this.loading = false;
+            forkJoin(ratingRequests).subscribe({
+              next: (mergedComments) => {
+                this.allComments = mergedComments.sort((a, b) =>
+                  new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                );
+                this.updateVisibleComments();
+                this.loading = false;
+              },
+              error: (err) => {
+                console.error('Error merging ratings/comments', err);
+                this.loading = false;
+              }
+            });
           },
           error: (err) => {
-            console.error('Error loading ratings/comments', err);
+            console.error('Error loading comments', err);
             this.loading = false;
           }
         });
       },
       error: (err) => {
-        console.error('Error loading comments', err);
+        console.error('Error fetching asset', err);
         this.loading = false;
       }
     });
@@ -133,40 +147,36 @@ export class ReviewComponentComponent implements OnChanges {
   }
 
   submitComment() {
-  if (!this.commentText.trim()) return;
+    if (!this.commentText.trim()) return;
 
-  const payload = {
-    userId: Number(this.userId),
-    assetId: this.assetId,
-    comment: this.commentText.trim()
-  };
+    const payload = {
+      userId: Number(this.userId),
+      assetId: this.assetId,
+      comment: this.commentText.trim()
+    };
 
-  this.commentService.addComment(payload).subscribe({
-    next: () => {
-      this.commentText = '';
-      this.errorMessage = '';
-      this.commentAdded.emit();
-      this.loadComments();
-    },
-    error: (err) => {
-      if (
-        err.status === 400 &&
-        err.error === 'Review contains inappropriate language.'
-      ) {
-        // Show SweetAlert warning popup
-        Swal.fire({
-          icon: 'warning',
-          title: 'Inappropriate Comment',
-          text: 'Your comment contains inappropriate language. Please revise it before submitting.',
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#f59e0b'
-        });
-        this.errorMessage = ''; // Optional: clear inline error
-      } else {
-        console.error('Error adding comment', err);
-        this.errorMessage = '⚠️ Failed to submit comment.';
+    this.commentService.addComment(payload).subscribe({
+      next: () => {
+        this.commentText = '';
+        this.errorMessage = '';
+        this.commentAdded.emit();
+        this.loadComments();
+      },
+      error: (err) => {
+        if (err.status === 400 && err.error === 'Review contains inappropriate language.') {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Inappropriate Comment',
+            text: 'Your comment contains inappropriate language. Please revise it before submitting.',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#f59e0b'
+          });
+          this.errorMessage = '';
+        } else {
+          console.error('Error adding comment', err);
+          this.errorMessage = '⚠️ Failed to submit comment.';
+        }
       }
-    }
-  });
-}
+    });
+  }
 }

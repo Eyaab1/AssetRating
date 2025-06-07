@@ -21,7 +21,7 @@
         </div>
         <div class="right-meta">
           <span  *ngIf="comment.userRating" class="user-rating">⭐ {{ comment.userRating.average }}/5</span>
-          <div *ngIf="userRole === 'CONTRIBUTOR'" class="analysis-badge-row">
+          <div *ngIf="userRole === 'CONTRIBUTOR' || userRole === 'ADMIN' " class="analysis-badge-row">
             <ng-container *ngIf="spamLabel === 'spam'; else showSentiment">
               <span class="badge badge-spam">⚠️ Spam</span>
             </ng-container>
@@ -78,7 +78,11 @@
             {{ showReplies ? 'Hide Replies' : 'View Replies (' + comment.replies.length + ')' }}
 
           </button>
-          <div class="edit-delete-actions" *ngIf="currentUserId === +comment.userId">
+          <div class="edit-delete-actions" *ngIf="
+            userRole === 'ADMIN' || 
+            +currentUserId === +comment.userId || 
+            (userRole === 'CONTRIBUTOR' && assetPublisherMail === currentUserEmail)
+          ">
             <button class="icon-btn" (click)="startEditing()">
               <i class="fa-solid fa-pen-to-square"></i> <span>Edit</span>
             </button>
@@ -108,7 +112,7 @@
               <span class="reply-author">{{ getReplyUser(reply.userId)?.firstName || 'User' }} {{ getReplyUser(reply.userId)?.lastName }}</span>
               <span class="reply-date">{{ reply.created_at | date:'short' }}</span>
             </div>
-            <div *ngIf="userRole === 'CONTRIBUTOR'" class="analysis-badge-row right-meta">
+            <div *ngIf="userRole === 'CONTRIBUTOR' || userRole === 'ADMIN' " class="analysis-badge-row right-meta">
               <ng-container *ngIf="replyAnalyses[reply.id]?.spamLabel === 'spam'; else showReplySentiment">
                 <span class="badge badge-spam">⚠️ Spam</span>
               </ng-container>

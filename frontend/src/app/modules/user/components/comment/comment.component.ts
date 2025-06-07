@@ -21,7 +21,6 @@ export class CommentComponent implements OnInit {
   @Input() comment!: Comment & { userRating?: { average: number } };
 
   userC!: User;
-  currentUserId: number | null = null;
   replyUsers: Record<number, User> = {};
   replying = false;
   replyText = '';
@@ -34,10 +33,14 @@ export class CommentComponent implements OnInit {
   profanityWarning: string = '';
 @Input() highlightReviewId: string | null = null;
 @Input() highlightReportId: string | null = null;
+@Input() currentUserId!: string;
+@Input() userRole!: string;
+@Input() currentUserEmail!: string;
+@Input() assetPublisherMail: string = '';
+
 highlightActive = false;
 sentiment: string | null = null;
 spamLabel: string | null = null;
-userRole: string | null = null;
 replyAnalyses: Record<number, { sentiment: string; spamLabel: string }> = {};
 
   private vcr = inject(ViewContainerRef);
@@ -81,12 +84,6 @@ ngOnChanges(changes: SimpleChanges): void {
 }
 ngOnInit(): void {
   // 1. Decode token
-  const token = localStorage.getItem('token');
-  if (token) {
-    const decoded: any = jwtDecode(token);
-    this.currentUserId = decoded.userId ? Number(decoded.userId) : null;
-    this.userRole = decoded.role || null;
-  }
 
   // 2. Fetch comment author
   this.userService.getUserById(Number(this.comment.userId)).subscribe({
@@ -124,7 +121,7 @@ this.comment.replies?.forEach(reply => {
 
   // 4. Set like data
   this.likesCount = this.comment.likes?.length ?? 0;
-  this.liked = this.comment.likes?.includes(this.currentUserId!) ?? false;
+  this.liked = this.comment.likes?.includes(+this.currentUserId!) ?? false;
 
   // 5. Fetch sentiment analysis
   this.commentService.getReview(this.comment.id).subscribe({
@@ -145,7 +142,7 @@ this.comment.replies?.forEach(reply => {
     if (!this.currentUserId) return;
 
     if (this.liked) {
-      this.commentService.unlikeReview(this.comment.id, this.currentUserId).subscribe({
+      this.commentService.unlikeReview(this.comment.id, +this.currentUserId).subscribe({
         next: () => {
           this.liked = false;
           this.likesCount = Math.max(this.likesCount - 1, 0);
@@ -153,7 +150,7 @@ this.comment.replies?.forEach(reply => {
         error: (err) => console.error('Error unliking comment', err)
       });
     } else {
-      this.commentService.likeReview(this.comment.id, this.currentUserId).subscribe({
+      this.commentService.likeReview(this.comment.id, +this.currentUserId).subscribe({
         next: () => {
           this.liked = true;
           this.likesCount += 1;
@@ -188,7 +185,7 @@ this.comment.replies?.forEach(reply => {
     if (!this.replyText.trim() || !this.currentUserId) return;
   
     this.commentService.replyToReview(this.comment.id, {
-      userId: this.currentUserId,
+      userId: +this.currentUserId,
       comment: this.replyText
     }).subscribe({
       next: () => {

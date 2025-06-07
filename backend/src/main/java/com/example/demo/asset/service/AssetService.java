@@ -12,6 +12,7 @@ import com.example.demo.asset.model.Status;
 import com.example.demo.asset.model.Tag;
 import com.example.demo.asset.model.Template;
 import com.example.demo.asset.model.Themes;
+import com.example.demo.asset.model.UILibrary;
 import com.example.demo.asset.model.Utility;
 import com.example.demo.asset.model.Widget;
 import com.example.demo.asset.repository.AssetReleaseRepository;
@@ -85,6 +86,7 @@ public class AssetService {
             case "SHEET" -> new Sheet();
             case "CONNECTOR" -> new Connector();
             case "THEME" -> new Themes();
+            case "UILIBRARY" -> new UILibrary();
             default -> throw new IllegalArgumentException("Unknown asset type: " + request.type);
         };
 
@@ -142,6 +144,8 @@ public class AssetService {
         User actor = authservice.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
         	    .orElseThrow(() -> new RuntimeException("User not found"));
         	notificationService.notifyAllUsersOfAsset(saved, actor, NotificationType.ASSET_PUBLISHED);
+        	System.out.println("Called notifyAllUsersOfAsset for asset: " + asset.getId());
+
         return saved;
 
     }

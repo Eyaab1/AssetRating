@@ -78,13 +78,10 @@ export const routes: Routes = [
         {path:'assets/add', component: AddAssetAdminComponent},
         {path :'assets/edit/:id', component:EditAssetAdminComponent},
         {path: 'users/overview', component: UserOverviewComponent},
-        {path :'chat-bot', component: AdminChatbotComponent},
-        {path:'profile', component:UserProfileComponent},
+        {path : 'chat-bot', component: AdminChatbotComponent},
+        {path: 'profile', component:UserProfileComponent},
         {path: 'notificationAll',component:NotificationSeeAllComponent},
         { path: 'detail/:id', component: DetailAssetComponent},
-
-
-
       ] 
     },
   

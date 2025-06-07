@@ -7,6 +7,8 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.example.rating.Impl.ToRate;
@@ -110,6 +112,19 @@ public abstract class Asset {
         this.categories = categories;
         
     }
+    
+    @PrePersist
+    @PreUpdate
+    private void validateAssetType() {
+        String type = this.getClass().getSimpleName(); // gets the actual subclass name
+        Set<String> allowed = Set.of("Widget", "Sheet", "Template", "Theme", "UILibrary", "Connector", "Utility");
+
+        if (!allowed.contains(type)) {
+            throw new IllegalArgumentException("Invalid asset type: " + type);
+        }
+    }
+
+    
     public String getFilePath() {
 		return filePath;
 	}
