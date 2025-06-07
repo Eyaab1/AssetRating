@@ -30,8 +30,6 @@ public class UserDTO {
 	        this.lastLogin=user.getLastLogin();
 	        this.setEnabled(user.isEnabled());
 	        }
-
-	 
 	    public Long getId() {
 	    	return id; 
 	    	}

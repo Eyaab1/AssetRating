@@ -34,5 +34,4 @@ public class ContributorChatBotController {
 	        String answer = chatBotService.askQuestion(assetId, question);
 	        return ResponseEntity.ok(Map.of("answer", answer));
 	    }
-
 }

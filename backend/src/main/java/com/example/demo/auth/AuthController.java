@@ -22,16 +22,16 @@ public class AuthController {
     
     //@PostMapping("/register")
     //public ResponseEntity<?> register(@RequestBody User user) {
-      //  String result = authService.register(user);
+        //String result = authService.register(user);
 
-//        if ("Email already exists!".equals(result)) {
-  //          return ResponseEntity.status(HttpStatus.CONFLICT)
-    //                             .body(Collections.singletonMap("message", result));
+        //if ("Email already exists!".equals(result)) {
+          ///  return ResponseEntity.status(HttpStatus.CONFLICT)
+        //                         .body(Collections.singletonMap("message", result));
       //  }
 
-        //return ResponseEntity.status(HttpStatus.CREATED)
-          //                   .body(Collections.singletonMap("message", result));
-    //}
+    //    return ResponseEntity.status(HttpStatus.CREATED)
+  //                        .body(Collections.singletonMap("message", result));
+  //   }
 
 
     @PostMapping("/login")

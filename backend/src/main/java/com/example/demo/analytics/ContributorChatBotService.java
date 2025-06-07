@@ -27,8 +27,8 @@ public class ContributorChatBotService {
         try {
             ResponseEntity<Map> response = restTemplate.postForEntity(flaskUrl, entity, Map.class);
 
-            System.out.println("Flask response status: " + response.getStatusCode());
-            System.out.println("Flask response body: " + response.getBody());
+            System.out.println("flask response status " + response.getStatusCode());
+            System.out.println("flask response body " + response.getBody());
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 Object rawAnswer = response.getBody().get("answer");

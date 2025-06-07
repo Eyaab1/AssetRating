@@ -88,7 +88,7 @@ public class NotificationService {
         }
     }
 
-    // ✅ uses padded reportId string
+
     public void notifyContributorOfReportedReview(ReviewComment review, String reason, User commenter, String reportId) {
         Asset asset = assetRepository.findById(review.getAssetId())
                 .orElseThrow(() -> new RuntimeException("Asset not found: " + review.getAssetId()));
