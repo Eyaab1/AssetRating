@@ -4,6 +4,7 @@ import com.example.demo.dto.ReviewRequest;
 import com.example.demo.dto.ModerationResult;
 import com.example.demo.dto.ProfanityCheckResponse;
 import com.example.demo.dto.ReplyRequest;
+import com.example.demo.asset.model.Asset;
 import com.example.demo.asset.service.AssetService;
 import com.example.demo.auth.AuthService;
 import com.example.demo.auth.User;
@@ -11,9 +12,12 @@ import com.example.review.model.ReviewComment;
 import com.example.review.service.ReviewCommentService;
 import com.example.demo.review.ReviewAnalysisClient;
 import com.example.demo.notification.NotificationService;
+import com.example.demo.notification.NotificationType;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -179,10 +183,46 @@ public class ReviewCommentController {
     }
 
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<?> deleteReview(@PathVariable Long reviewId) {
+    public ResponseEntity<?> deleteReview(@PathVariable Long reviewId, Principal principal) {
+        // Get the user performing the deletion
+        String email = principal.getName();
+        User performingUser = authService.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Get the comment to find the original author
+        ReviewComment comment = reviewService.findById(reviewId)
+            .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        Long originalAuthorId = comment.getUserId();
+
+        // Notify the original author ONLY IF another user deleted it
+        if (!originalAuthorId.equals(performingUser.getId())) {
+            User author = authService.findById(originalAuthorId)
+                .orElseThrow(() -> new RuntimeException("Original author not found"));
+
+            Asset asset = assetService.findById(comment.getAssetId())
+                .orElseThrow(() -> new RuntimeException("Asset not found"));
+
+            String content = "Your comment on \"" + asset.getName() + "\" was deleted by a moderator.";
+
+            notificationService.notifyUser(
+                author,
+                performingUser,
+                content,
+                NotificationType.REVIEW_REMOVED,
+                reviewId.toString(),
+                asset.getId(),
+                asset
+            );
+        }
+
+        // Delete the comment
         reviewService.deleteReview(reviewId);
+
         return ResponseEntity.ok(Map.of("message", "Review deleted."));
     }
+
+
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ReviewComment>> getReviewsByUser(@PathVariable Long userId) {

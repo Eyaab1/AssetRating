@@ -14,6 +14,7 @@ import { jwtDecode } from 'jwt-decode';
 import { TagAndcategoryService } from '../../../../shared/services/tag-andcategory.service';
 import { Format } from '../../../../shared/enums/Format';
 import { ActivatedRoute } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-add-asset-admin',
@@ -245,7 +246,13 @@ export class AddAssetAdminComponent implements OnInit {
 
     this.assetService.addAsset(formData).subscribe({
       next: () => {
-        alert(`Asset of type '${payload.type}' created successfully!`);
+        Swal.fire({
+          title: 'Success!',
+          text: `Asset of type '${payload.type}' created successfully!`,
+          icon: 'success',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'OK'
+        });
         this.assetForm.reset({
           license: LicenseType.Free,
           status: StatusType.Published,
@@ -262,7 +269,13 @@ export class AddAssetAdminComponent implements OnInit {
       },
       error: (err) => {
         console.error('Asset creation failed:', err);
-        alert('Failed to create asset.');
+        Swal.fire({
+          title: 'Error!',
+          text: 'Failed to create asset.',
+          icon: 'error',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'OK'
+        });
       }
     });
   }

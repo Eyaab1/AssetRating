@@ -1,3 +1,31 @@
+.review-filter-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 6px 14px;
+  font-size: 14px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  background-color: #f3f4f6;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background-color: #e5e7eb;
+}
+
+.filter-btn.active {
+  background-color: #2563eb;
+  color: white;
+  border-color: #2563eb;
+  font-weight: bold;
+}
+
 .review-component {
   background: #ffffff;
   padding: 30px;

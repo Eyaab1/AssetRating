@@ -36,6 +36,7 @@ export class ReviewComponentComponent implements OnChanges {
   loading = false;
   errorMessage: string = '';
   assetPublisherMail: string = '';
+  reviewFilter: 'ALL' | 'POSITIVE' | 'NEGATIVE' | 'SPAM' = 'ALL';
 
   constructor(
     private commentService: CommentService,
@@ -67,72 +68,115 @@ export class ReviewComponentComponent implements OnChanges {
     }
   }
 
-  loadComments() {
-    this.loading = true;
+loadComments() {
+  this.loading = true;
 
-    // ✅ Step 1: Fetch asset to get the publisherMail
-    this.assetService.getAssetById(this.assetId).subscribe({
-      next: (asset) => {
-        this.assetPublisherMail = asset.publisherMail;
-  console.log('[DEBUG] assetPublisherMail:', this.assetPublisherMail);
+  // Step 1: Get asset to fetch publisherMail
+  this.assetService.getAssetById(this.assetId).subscribe({
+    next: (asset) => {
+      this.assetPublisherMail = asset.publisherMail;
+      console.log('[DEBUG] assetPublisherMail:', this.assetPublisherMail);
 
-        // ✅ Step 2: Fetch comments
-        this.commentService.getCommentsByAsset(this.assetId).subscribe({
-          next: (data) => {
-            const ratingRequests = data.map((c: any) => {
-              const isReview = c.comment.startsWith('__REVIEW__ ');
-              const cleanedComment = isReview ? c.comment.replace('__REVIEW__ ', '') : c.comment;
-              const baseComment = { ...c, comment: cleanedComment };
+      // Step 2: Get all comments
+      this.commentService.getCommentsByAsset(this.assetId).subscribe({
+        next: (data) => {
+          const enrichedCommentObservables = data.map((c: any) => {
+            const isReview = c.comment.startsWith('__REVIEW__ ');
+            const cleanedComment = isReview ? c.comment.replace('__REVIEW__ ', '') : c.comment;
+            const baseComment = { ...c, comment: cleanedComment };
 
-              return isReview
-                ? this.ratingService.getUserRating(Number(c.userId), this.assetId).pipe(
-                    map((rating) => ({
-                      ...baseComment,
-                      userRating: { average: rating.average }
-                    })),
-                    catchError(() =>
-                      of({ ...baseComment, userRating: undefined })
-                    )
-                  )
-                : of(baseComment);
-            });
+            const review$ = isReview
+              ? this.ratingService.getUserRating(Number(c.userId), this.assetId).pipe(
+                  map((rating) => ({
+                    ...baseComment,
+                    userRating: { average: rating.average }
+                  })),
+                  catchError(() => of({ ...baseComment, userRating: undefined }))
+                )
+              : of(baseComment);
 
-            forkJoin(ratingRequests).subscribe({
-              next: (mergedComments) => {
-                this.allComments = mergedComments.sort((a, b) =>
-                  new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-                );
-                this.updateVisibleComments();
-                this.loading = false;
-              },
-              error: (err) => {
-                console.error('Error merging ratings/comments', err);
-                this.loading = false;
-              }
-            });
-          },
-          error: (err) => {
-            console.error('Error loading comments', err);
-            this.loading = false;
-          }
-        });
-      },
-      error: (err) => {
-        console.error('Error fetching asset', err);
-        this.loading = false;
-      }
-    });
-  }
+            const moderation$ = this.commentService.getReview(c.id).pipe(
+              map((res) => ({
+                sentiment: res.analysis?.sentiment || null,
+                spamLabel: res.analysis?.spamLabel || null
+              })),
+              catchError(() => of({ sentiment: null, spamLabel: null }))
+            );
+
+            return forkJoin([review$, moderation$]).pipe(
+              map(([reviewData, moderationData]) => ({
+                ...reviewData,
+                ...moderationData
+              }))
+            );
+          });
+
+          forkJoin(enrichedCommentObservables).subscribe({
+            next: (mergedComments) => {
+              this.allComments = mergedComments.sort((a, b) =>
+                new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+              );
+              this.applyFilters();  // ✅ Only filtered comments are displayed
+              this.loading = false;
+            },
+
+            error: (err) => {
+              console.error('Error enriching comments with ratings/moderation:', err);
+              this.loading = false;
+            }
+          });
+        },
+        error: (err) => {
+          console.error('Error loading comments:', err);
+          this.loading = false;
+        }
+      });
+    },
+    error: (err) => {
+      console.error('Error fetching asset:', err);
+      this.loading = false;
+    }
+  });
+}
+
 
   updateVisibleComments() {
     this.visibleComments = this.showAllComments
       ? this.allComments
       : this.allComments.slice(0, this.maxVisible);
   }
+applyFilters(): void {
+  const filtered = this.allComments.filter(comment => {
+    const sentiment = comment.sentiment?.toUpperCase() || '';
+    const spamLabel = comment.spamLabel?.toUpperCase() || '';
+
+    // Spam overrides everything
+    if (this.reviewFilter === 'SPAM') {
+      return spamLabel === 'SPAM';
+    }
+
+    if (spamLabel === 'SPAM') {
+      return this.reviewFilter === 'ALL'; // Spam is excluded from other filters
+    }
+
+    switch (this.reviewFilter) {
+      case 'POSITIVE':
+        return sentiment === 'POSITIVE';
+      case 'NEGATIVE':
+        return sentiment === 'NEGATIVE';
+      default:
+        return true;
+    }
+  });
+
+  this.visibleComments = this.showAllComments
+    ? filtered
+    : filtered.slice(0, this.maxVisible);
+}
 
   toggleShowAllComments() {
     this.showAllComments = !this.showAllComments;
-    this.updateVisibleComments();
+    this.applyFilters();
   }
 
   loadAverageRating() {

@@ -1,4 +1,27 @@
 <div class="review-component">
+  <div class="review-filter-buttons" *ngIf="userRole === 'CONTRIBUTOR' || userRole === 'ADMIN'">
+    <button
+      class="filter-btn"
+      [class.active]="reviewFilter === 'ALL'"
+      (click)="reviewFilter = 'ALL'; applyFilters()">All
+    </button>
+    <button
+      class="filter-btn"
+      [class.active]="reviewFilter === 'POSITIVE'"
+      (click)="reviewFilter = 'POSITIVE'; applyFilters()">Positive
+    </button>
+    <button
+      class="filter-btn"
+      [class.active]="reviewFilter === 'NEGATIVE'"
+      (click)="reviewFilter = 'NEGATIVE'; applyFilters()">Negative
+    </button>
+    <button
+      class="filter-btn"
+      [class.active]="reviewFilter === 'SPAM'"
+      (click)="reviewFilter = 'SPAM'; applyFilters()">Spam
+    </button>
+  </div>
+
 
   <div *ngIf="visibleComments.length > 0; else noComments">
     <div
