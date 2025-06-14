@@ -3,12 +3,9 @@
         <i class="fas fa-arrow-left me-2"></i> Back
     </button>
   <div class="detail-container">
-
-  <!--  LEFT COLUMN  -->
   <div class="left-column">
-    <!-- Header -->
    <div class="header">
-  <img [src]="getIcon(assetSelected?.image || '')" alt="Asset Icon" class="asset-icon" />
+  <img [src]="getImage(assetSelected?.image || '')" alt="Asset Icon" class="asset-icon" />
   
   <div class="asset-info">
     <h2>{{ assetSelected?.label }}</h2>
@@ -24,15 +21,11 @@
     
   </div>
 </div>
-    <!-- Tabs -->
     <div class="tabs">
       <button [class.active]="activeTab === 'docs'" (click)="activeTab = 'docs'">Documentation</button>
       <button [class.active]="activeTab === 'releases'" (click)="activeTab = 'releases'">Releases</button>
     </div>
-
-    <!-- Tab Content -->
     <div class="tab-content">
-      <!--  Documentation Tab  -->
       <ng-container *ngIf="activeTab === 'docs'">
         <div class="doc-preview" *ngIf="assetSelected?.documentation; else noDoc">
           <iframe 
@@ -46,17 +39,12 @@
           <p>No documentation available.</p>
         </ng-template>
       </ng-container>
-
-      <!-- Releases Tab -->
-      <!-- Releases Tab -->
 <ng-container *ngIf="activeTab === 'releases'">
   <div *ngIf="assetReleases.length > 0; else noReleases">
     <div
       *ngFor="let release of assetReleases"
       class="release-card"
-      [class.selected]="selectedRelease?.releasedAsset?.id === release.releasedAsset?.id"
-    >
-      <!-- RELEASE HEADER -->
+      [class.selected]="selectedRelease?.releasedAsset?.id === release.releasedAsset.id">
       <div class="release-header" (click)="toggleRelease(getReleasedAssetId(release.releasedAsset))">
        <div class="release-meta">
           <div class="meta-left">
@@ -72,10 +60,7 @@
           </div>
         </div>
       </div>
-
-      <!-- RELEASE CONTENT -->
       <div *ngIf="selectedRelease?.releasedAsset?.id === release.releasedAsset?.id">
-        <!-- Inner Tabs -->
         <div class="tab-buttons">
           <button
             [class.active]="activeReleaseTabs[release.releasedAsset.id] === 'docs'"
@@ -90,10 +75,7 @@
                 <i class="fas fa-comments"></i> Feedback
           </button>
         </div>
-
-        <!-- Tab Content -->
         <div class="tab-content">
-          <!-- DOCS TAB -->
           <div *ngIf="activeReleaseTabs[release.releasedAsset.id] === 'docs'">
             <iframe
               *ngIf="release.releasedAsset?.documentation"
@@ -104,8 +86,6 @@
               No documentation available for this release.
             </p>
           </div>
-
-          <!-- FEEDBACK TAB -->
           <div *ngIf="activeReleaseTabs[release.releasedAsset.id] === 'feedback'">
             <div class="review-header">
               <div class="text-header">
@@ -132,8 +112,6 @@
       </div>
     </div>
   </div>
-
-  <!-- NO RELEASES FALLBACK -->
   <ng-template #noReleases>
     <p>No releases available for this asset.</p>
   </ng-template>
@@ -142,8 +120,6 @@
 
 
     </div>
-
-    <!--  Review Section  -->
     <div class="review-header"     *ngIf="activeTab !== 'releases'" >
       <div class="text-header">
       <h3 class="section-title">What People Are Saying</h3>
@@ -161,9 +137,7 @@
 
   </div>
 
-  <!--  RIGHT COLUMN  -->
   <div class="right-column">
-    <!-- Asset Meta Info -->
     <div class="asset-meta">
       <h4 class="about-title">About this asset</h4>
       <p class="publisher"><i class="fa fa-user"></i> {{ assetSelected?.publisher }}</p>
@@ -173,7 +147,6 @@
     </p>
     </div>
 
-    <!-- Average Ratings -->
     <div class="rating-section">
       <h3>Average Ratings</h3>
       <div class="rating-category" *ngFor="let category of ratingCategories">
@@ -188,8 +161,6 @@
         <small>{{ categoryAverages[category.field] | number:'1.1-1' }}/5</small>
       </div>
     </div>
-
-    <!-- Same Category Assets -->
     <div class="same-category-header">
       <h4>Same category</h4>
     </div>
@@ -200,7 +171,7 @@
   (click)="goTheDetail(item.id)"
 >
 
-        <img [src]="getIcon(item.image)" class="category-icon" />
+        <img [src]="getImage(item.image)" class="category-icon" />
         <div class="category-text">
           <strong>{{ item.label }}</strong>
           <p>{{ item.description }}</p>
@@ -211,10 +182,9 @@
     
     
   
-    
+
   </div>
 
-  <!--  Review Popup Modal  -->
   <app-review-popup #reviewModal (reviewSubmitted)="onReviewSubmitted()"></app-review-popup>
 
 </div>

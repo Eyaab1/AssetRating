@@ -6,7 +6,6 @@ import com.example.demo.auth.AuthRepository;
 import com.example.demo.auth.AuthService;
 import com.example.demo.auth.User;
 import com.example.review.model.ReviewComment;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -19,23 +18,21 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final AssetRepository assetRepository;
     private final AuthService authService;
-    private final SimpMessagingTemplate messagingTemplate;
 
     public NotificationService(NotificationRepository notificationRepository,
                                AssetRepository assetRepository,
-                               AuthService authService,
-                               SimpMessagingTemplate messagingTemplate) {
+                               AuthService authService) {
         this.notificationRepository = notificationRepository;
         this.assetRepository = assetRepository;
         this.authService = authService;
-        this.messagingTemplate = messagingTemplate;
+        
     }
 
     private boolean shouldReceiveNotification(User recipient, User actor, NotificationType type, Asset asset) {
         boolean isSelfAction = recipient.getId().equals(actor.getId());
 
-        return !isSelfAction;  // Admins, contributors, users — all get notified, unless they triggered it themselves
-    }
+        return !isSelfAction;  
+        }
 
 
     public void notifyUser(User recipient, User actor, String content, NotificationType type,
@@ -60,7 +57,6 @@ public class NotificationService {
         n.setRead(false);
 
         notificationRepository.save(n);
-        messagingTemplate.convertAndSend("/topic/notifications/" + recipient.getId(), n);
     }
 
     public void notifyUser(User recipient, User actor, String content, NotificationType type,
@@ -145,9 +141,9 @@ public class NotificationService {
     public void notifyAllUsersOfAsset(Asset asset, User actor, NotificationType type) {
         String message;
         if (type == NotificationType.ASSET_PUBLISHED) {
-            message = "🚀 New feature alert! A new asset titled \"" + asset.getName() + "\" has just been published — check it out now!";
+            message = " New feature alert! A new asset titled \"" + asset.getName() + "\" has just been published — check it out now!";
         } else {
-            message = "🔁 \"" + asset.getName() + "\" just got a new version! Discover the latest update now.";
+            message = "" + asset.getName() + "\" just got a new version! Discover the latest update now.";
         }
 
         List<User> allUsers = authService.findAll();

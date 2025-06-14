@@ -53,14 +53,11 @@ export class ReviewComponentComponent implements OnChanges {
       this.userEmail = decoded.sub || decoded.email || '';
       console.log('[DEBUG] currentUserEmail:', this.userEmail);
     }
-
-
     if (this.assetId) {
       this.loadComments();
       this.loadAverageRating();
     }
   }
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['assetId'] && this.assetId) {
       this.loadComments();
@@ -71,7 +68,6 @@ export class ReviewComponentComponent implements OnChanges {
 loadComments() {
   this.loading = true;
 
-  // Step 1: Get asset to fetch publisherMail
   this.assetService.getAssetById(this.assetId).subscribe({
     next: (asset) => {
       this.assetPublisherMail = asset.publisherMail;

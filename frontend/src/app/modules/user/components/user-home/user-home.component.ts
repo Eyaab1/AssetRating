@@ -8,7 +8,7 @@ import { TagAndcategoryService } from '../../../../shared/services/tag-andcatego
 import { DecodedToken } from '../../../../shared/decoded-token';
 import { AuthService } from '../../../../core/auth/services/auth.service';
 import { RatingService } from '../../../../shared/services/rating.service';
-import { forkJoin } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'app-user-home',
@@ -28,28 +28,15 @@ export class UserHomeComponent implements OnInit {
   loadingRecommendations = true;
   role: string='';
   groupedAssets: { label: string; assets: Asset[] }[] = [];
-
   allCategories: { id: number; name: string }[] = [];
   selectedCategoryIds: number[] = [];
-
   allTags: { id: number; name: string }[] = [];
   selectedTagNames: string[] = [];
-
   searchQuery: string = '';
   quickViewRating: number | null = null;
 breadcrumb: string[] = ['Homepage'];
 
-navigateToBreadcrumb(index: number): void {
-  const label = this.breadcrumb[index];
-  if (label === 'Homepage') {
-    this.clearAllFilters();
-    this.searchQuery = '';
-    this.filteredAssets = [...this.assets];
-    this.groupByType();
-    this.updateSections();
-  }
-  this.breadcrumb = this.breadcrumb.slice(0, index + 1);
-}
+
 
   constructor(
     private assetService: AssetServiceService,
@@ -71,7 +58,6 @@ navigateToBreadcrumb(index: number): void {
       },
       error: (err) => console.error('Failed to fetch assets:', err)
     });
-
     this.tagCatgService.getAllCategories().subscribe({
       next: (data) => this.allCategories = data,
       error: (err) => console.error('Failed to fetch categories:', err)
@@ -94,10 +80,8 @@ navigateToBreadcrumb(index: number): void {
     }
 
   }
-  
 onFilterChange(type: 'tags' | 'categories' | 'type', event: Event): void {
   const checkbox = event.target as HTMLInputElement;
-
   if (type === 'tags') {
     const value: string = checkbox.value;
     if (checkbox.checked) {
@@ -120,12 +104,9 @@ onFilterChange(type: 'tags' | 'categories' | 'type', event: Event): void {
       this.selectedTypes = this.selectedTypes.filter(t => t !== value);
     }
   }
-
   this.applyFilters();
-}
-
-
-  applyFilters(): void {
+  }
+applyFilters(): void {
   this.filteredAssets = this.assets.filter(asset => {
     const matchesCategory = this.selectedCategoryIds.length === 0 ||
       asset.categories?.some(c => c.id !== null && this.selectedCategoryIds.includes(c.id));
@@ -151,7 +132,6 @@ onFilterChange(type: 'tags' | 'categories' | 'type', event: Event): void {
   this.updateSections();
 }
 
-
   getAssetDetailLink(assetId: string): string {
     const decoded: DecodedToken | null = this.authService.decodeToken();
     const role = decoded?.role || '';
@@ -175,7 +155,12 @@ onFilterChange(type: 'tags' | 'categories' | 'type', event: Event): void {
 
  updateSections(): void {
   const ratingRequests = this.filteredAssets.map(asset =>
-    this.ratingService.getAveragerating(asset.id)
+    this.ratingService.getAveragerating(asset.id).pipe(
+      catchError(err=>{
+        console.error(`Failed to fetch rating for asset ${asset.id}:`, err);
+        return of(0); //hedha lel defaut rating ken fama error
+      })
+    )
   );
 
   forkJoin(ratingRequests).subscribe((averages) => {
@@ -212,7 +197,6 @@ onFilterChange(type: 'tags' | 'categories' | 'type', event: Event): void {
 goToDetail(assetId: string) {
   if(this.role === 'CONTRIBUTOR') {
   this.router.navigate(['/contributorLayout/detail', assetId])} 
-  
   else if (this.role === 'USER') {
   this.router.navigate(['/detail', assetId]);}
   else if (this.role === 'ADMIN') {

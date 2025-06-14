@@ -188,3 +188,51 @@ button:disabled {
   background-color: #3f51b5;
   color: white;
 }
+.custom-tag-wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.custom-tag-input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-right: 8px;
+}
+
+.custom-tag-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.custom-tag-btn:hover {
+  background-color: #2d83c5;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-chip {
+  background-color: #f0f0f0;
+  border-radius: 20px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.tag-chip.selected {
+  background-color: #3498db;
+  color: white;
+}

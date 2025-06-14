@@ -1,14 +1,12 @@
 <div class="form-wrapper">
   <h2 class="form-title">Add New Asset</h2>
   <form [formGroup]="assetForm" (ngSubmit)="submitAsset()" enctype="multipart/form-data">
-
-    <!-- Section: Basic Info -->
     <div class="form-grid-3">
       <div class="form-group"><label>Name</label><input type="text" formControlName="name" /></div>
       <div class="form-group"><label>Label</label><input type="text" formControlName="label" /></div>
-      <div class="form-group"><label>Publisher</label><input type="text" formControlName="publisher" /></div>
-      <div class="form-group"><label>Email</label><input type="email" formControlName="publisherMail" /></div>
-      <div class="form-group"><label>Publish Date</label><input type="date" formControlName="publishDate" /></div>
+      <div class="form-group"><label>Publisher</label><input type="text" formControlName="publisher" [readonly]="true" /></div>
+      <div class="form-group"><label>Email</label><input type="email" formControlName="publisherMail" [readonly]="true" /></div>
+      <div class="form-group"><label>Created at</label><input type="date" formControlName="publishDate"  [readonly]="true"  /></div>
       <div class="form-group"><label>License</label>
         <select formControlName="license">
           <option *ngFor="let l of licenseOptions" [value]="l">{{ l }}</option>
@@ -30,13 +28,9 @@
         </select>
       </div>
     </div>
-
-    <!-- Description (optional) -->
     <div class="form-group full"><label>Description</label>
       <textarea rows="2" formControlName="description" placeholder="Short description..."></textarea>
     </div>
-
-    <!-- Uploads -->
     <div class="form-grid-3">
       <div class="form-group"><label>Upload Doc (PDF)</label>
         <input type="file" accept="application/pdf" (change)="onDocumentationSelect($event)" />
@@ -55,8 +49,6 @@
       </div>
      
     </div>
-
-    <!-- Tags / Category -->
     <div class="form-grid-2">
       <div class="form-group">
         <label>Tags</label>
@@ -69,7 +61,20 @@
             {{ tag.name }}
           </span>
         </div>
+        <div class="custom-tag-wrapper">
+          <input 
+            type="text" 
+            [(ngModel)]="customTag" 
+            placeholder="New tag..." 
+            class="custom-tag-input"
+            name="customTag"
+           [ngModelOptions]="{ standalone: true }"
+          />
+
+          <button type="button" class="custom-tag-btn" (click)="addCustomTag()" >+ Add</button>
+        </div>
       </div>
+
       
       
       <div class="form-group">
@@ -79,15 +84,11 @@
         </select>
       </div>
     </div>
-
-    <!-- Advanced Section Toggle -->
     <div class="form-group full">
       <button type="button" class="toggle-btn" (click)="showRelatedType = !showRelatedType">
         {{ showRelatedType ? 'Hide' : 'Show' }} Related Fields
       </button>
     </div>
-
-    <!-- Advanced Fields -->
     <div *ngIf="showRelatedType" class="form-grid-3">
       <div class="form-group" *ngIf="assetForm.get('framework')"><label>Framework</label>
         <select formControlName="framework">
@@ -125,8 +126,6 @@
         <textarea rows="2" formControlName="dependencies"></textarea>
       </div>
     </div>
-
-    <!-- Submit -->
     <div class="form-actions">
       <button type="submit" [disabled]="assetForm.invalid">Submit Asset</button>
     </div>

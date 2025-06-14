@@ -55,9 +55,10 @@ public class AssetController {
     @PreAuthorize("hasRole('CONTRIBUTOR')")
     public ResponseEntity<Asset> createAsset(
             @RequestPart("request") AssetRequest request,
-            @RequestPart(value = "documentation", required = false) MultipartFile documentation
+            @RequestPart(value = "documentation", required = false) MultipartFile documentation,
+            @RequestParam(value = "image", required = false) MultipartFile imageFile
     ) {
-        Asset createdAsset = assetService.createAssetWithFile(request, documentation);
+        Asset createdAsset = assetService.createAssetWithFile(request, documentation,imageFile);
         return ResponseEntity.ok(createdAsset);
     }
 

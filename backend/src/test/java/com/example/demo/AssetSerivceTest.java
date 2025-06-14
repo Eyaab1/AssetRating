@@ -49,7 +49,6 @@ public class AssetSerivceTest {
 
         assertNotNull(saved);  
         assertEquals("Test Asset", saved.getName()); 
-
         verify(assetRepository, times(1)).save(any(Widget.class));
     }
 }

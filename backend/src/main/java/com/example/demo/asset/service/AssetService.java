@@ -149,21 +149,35 @@ public class AssetService {
         return saved;
 
     }
-    public Asset createAssetWithFile(AssetRequest request, MultipartFile documentationFile) {
+    public Asset createAssetWithFile(AssetRequest request, MultipartFile documentationFile, MultipartFile imageFile) {
         if (documentationFile != null && !documentationFile.isEmpty()) {
             String docFilename = UUID.randomUUID() + "_" + documentationFile.getOriginalFilename();
-            Path path = Paths.get("uploads/docs/" + docFilename);
+            Path docPath = Paths.get("uploads/docs/" + docFilename);
             try {
-                Files.createDirectories(path.getParent());
-                Files.copy(documentationFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                Files.createDirectories(docPath.getParent());
+                Files.copy(documentationFile.getInputStream(), docPath, StandardCopyOption.REPLACE_EXISTING);
                 request.documentation = "/docs/" + docFilename;
             } catch (IOException e) {
                 throw new RuntimeException("Failed to store documentation", e);
             }
         }
 
-        return createAssetFromRequest(request); 
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String imageFilename = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
+            Path imagePath = Paths.get("uploads/images/" + imageFilename);
+            try {
+                Files.createDirectories(imagePath.getParent());
+                Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+                request.image = "/images/" + imageFilename;
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to store image", e);
+            }
+        }
+
+        return createAssetFromRequest(request);
     }
+
+
 
     
     public Asset uploadAssetRelease(AssetReleaseRequest request) {

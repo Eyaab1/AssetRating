@@ -26,7 +26,6 @@ export class AddAssetFormComponent implements OnInit {
   projectTypes = Object.values(ProjectType);
   frameworks = Object.values(Framework);
   showRelatedType: boolean = false;
-
   imageFile: File | null = null;
   imagePreview: string | null = null;
   dragImageOver: boolean = false;
@@ -35,12 +34,7 @@ export class AddAssetFormComponent implements OnInit {
   dragIconOver: boolean = false;
   documentationFile: File | null = null;
 
-onDocumentationSelect(event: Event): void {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    this.documentationFile = input.files[0];
-  }
-}
+
 
   allTags: { id: number, name: string }[] = [];
   allCategories: { id: number, name: string }[] = [];
@@ -147,31 +141,65 @@ onDocumentationSelect(event: Event): void {
     }
   }
 
-  addCustomTag() {
-    const tagName = this.customTag.trim();
-    const currentTags: string[] = this.assetForm.get('tags')?.value || [];
+ addCustomTag() {
+  const tagName = this.customTag.trim();
+  const currentTags: string[] = this.assetForm.get('tags')?.value || [];
 
-    if (tagName && !currentTags.includes(tagName)) {
-      this.tagCatgService.createTag({ name: tagName }).subscribe({
-        next: (createdTag) => {
-          this.allTags.push(createdTag);
-          this.assetForm.patchValue({
-            tags: [...currentTags, tagName]
-          });
-          this.customTag = '';
-        },
-        error: (err) => {
-          console.error('Failed to create custom tag:', err);
-          alert('Failed to create custom tag');
-        }
-      });
-    }
+  if (tagName && !currentTags.includes(tagName)) {
+    this.tagCatgService.createTag({ name: tagName }).subscribe({
+      next: (createdTag) => {
+        this.allTags.push(createdTag);
+        this.assetForm.patchValue({
+          tags: [...currentTags, tagName]
+        });
+        this.customTag = '';
+        Swal.fire({
+          title: 'Tag Added',
+          text: `"${tagName}" has been created and selected.`,
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      },
+      error: () => {
+        Swal.fire({
+          title: 'Failed to Add Tag',
+          text: 'Something went wrong. Try again later.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
+  } else if (currentTags.includes(tagName)) {
+    Swal.fire({
+      title: 'Already Exists',
+      text: 'This tag is already selected.',
+      icon: 'info',
+      timer: 1500,
+      showConfirmButton: false
+    });
   }
+}
+
+
+onDocumentationSelect(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    const file = input.files[0];
+    if (!file.type.includes('pdf')) {
+      alert('Only PDF files are allowed.');
+      this.documentationFile = null;
+      return;
+    }
+    this.documentationFile = file;
+  }
+}
 
   onImageSelect(event: any) {
-    const file: File = event.target.files?.[0];
-    if (file) this.handleImage(file);
+  const file: File = event.target.files?.[0];
+  if (file) this.handleImage(file);
   }
+
 
   onImageDrop(event: DragEvent) {
     event.preventDefault();
@@ -189,15 +217,16 @@ onDocumentationSelect(event: Event): void {
     this.dragImageOver = false;
   }
 
-  handleImage(file: File) {
-    this.imageFile = file;
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.imagePreview = reader.result as string;
-      this.assetForm.patchValue({ image: file.name });
-    };
-    reader.readAsDataURL(file);
-  }
+ handleImage(file: File) {
+  this.imageFile = file;
+  const reader = new FileReader();
+  reader.onload = () => {
+    this.imagePreview = reader.result as string;
+    this.assetForm.patchValue({ image: file.name }); 
+  };
+  reader.readAsDataURL(file);
+}
+
 
   onIconSelect(event: any) {
     const file: File = event.target.files?.[0];
@@ -233,19 +262,16 @@ onDocumentationSelect(event: Event): void {
 submitAsset() {
   if (this.assetForm.valid) {
     const formValues = this.assetForm.value;
-
     const selectedTagNames: string[] = formValues.tags || [];
     const matchedTagIds: number[] = [];
     selectedTagNames.forEach(tagName => {
       const tagObj = this.allTags.find(t => t.name === tagName);
       if (tagObj?.id != null) matchedTagIds.push(tagObj.id);
     });
-
     let matchedCategoryIds: number[] = [];
     const catObj = this.allCategories.find(c => c.name === formValues.category);
     if (catObj?.id != null) matchedCategoryIds = [catObj.id];
-
-    const payload: any = {
+      const payload: any = {
       name: formValues.name,
       label: formValues.label,
       publisher: formValues.publisher,
@@ -253,7 +279,7 @@ submitAsset() {
       publishDate: formValues.publishDate,
       license: formValues.license.toUpperCase(),
       status: formValues.status.toUpperCase(),
-      image: this.imageFile ? this.imageFile.name : formValues.image || null,
+      image: null,
       documentation: null,
       description: formValues.description || '',
       projectType: formValues.projectType,
@@ -262,11 +288,10 @@ submitAsset() {
       categoryIds: matchedCategoryIds
     };
 
-    // Subtype fields
     switch (formValues.assetType) {
       case 'Widget':
       case 'Sheet':
-        payload.icon = this.iconFile ? this.iconFile.name : formValues.icon || null;
+        payload.icon = formValues.icon;
         payload.framework = formValues.framework;
         if (formValues.assetType === 'Sheet') payload.format = formValues.format;
         break;
@@ -290,11 +315,16 @@ submitAsset() {
     const formData = new FormData();
     formData.append('request', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
     if (this.documentationFile) formData.append('documentation', this.documentationFile);
+    
+    if (this.imageFile) {
+      formData.append('image', this.imageFile);
+    }
 
+   
     this.assetService.addAsset(formData).subscribe({
       next: () => {
         Swal.fire({
-          title: `✔️ Asset "${payload.name}" Created!`,
+          title: `Asset "${payload.name}" Created!`,
           text: `Type: ${payload.type}`,
           icon: 'success',
           confirmButtonText: 'OK',
@@ -341,7 +371,5 @@ submitAsset() {
     this.assetForm.patchValue({ tags: tags.filter((t: string) => t !== tag) });
   }
   
-  generateId(): string {
-    return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
-  }
+  
 }

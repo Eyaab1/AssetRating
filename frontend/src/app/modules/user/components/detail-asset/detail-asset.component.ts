@@ -32,16 +32,16 @@ export class DetailAssetComponent {
   @ViewChild(ReviewComponentComponent) reviewComponent!: ReviewComponentComponent;
 @ViewChild('reviewModal', { static: false }) reviewModal!: ReviewPopupComponent;
 
-  // User & Asset State 
+  // user & asset  
   private userId: string = '';
   assetSelected!: Asset | undefined;
   sameCategoryAssets: Asset[] = [];
 
-  //  Tab State 
+  //  tabs 
   activeTab: 'docs' | 'releases' = 'docs';
   safeDocUrl: SafeResourceUrl | null = null;
 
-  //  Review & Rating State 
+  // reviews and ratings
   comments: Comment[] = [];
   ratings: Rating[] = [];
   categoryAverages: { [key: string]: number } = {};
@@ -52,7 +52,7 @@ export class DetailAssetComponent {
     { label: 'Documentation', field: 'documentation' }
   ];
 
-  //  Release State 
+  //  release  
   assetReleases: AssetRelease[] = [];
   selectedRelease: AssetRelease | null = null;
   showReleasePopup = false;
@@ -64,7 +64,6 @@ export class DetailAssetComponent {
   newReleaseDate: string = '';
   releaseRatings: { [releaseId: number]: number } = {};
 
-  // Constructor 
   constructor(
     private route: ActivatedRoute,
     private assetService: AssetServiceService,
@@ -79,7 +78,6 @@ export class DetailAssetComponent {
 highlightReportId: string | null = null;
 focusReviewId: string | null = null;
 fromReport: boolean = false;
-  //  Initialization
  ngOnInit(): void {
   const token = localStorage.getItem('token');
   if (token) {
@@ -109,20 +107,14 @@ scrollToComment(commentId: string, type: 'review' | 'report') {
   const el = document.getElementById(`review-${commentId}`);
   if (el) {
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-    // First clear any existing highlight
     this.highlightReviewId = null;
     this.highlightReportId = null;
-
-    // Wait for DOM to update, then set the new highlight
     setTimeout(() => {
       if (type === 'review') {
         this.highlightReviewId = commentId;
       } else {
         this.highlightReportId = commentId;
       }
-
-      // Remove highlight after 2.5s
       setTimeout(() => {
         if (type === 'review') {
           this.highlightReviewId = null;
@@ -130,7 +122,7 @@ scrollToComment(commentId: string, type: 'review' | 'report') {
           this.highlightReportId = null;
         }
       }, 2500);
-    }, 100); // Give Angular a moment to render the element
+    }, 100);
   }
 }
 
@@ -145,7 +137,6 @@ loadAssetById(id: string): void {
       this.loadRatings(data.id);
       this.loadReleases(data.id);
       this.loadCategoryAverages(data.id);
-
       const firstCategory = data.categories?.[0];
       if (firstCategory?.id != null) {
         this.loadSameCategoryAssets(firstCategory.id);
@@ -162,10 +153,10 @@ loadAssetById(id: string): void {
   setReleaseTab(releaseId: string, tab: 'docs' | 'feedback') {
     this.activeReleaseTabs[releaseId] = tab;
   }
+
   loadComments(): void {
     const assetId = this.assetSelected?.id;
     if (!assetId) return;
-
     this.commentService.getCommentsByAsset(assetId).subscribe({
       next: data => {
         this.comments = data.filter(comment => !comment.parentReviewId);
@@ -189,18 +180,13 @@ loadReleases(assetId: string): void {
   this.assetService.getReleasesByAsset(assetId).subscribe({
     next: (data: AssetRelease[]) => {
       this.assetReleases = data;
-
-      // Initialize rating map
       this.releaseRatings = data.reduce((acc, release) => {
         if (release.id != null) acc[release.id] = 0;
         return acc;
       }, {} as { [releaseId: number]: number });
-
-      // Fetch rating for each release
       data.forEach((release) => {
         const releaseId = release.id;
-        const releasedAssetId = release.releasedAsset?.id;
-
+        const releasedAssetId = release.releasedAsset.id;
         if (releaseId != null && releasedAssetId) {
           this.ratingService.getAverageRatingForRelease(releasedAssetId).subscribe({
             next: (ratingResponse) => {
@@ -391,6 +377,9 @@ toggleRelease(releasedAssetId: string): void {
 
   getIcon(img: string): string {
     return img ? `assets/images/${img}` : 'assets/images/default4.jpg';
+  }
+  getImage(img:string): string{
+    return img ? `http://localhost:8081${img}` : 'assets/images/default4.jpg';
   }
 
   goBack(): void {

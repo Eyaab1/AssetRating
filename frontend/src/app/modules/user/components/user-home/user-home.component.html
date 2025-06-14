@@ -1,6 +1,4 @@
-
 <div class="marketplace-page">
-  <!-- Sidebar -->
   <aside class="marketplace-sidebar stickySidebar"  
   [ngClass]="{
     'stickySidebar': role !== 'CONTRIBUTOR',
@@ -17,15 +15,10 @@
     {{ capitalizeFirst(type) }}
   </label>
 </div>
-
     <div class="filter-section">
       <h4>Categories ({{ allCategories.length }})</h4>
       <label *ngFor="let category of allCategories">
-        <input
-          type="checkbox"
-          [value]="category.id"
-          (change)="onFilterChange('categories', $event)"
-        />
+        <input type="checkbox" [value]="category.id"(change)="onFilterChange('categories', $event)" />
         {{ category.name }}
       </label>
     </div>
@@ -41,11 +34,7 @@
         {{ tag.name }}
       </label>
     </div>
-
-    <!-- <button class="apply-filter-btn" (click)="applyFilters()">Apply filters</button> -->
   </aside>
-
-  <!-- Main Content -->
   <main class="marketplace-content">
     <div class="search-bar ">
       <input
@@ -55,11 +44,7 @@
         (input)="filterAssets()"
       />
     </div>
-
-
-    <!-- Recommendations -->
     <section *ngIf="loadingRecommendations" class="loading-box">Loading recommendations...</section>
-
     <section *ngIf="recommendedAssets.length > 0" class="group-section">
       <h3><i class="fas fa-thumbs-up"></i>&nbsp; Recommended for You</h3>
       <div class="asset-grid">
@@ -73,18 +58,16 @@
               <div class="card-footer">
                 <span *ngIf="asset.downloadCount">{{ asset.downloadCount }} <i class="fas fa-download"></i></span>
                 <button class="view-detail-btn" (click)="goToDetail(asset.id); $event.stopPropagation()">View Details</button>
-                <!-- <button class="downloadBtn"(click)="onDownloadClicked(asset.id)">Download</button> -->
               </div>
            <!-- <button class="view-detail-btn" (click)="goToDetail(asset.id)">View Details</button> -->
               <button class="downloadBtn"(click)="onDownloadClicked(asset.id); $event.stopPropagation()">Download</button>
           </div>
-</div>
+      </div>
 
         </ng-container>
       </div>
     </section>
-
-    <!-- Trending -->
+<!-- top rated asset here y displayed -->
     <section *ngIf="topRated.length > 0" class="group-section">
       <h3><i class="fas fa-fire"></i>&nbsp;Top Rated Assets</h3>
       <div class="asset-grid">
@@ -109,7 +92,7 @@
       </div>
     </section>
 
-    <!-- Grouped Results -->
+    <!-- GROUP ma9souma -->
     <p *ngIf="groupedAssets.length === 0" class="no-assets">No assets found.</p>
 
     <section class="group-section" *ngFor="let group of groupedAssets">
@@ -137,9 +120,6 @@
     </section>
   </main>
 </div>
-
-
-
 <div class="quick-view-overlay" *ngIf="quickViewAsset" (click)="quickViewAsset = null">
   <div class="quick-view-panel" (click)="$event.stopPropagation()">
     <button class="close-btn" (click)="quickViewAsset = null">

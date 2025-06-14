@@ -1,16 +1,14 @@
 <div class="profile-container" *ngIf="user">
   <div class="profile-wrapper">
-    <!-- Profile Overview -->
     <div class="profile-overview">
       <div class="profile-avatar-box">
-        <div class="profile-avatar">{{ user.firstName?.charAt(0) | uppercase }}</div>
+        <div class="profile-avatar">{{ user.firstName.charAt(0) | uppercase }}</div>
       </div>
       <div class="profile-details">
         <h2 class="full-name">{{ user.firstName }} {{ user.lastName }}</h2>
         <p>{{user.role}}</p>
       </div>
     </div>
-    <!-- Personal Information Section -->
     <div class="info-section">
       <div class="section-header">
         <h3 class="section-title">Personal Information</h3>
@@ -37,7 +35,6 @@
         </div>
       </div>
     </div>
-    <!-- Reviews or Assets Section -->
     <div class="dynamic-section" *ngIf="userRole === 'USER'">
       <header class="reviews-header">
         <h2 class="reviews-title">Reviews History</h2>
@@ -55,10 +52,9 @@
           </select>
         </div>
 
-        <!-- Filtered Reviews -->
         <div class="reviews-list" *ngIf="filteredReviews.length > 0; else noReviews">
           <div class="review-card" *ngFor="let comment of filteredReviews" (click)="navigateToReview(comment.assetId, comment.id)">
-            <p class="review-content">🗨️ {{ comment.comment }}</p>
+            <p class="review-content"> {{ comment.comment }}</p>
             <small class="review-date">{{ comment.created_at | date:'medium' }}</small>
           </div>
         </div>
@@ -70,7 +66,6 @@
     </div>
 
     <div class="dynamic-section" *ngIf="userRole !== 'USER'">
-  <!-- Tab Buttons -->
   <div class="tab-buttons">
     <button 
       class="tab-button" 
@@ -85,8 +80,6 @@
       Reviews
     </button>
   </div>
-
-  <!-- Assets Section -->
   <div class="assets-content" *ngIf="activeTab === 'assets'">
     <div class="assets-list" *ngIf="assets.length > 0; else noAssets">
       <div class="asset-card" *ngFor="let asset of assets" (click)="navigateToAsset(asset.id)">
@@ -103,7 +96,6 @@
     </ng-template>
   </div>
 
-  <!-- Reviews Section -->
   <div class="reviews-content" *ngIf="activeTab === 'reviews'">
     <div class="filter-bar">
       <label for="timeFilter" class="filter-label">Filter by:</label>
@@ -118,7 +110,7 @@
 
     <div class="reviews-list" *ngIf="filteredReviews.length > 0; else noReviews">
       <div class="review-card" *ngFor="let comment of filteredReviews" (click)="navigateToReview(comment.assetId, comment.id)">
-        <p class="review-content">🗨️ {{ comment.comment }}</p>
+        <p class="review-content"> {{ comment.comment }}</p>
         <small class="review-date">{{ comment.created_at | date:'medium' }}</small>
       </div>
     </div>
@@ -130,7 +122,7 @@
 
 
 
-    <!-- Password Modal -->
+    <!-- password popup -->
     <div class="modal-backdrop" *ngIf="showPasswordModal" (click)="closePasswordModal()">
       <div class="modal" (click)="$event.stopPropagation()">
         <h3 class="modal-title">Change Password</h3>

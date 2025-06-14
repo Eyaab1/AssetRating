@@ -52,6 +52,7 @@ public class AuthConfig {
             	    .requestMatchers("/api/categories/**").permitAll()  
             	    .requestMatchers("/api/tags/**").permitAll()  
             	    .requestMatchers("/docs/**").permitAll()
+            	    .requestMatchers("/images/**").permitAll()
             	    .requestMatchers("/releases/docs/upload").permitAll()
             	    .requestMatchers("/api/analytics/**").permitAll()
             	    .requestMatchers("/api/notifications").authenticated()

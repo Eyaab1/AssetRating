@@ -14,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.Date;
 import java.util.Optional;
@@ -31,7 +30,6 @@ public class NotificationTest {
     @Mock private NotificationRepository notificationRepository;
     @Mock private AuthService authService;
     @Mock private AssetRepository assetRepository;
-    @Mock private SimpMessagingTemplate messagingTemplate;
 
     @InjectMocks private NotificationService notificationService;
 
@@ -52,7 +50,6 @@ public class NotificationTest {
         );
 
         verify(notificationRepository, times(1)).save(any(Notification.class));
-        verify(messagingTemplate, times(1)).convertAndSend(eq("/topic/notifications/" + recipient.getId()), any(Notification.class));
     }
 
     @Test
