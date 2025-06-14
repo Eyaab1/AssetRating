@@ -11,7 +11,8 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  justify-content: space-between; /* allow scrolling within sidebar if needed */
+  justify-content: space-between;
+  transition: width 0.3s ease;
 }
 
 .nav-links {
@@ -46,11 +47,15 @@
   color: white;
 }
 
+.link-text {
+  display: inline;
+  transition: opacity 0.3s ease;
+}
+
 @media (max-width: 768px) {
   .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
+    width: 70px;
+    padding: 20px 10px;
   }
 
   .nav-links a {
@@ -61,8 +66,7 @@
     margin-right: 0;
   }
 
-  .sidebar-header {
-    flex-direction: row;
-    justify-content: space-between;
+  .link-text {
+    display: none;
   }
 }

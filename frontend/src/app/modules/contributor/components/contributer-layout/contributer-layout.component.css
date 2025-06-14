@@ -4,20 +4,25 @@
   font-family: 'Segoe UI', sans-serif;
 }
 
+/* FIX SIDEBAR */
 app-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
   width: 250px;
-  flex-shrink: 0;
-  z-index: 2;
+  z-index: 1000;
 }
 
+/* MAIN CONTENT SHIFTED RIGHT */
 .main-content {
+  margin-left: 250px;
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
-  
 }
+
 
 .content-area {
   flex: 1;
@@ -28,3 +33,22 @@ app-sidebar {
  
 }
 
+@media (max-width: 768px) {
+  app-sidebar {
+    width: 70px;
+  }
+
+  .main-content {
+    margin-left: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  app-sidebar {
+    display: none;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+}

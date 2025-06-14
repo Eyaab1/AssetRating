@@ -266,7 +266,9 @@ createStarDisplay(average: number): string[] {
   return stars;
 }
 
-
+getImage(img:string): string{
+    return img ? `http://localhost:8081${img}` : 'assets/images/default4.jpg';
+  }
 
 hasActiveFilters(): boolean {
   return this.selectedTypes.length > 0 || this.selectedCategoryIds.length > 0 || this.selectedTagNames.length > 0;

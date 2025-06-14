@@ -141,7 +141,7 @@
     <div class="asset-meta">
       <h4 class="about-title">About this asset</h4>
       <p class="publisher"><i class="fa fa-user"></i> {{ assetSelected?.publisher }}</p>
-      <p class="publishedAt"><i class="fa fa-calendar"></i> {{ assetSelected?.publishDate | date: 'mediumDate' }}</p>
+      <p class="publishedAt"><i class="fa fa-calendar"></i> {{ assetSelected?.publishDate| date: 'mediumDate' }}</p>
       <p class="download-count" *ngIf="assetSelected?.downloadCount !== undefined && assetSelected?.downloadCount !== 0">
       <i class="fas fa-arrow-down"></i>{{ assetSelected?.downloadCount }} downloaded
     </p>

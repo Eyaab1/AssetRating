@@ -45,7 +45,6 @@ public abstract class Asset {
     private String filePath;
     
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at")  
     private Date publishDate;
 
     @Enumerated(EnumType.STRING)

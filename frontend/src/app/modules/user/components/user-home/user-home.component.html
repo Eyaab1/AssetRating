@@ -50,7 +50,7 @@
       <div class="asset-grid">
         <ng-container *ngFor="let asset of recommendedAssets">
           <div class="asset-card" (click)="openQuickView(asset)">
-          <img [src]="getIcon(asset.image)" (error)="onImageError($event)" />
+          <img [src]="getImage(asset.image)" (error)="onImageError($event)" />
             <div class="card-body">
               <h4>{{ asset.name }}</h4>
               <small>Published by {{ asset.publisher }}</small>
@@ -73,7 +73,7 @@
       <div class="asset-grid">
         <ng-container *ngFor="let asset of topRated">
           <div class="asset-card" (click)="openQuickView(asset)">
-           <img [src]="getIcon(asset.image)" (error)="onImageError($event)" />
+           <img [src]="getImage(asset.image)" (error)="onImageError($event)" />
             <div class="card-body">
               <h4>{{ asset.name }}</h4>
               <small>Published by {{ asset.publisher }}</small>
@@ -101,7 +101,7 @@
         <div
           class="asset-card"
           *ngFor="let asset of group.assets">
-            <img [src]="getIcon(asset.image)" (error)="onImageError($event)" (click)="openQuickView(asset)"/>
+            <img [src]="getImage(asset.image)" (error)="onImageError($event)" (click)="openQuickView(asset)"/>
             <div class="card-body">
               <h4>{{ asset.name }}</h4>
               <small>Published by {{ asset.publisher }}</small>

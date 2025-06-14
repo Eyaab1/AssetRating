@@ -84,8 +84,7 @@ onIconSelect(event: any): void {
   if (file) {
     const reader = new FileReader();
     reader.onload = () => {
-      // Optional: Show preview
-      this.assetForm.patchValue({ icon: file.name }); // You may want to store the file separately for upload
+      this.assetForm.patchValue({ icon: file.name }); 
     };
     reader.readAsDataURL(file);
   }
@@ -132,49 +131,60 @@ hasSubtypeFields(): boolean {
   }
   isSubmittingRelease = false;
   submitRelease(): void {
-    if (this.isSubmittingRelease || !this.newReleaseFile || !this.newReleaseVersion) return;
-  
-    this.isSubmittingRelease = true;
-  
-    this.assetService.uploadReleaseDocumentation(this.newReleaseFile).pipe(
-      switchMap((docPath: string) => {
-        const payload = {
-          originalAssetId: this.assetId,
-          version: this.newReleaseVersion,
-          documentation: docPath,
-          fileUrl: "/uploads/fake-release.zip"
-        };
-        return this.assetService.uploadAssetReleaseFull(payload);
-      })
-    ).subscribe({
-      next: () => {
-        this.loadReleases();
-        alert('Release added successfully.');
-        this.newReleaseVersion = '';
-        this.newReleaseFile = null;
-        this.showAddRelease = false;
-        this.isSubmittingRelease = false;
-      },
-      error: (err) => {
-        console.error('Failed to submit release:', err);
-        alert('Failed to submit release.');
-        this.isSubmittingRelease = false;
-      }
+  if (this.isSubmittingRelease || !this.newReleaseFile || !this.newReleaseVersion) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Incomplete Fields',
+      text: 'You must enter a version and select a file.',
     });
-    this.addSubtypeFields(this.assetForm.get('type')?.value);
-    this.assetForm.get('type')?.valueChanges.subscribe(type => {
-      this.addSubtypeFields(type);
-    });
-
+    return;
   }
+
+  this.isSubmittingRelease = true;
+
+  this.assetService.uploadReleaseDocumentation(this.newReleaseFile).pipe(
+    switchMap((docPath: string) => {
+      const payload = {
+        originalAssetId: this.assetId,
+        version: this.newReleaseVersion,
+        documentation: docPath,
+        fileUrl: "/uploads/fake-release.zip"
+      };
+      return this.assetService.uploadAssetReleaseFull(payload);
+    })
+  ).subscribe({
+    next: () => {
+      this.loadReleases();
+      Swal.fire({
+        icon: 'success',
+        title: 'Release Added',
+        text: 'The release has been added successfully.',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      this.newReleaseVersion = '';
+      this.newReleaseFile = null;
+      this.showAddRelease = false;
+      this.isSubmittingRelease = false;
+    },
+    error: (err) => {
+      console.error('Failed to submit release:', err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Release Failed',
+        text: 'Could not submit the release. Please try again.',
+      });
+      this.isSubmittingRelease = false;
+    }
+  });
+}
   
 
   getSafeDoc(path: string): SafeResourceUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl('http://localhost:8081' + path);
   }
 
- submitAssetUpdate(): void {
-  // Ensure dynamic fields are in place before validation
+submitAssetUpdate(): void {
   const type = this.assetForm.get('type')?.value;
   this.addSubtypeFields(type, this.assetSelected);
 
@@ -201,13 +211,12 @@ hasSubtypeFields(): boolean {
             text: 'Asset updated successfully.',
             icon: 'success',
             timer: 2000,
-            showConfirmButton: true
+            showConfirmButton: false
           });
         });
       }
     });
   } else {
-    console.warn('Form is invalid', this.assetForm.value);
     Swal.fire({
       icon: 'error',
       title: 'Form Incomplete',
@@ -256,7 +265,6 @@ hasSubtypeFields(): boolean {
   ['icon', 'framework', 'format', 'themeType', 'primaryColor', 'templateCategory', 'preconfigured', 'dependencies']
     .forEach(field => controls[field] && this.assetForm.removeControl(field));
 
-  // Track whether any new fields are added
   this.subtypeFieldsPresent = false;
 
   switch (type) {

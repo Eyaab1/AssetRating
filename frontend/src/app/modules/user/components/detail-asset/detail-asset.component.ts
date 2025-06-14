@@ -133,6 +133,7 @@ loadAssetById(id: string): void {
       if (data.documentation) {
         this.safeDocUrl = this.getSafeDocDirect(data.documentation);
       }
+      console.log("date asset",this.assetSelected.publishDate);
       this.loadComments();
       this.loadRatings(data.id);
       this.loadReleases(data.id);
@@ -229,7 +230,7 @@ loadReleases(assetId: string): void {
     });
   }
 
-  //  Review Submission 
+  //  review submission 
   handleReviewSubmit(review: { review: { rating: number, text: string } }): void {
     if (!this.assetSelected || !this.userId) return;
     const assetId = this.assetSelected.id;

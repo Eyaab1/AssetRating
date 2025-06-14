@@ -1,6 +1,5 @@
-/* ========== Dashboard Wrapper & Header ========== */
 body {
-  /* overflow: hidden; not recommended unless your layout is fixed-height */
+  /* overflow: hidden; */
 }
 .dashboard-wrapper {
   padding: 2rem;
@@ -40,7 +39,6 @@ body {
   box-shadow: 0 6px 20px rgba(67, 56, 202, 0.35);
 }
 
-/* ========== Cards Layout ========== */
 .dashboard-cards-container {
   display: flex;
   flex-wrap: wrap;
@@ -88,24 +86,11 @@ body {
   color: #111827;
 }
 
-/* Color variants (optional) */
 .stat-blue .stat-icon { color: #4F46E5; }
 .stat-green .stat-icon { color: #10B981; }
 .stat-orange .stat-icon { color: #F59E0B; }
 .stat-purple .stat-icon { color: #8B5CF6; }
 
-/* Responsive adjustments */
-@media (max-width: 900px) {
-  .stat-card {
-    flex: 1 1 calc(50% - 1rem);
-  }
-}
-
-@media (max-width: 600px) {
-  .stat-card {
-    flex: 1 1 100%;
-  }
-}
 
 .dashboard-cards-container.pretty {
   display: flex;
@@ -162,7 +147,6 @@ body {
 }
 
 
-/* ========== Chart Section ========== */
 .chart-row-horizontal {
   display: flex;
   flex-wrap: wrap;
@@ -178,7 +162,7 @@ body {
   border-radius: 0px;
   padding: 1rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
-  height: 300px; /* ↓ Reduced from 400px */
+  height: 300px; 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -195,11 +179,10 @@ body {
 }
 
 .chart-card-small canvas {
-  max-height: 20px !important; /* ↓ Reduced from 400px */
+  max-height: 20px !important;
 }
 
 
-/* ========== Mini Asset List ========== */
 .dashboard-main-section {
   display: flex;
   gap: 2rem;
@@ -295,4 +278,117 @@ body {
 
 .show-more-btn:hover {
   background-color: #4338CA;
+}
+/* respon */
+@media (max-width: 1024px) {
+  .dashboard-main-section {
+    flex-direction: column;
+  }
+
+  .dashboard-right {
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+
+  .chart-card-small {
+    flex: 1 1 100%;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.7rem;
+  }
+
+  .upload-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Small screens (phones) */
+@media (max-width: 768px) {
+  .pretty-card {
+    flex: 1 1 100%;
+  }
+
+  .dashboard-cards-container {
+    flex-direction: column;
+  }
+
+  .chart-row-horizontal {
+    flex-direction: column;
+  }
+
+  .chart-card-small {
+    height: auto;
+    padding: 1rem 0.5rem;
+  }
+
+  .mini-list-title {
+    font-size: 1rem;
+  }
+
+  .asset-name {
+    font-size: 0.9rem;
+  }
+
+  .asset-type {
+    font-size: 0.75rem;
+  }
+
+  .dashboard-wrapper {
+    padding: 1rem;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+  }
+
+  .card-details h3 {
+    font-size: 1.1rem;
+  }
+
+  .card-details p {
+    font-size: 0.7rem;
+  }
+}
+
+/* Extra small screens (narrow phones) */
+@media (max-width: 480px) {
+  .icon-circle {
+    width: 36px;
+    height: 36px;
+    font-size: 0.85rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.4rem;
+  }
+
+  .upload-btn {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .show-more-btn {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.8rem;
+  }
+
+  .dashboard-cards-container.pretty {
+    gap: 1rem;
+  }
+
+  .chart-title {
+    font-size: 0.9rem;
+  }
 }

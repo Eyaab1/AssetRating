@@ -1,17 +1,13 @@
 <div class="edit-asset-container">
-  <!-- Header with title and Save button -->
   <div class="edit-asset-header">
     <h2>Edit Asset</h2>
     <button type="button" class="save-btn-top" (click)="submitAssetUpdate()">Save</button>
   </div>
-
-  <!-- Tabs -->
   <div class="tab-bar">
     <button [class.active]="activeTab === 'general'" (click)="activeTab = 'general'">General</button>
     <button [class.active]="activeTab === 'releases'" (click)="activeTab = 'releases'">Releases</button>
   </div>
   <div class="tab-content">
-    <!-- GENERAL TAB -->
     <div *ngIf="activeTab === 'general'" class="general-tab">
       <form *ngIf="assetForm" [formGroup]="assetForm">
         <div class="form-header">
@@ -35,7 +31,7 @@
 
             <div class="form-row">
               <div class="form-group">
-                <label>Publish Date</label>
+                <label>Created at</label>
                 <input type="text" [value]="assetForm.get('publishDate')?.value | date: 'MMM d, y'" disabled />
               </div>
               <div class="form-group">
@@ -67,8 +63,6 @@
           <label>Description</label>
           <textarea formControlName="description" rows="4"></textarea>
         </div>
-
-        <!-- Subtype-specific fields -->
         <div class="subtype-section" *ngIf="subtypeFieldsPresent">
           <div class="form-row" *ngIf="assetForm.get('framework')">
             <div class="form-group">
@@ -111,8 +105,6 @@
         </div>
       </form>
     </div>
-
-    <!-- RELEASES TAB -->
     <div *ngIf="activeTab === 'releases'" class="release-tab">
       <div class="release-header-row">
         <h3>Asset Releases</h3>
